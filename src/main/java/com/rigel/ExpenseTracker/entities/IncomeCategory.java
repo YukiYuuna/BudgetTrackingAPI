@@ -1,12 +1,14 @@
 package com.rigel.ExpenseTracker.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "income_category")
+@Data
 public class IncomeCategory {
 
     @Id
@@ -23,27 +25,4 @@ public class IncomeCategory {
     public IncomeCategory() {
     }
 
-    public IncomeCategory(String categoryName){
-        this.categoryName = categoryName;
-    }
-
-    public Long getId() {
-        return Id;
-    }
-
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
-
-    public List<IncomeTransaction> getIncomeTransaction() {
-        return incomeTransaction;
-    }
-
-    public void setIncomeTransaction(List<IncomeTransaction> incomeTransaction) {
-        this.incomeTransaction = incomeTransaction;
-    }
 }

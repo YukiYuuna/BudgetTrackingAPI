@@ -2,7 +2,7 @@ package com.rigel.ExpenseTracker.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
-import org.springframework.lang.Nullable;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -10,6 +10,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "expense_transaction")
+@Data
 public class ExpenseTransaction {
 
     @Id
@@ -47,58 +48,6 @@ public class ExpenseTransaction {
         this.expenseAmount = expenseAmount;
         this.category = categoryName;
         this.expenseCategory = expenseCategory;
-        this.description = description;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public Double getExpenseAmount() {
-        return expenseAmount;
-    }
-
-    public void setExpenseAmount(Double expenseAmount) {
-        this.expenseAmount = expenseAmount;
-    }
-
-    public ExpenseCategory getExpenseCategory() {
-        return expenseCategory;
-    }
-
-    public void setExpenseCategory(ExpenseCategory expenseCategory) {
-        this.expenseCategory = expenseCategory;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User userTransactions) {
-        this.user = userTransactions;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
         this.description = description;
     }
 }

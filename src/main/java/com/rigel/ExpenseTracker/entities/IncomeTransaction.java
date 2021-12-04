@@ -1,12 +1,14 @@
 package com.rigel.ExpenseTracker.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "income_transaction")
+@Data
 public class IncomeTransaction {
 
     @Id
@@ -35,42 +37,6 @@ public class IncomeTransaction {
         this.date = date;
         this.incomeAmount = incomeAmount;
         this.incomeCategory = incomeCategory;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public Double getIncomeAmount() {
-        return incomeAmount;
-    }
-
-    public void setIncomeAmount(Double incomeAmount) {
-        this.incomeAmount = incomeAmount;
-    }
-
-    public IncomeCategory getIncomeCategory() {
-        return incomeCategory;
-    }
-
-    public void setIncomeCategory(IncomeCategory incomeCategory) {
-        this.incomeCategory = incomeCategory;
-    }
-
-    public User getUsers() {
-        return users;
-    }
-
-    public void setUsers(User users) {
-        this.users = users;
     }
 
 }
