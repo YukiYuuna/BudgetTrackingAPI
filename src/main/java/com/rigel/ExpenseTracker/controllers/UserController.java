@@ -13,11 +13,11 @@ import java.util.*;
 @RestController
 @RequestMapping("/user")
 @CrossOrigin(origins = "*")
-public class BudgetController {
+public class UserController {
 
     private final UserRepository userRepo;
 
-    public BudgetController(UserRepository userRepository){
+    public UserController(UserRepository userRepository){
         this.userRepo = userRepository;
     }
 
@@ -32,7 +32,7 @@ public class BudgetController {
     @GetMapping("/fetch/{id}")
     private ResponseEntity<?> fetchUserById(@PathVariable Long id){
         if(!(userRepo.existsById(id))){
-            return ResponseEntity.ok("The user doesn't exist!");
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(userRepo.findUserById(id));
     }
@@ -60,7 +60,7 @@ public class BudgetController {
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteByFirstAndLastName(String fName, String lName) {
         if (!(userRepo.existsByFirstNameAndLastName(fName, lName)))
-            return ResponseEntity.ok("User not found.");
+            return ResponseEntity.notFound().build();
 
         User user = userRepo.findUserByFirstNameAndLastName(fName, lName);
         userRepo.delete(user);
@@ -69,8 +69,8 @@ public class BudgetController {
 
     @DeleteMapping("delete/{id}")
     private ResponseEntity<?> deleteUserById(@PathVariable Long id){
-        if(!(userRepo.existsById(id))){
-            return ResponseEntity.ok("The user doesn't exist!");
+        if(!(userRepo.existsById(id))) {
+            return ResponseEntity.notFound().build();
         }
         userRepo.deleteById(id);
         return ResponseEntity.ok("The user has been deleted successfully!");

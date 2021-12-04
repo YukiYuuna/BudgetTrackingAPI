@@ -4,16 +4,12 @@ package com.rigel.ExpenseTracker.controllers;
 import com.rigel.ExpenseTracker.entities.ExpenseCategory;
 import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
 import com.rigel.ExpenseTracker.entities.User;
-import com.rigel.ExpenseTracker.exceptions.MyResourceNotFoundException;
 import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
 import com.rigel.ExpenseTracker.repositories.ExpenseTransactionRepository;
 import com.rigel.ExpenseTracker.repositories.UserRepository;
-import org.apache.tomcat.jni.Local;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -60,7 +56,7 @@ public class ExpenseController {
         if (userRepository.existsById(userId)) {
             user = userRepository.findUserById(userId);
         } else {
-            return ResponseEntity.ok("User not found!");
+            return ResponseEntity.notFound().build();
         }
 
         List<ExpenseTransaction> userTransactions = expenseTransactionRepository.findAllByUser(user);
@@ -90,7 +86,7 @@ public class ExpenseController {
         LocalDate localDate = LocalDate.parse(date);
 
         if (!(userRepository.existsById(userId)))
-            return ResponseEntity.ok("User not found! Transaction hasn't been made!");
+            return ResponseEntity.notFound().build();
 
         User user = userRepository.findUserById(userId);
         double userBudget = user.getCurrentBudget() - expenseAmount;
@@ -139,7 +135,7 @@ public class ExpenseController {
     @DeleteMapping("/delete/transaction/{id}")
     ResponseEntity<?> deleteTransactionById(@PathVariable Long id) {
         if (!(expenseTransactionRepository.existsById(id)))
-            return ResponseEntity.ok("The transaction doesn't exist!");
+            return ResponseEntity.notFound().build();
 
         expenseTransactionRepository.deleteById(id);
         return ResponseEntity.ok("The transaction has been deleted");
