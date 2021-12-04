@@ -4,13 +4,14 @@ package com.rigel.ExpenseTracker.controllers;
 import com.rigel.ExpenseTracker.entities.ExpenseCategory;
 import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
 import com.rigel.ExpenseTracker.entities.User;
+import com.rigel.ExpenseTracker.exception.BadRequestException;
+import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
 import com.rigel.ExpenseTracker.repositories.ExpenseTransactionRepository;
 import com.rigel.ExpenseTracker.repositories.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 import java.util.*;
 
@@ -39,40 +40,46 @@ public class ExpenseController {
         return expenseCategoryRepository.findAllCategories();
     }
 
-    @GetMapping("/transactions/category")
-    private List<ExpenseTransaction> fetchAllTransactionsByCategoryName(String categoryName) {
-        return expenseTransactionRepository.findExpenseTransactionByExpenseCategory_CategoryName(categoryName);
+    @GetMapping("/category/{categoryName}")
+    private ExpenseCategory fetchTransactionsByCategory(@PathVariable String categoryName) {
+        if(!expenseCategoryRepository.existsExpenseCategoryByCategoryName(categoryName))
+            throw new NotFoundException("Category of type " + categoryName + " doesn't exist!");
+        return expenseCategoryRepository.findExpenseCategoryByCategoryName(categoryName);
     }
 
     @GetMapping("/transaction/{id}")
     private ExpenseTransaction fetchTransactionById(@PathVariable Long id) {
+        if(!expenseTransactionRepository.existsById(id))
+            throw new NotFoundException("Transaction with id " + id + " does not exist.");
         return expenseTransactionRepository.findExpenseTransactionById(id);
     }
 
     @GetMapping("/transaction/{date}/{userId}")
     private ResponseEntity<?> fetchTransactionsByDate(@PathVariable String date, @PathVariable Long userId) {
+
         LocalDate day = LocalDate.parse(date);
         User user;
-        if (userRepository.existsById(userId)) {
+
+        if (userRepository.existsById(userId))
             user = userRepository.findUserById(userId);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        else
+            throw new NotFoundException("User with id:" + userId + " doesn't exist.");
 
         List<ExpenseTransaction> userTransactions = expenseTransactionRepository.findAllByUser(user);
         List<ExpenseTransaction> response = new ArrayList<>();
         for (ExpenseTransaction transaction : userTransactions)
             if (transaction.getDate().equals(day))
                 response.add(transaction);
+
         if(response.size() == 0)
-            return ResponseEntity.ok("There are no transactions made on " + date + " for user with id: " + userId);
+            throw new NotFoundException("There are no transactions on " + date);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/add/category")
     public ResponseEntity<?> addExpenseCategory(String name) {
         if (expenseCategoryRepository.existsExpenseCategoryByCategoryName(name)) {
-            return ResponseEntity.ok("The category already exists!!");
+            throw new BadRequestException("A category with this name already exists!");
         }
         return ResponseEntity.ok(expenseCategoryRepository.save(new ExpenseCategory(name)));
     }
@@ -86,7 +93,7 @@ public class ExpenseController {
         LocalDate localDate = LocalDate.parse(date);
 
         if (!(userRepository.existsById(userId)))
-            return ResponseEntity.notFound().build();
+            throw new NotFoundException("User with id:" + userId + " doesn't exist.");
 
         User user = userRepository.findUserById(userId);
         double userBudget = user.getCurrentBudget() - expenseAmount;
@@ -98,7 +105,6 @@ public class ExpenseController {
         } else {
             ExpenseCategory nonExistingCategory = new ExpenseCategory();
             nonExistingCategory.setCategoryName(expenseCategory);
-
             expenseTransaction = new ExpenseTransaction(localDate, expenseAmount, expenseCategory, nonExistingCategory, description);
         }
         expenseTransaction.setUser(user);
@@ -111,7 +117,7 @@ public class ExpenseController {
     @DeleteMapping("/delete/categories")
     public ResponseEntity<?> deleteAllCategories() {
         if (expenseCategoryRepository.findAll().size() == 0)
-            return ResponseEntity.ok("There are no declared categories.");
+            throw new NotFoundException("There are no categories!");
 
         expenseCategoryRepository.deleteAll();
         return ResponseEntity.ok("All categories have been deleted");
@@ -120,7 +126,7 @@ public class ExpenseController {
     @DeleteMapping("/delete/category/{id}")
     public ResponseEntity<?> deleteCategoryById(@PathVariable Long id) {
         if (!(expenseCategoryRepository.existsById(id)))
-            return ResponseEntity.ok("The category doesn't exist!");
+            throw new NotFoundException("Category with id:" + id + " doesn't exist!");
 
         expenseCategoryRepository.deleteById(id);
         return ResponseEntity.ok("The category has been deleted!");
@@ -128,6 +134,9 @@ public class ExpenseController {
 
     @DeleteMapping("/delete/transactions")
     public ResponseEntity<?> deleteAllTransactions() {
+        if (expenseTransactionRepository.findAll().size() == 0)
+            throw new NotFoundException("There are no transactions!");
+
         expenseTransactionRepository.deleteAll();
         return ResponseEntity.ok("All transactions have been deleted");
     }
@@ -135,7 +144,7 @@ public class ExpenseController {
     @DeleteMapping("/delete/transaction/{id}")
     ResponseEntity<?> deleteTransactionById(@PathVariable Long id) {
         if (!(expenseTransactionRepository.existsById(id)))
-            return ResponseEntity.notFound().build();
+            throw new NotFoundException("Transaction with id: " + id + " doesn't exist!");
 
         expenseTransactionRepository.deleteById(id);
         return ResponseEntity.ok("The transaction has been deleted");

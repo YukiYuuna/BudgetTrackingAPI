@@ -17,5 +17,6 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
 
     List<ExpenseTransaction> findAllByDate(LocalDate date);
 
+    boolean existsExpenseTransactionByExpenseCategory_CategoryName(String categoryName);
 
 }
