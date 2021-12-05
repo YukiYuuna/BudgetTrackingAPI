@@ -14,6 +14,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/expense")
@@ -40,12 +42,6 @@ public class ExpenseController {
         return expenseCategoryRepository.findAllCategories();
     }
 
-    @GetMapping("/category/{categoryName}")
-    private ExpenseCategory fetchTransactionsByCategory(@PathVariable String categoryName) {
-        if(!expenseCategoryRepository.existsExpenseCategoryByCategoryName(categoryName))
-            throw new NotFoundException("Category of type " + categoryName + " doesn't exist!");
-        return expenseCategoryRepository.findExpenseCategoryByCategoryName(categoryName);
-    }
 
     @GetMapping("/transaction/{id}")
     private ExpenseTransaction fetchTransactionById(@PathVariable Long id) {
@@ -57,23 +53,37 @@ public class ExpenseController {
     @GetMapping("/transaction/{date}/{userId}")
     private ResponseEntity<?> fetchTransactionsByDate(@PathVariable String date, @PathVariable Long userId) {
 
+        HashMap<String, Object> result = new LinkedHashMap<>();
         LocalDate day = LocalDate.parse(date);
         User user;
+        String username;
 
-        if (userRepository.existsById(userId))
+        if (userRepository.existsById(userId)) {
             user = userRepository.findUserById(userId);
-        else
+            username = Stream.of(user.getFirstName(), user.getLastName())
+                    .map(Object::toString)
+                    .collect(Collectors.joining(" "));
+            result.put("user", username);
+        } else{
             throw new NotFoundException("User with id:" + userId + " doesn't exist.");
+        }
 
         List<ExpenseTransaction> userTransactions = expenseTransactionRepository.findAllByUser(user);
-        List<ExpenseTransaction> response = new ArrayList<>();
+        List<ExpenseTransaction> expenseTransactions = new ArrayList<>();
         for (ExpenseTransaction transaction : userTransactions)
             if (transaction.getDate().equals(day))
-                response.add(transaction);
+                expenseTransactions.add(transaction);
 
-        if(response.size() == 0)
-            throw new NotFoundException("There are no transactions on " + date);
-        return ResponseEntity.ok(response);
+        if(expenseTransactions.size() == 0)
+            throw new NotFoundException("There are no transactions on " + date + " made by " + username);
+
+        result.put("totalSpent", expenseTransactions.stream()
+                .map(ExpenseTransaction::getExpenseAmount)
+                .reduce(0.0, Double::sum));
+
+        result.put("transactions", expenseTransactions);
+
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/add/category")

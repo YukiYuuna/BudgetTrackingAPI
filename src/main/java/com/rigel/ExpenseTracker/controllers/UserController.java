@@ -57,19 +57,19 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteByFirstAndLastName(String fName, String lName) {
-        if (!(userRepo.existsByFirstNameAndLastName(fName, lName)))
-           throw new NotFoundException("The user " + fName + " " + lName + ", doesn't exist.");
+    public ResponseEntity<?> deleteByFirstAndLastName(String firstName, String lastName) {
+        if (!(userRepo.existsByFirstNameAndLastName(firstName, lastName)))
+           throw new NotFoundException("User with name: " + firstName + " " + lastName + " doesn't exist.");
 
-        User user = userRepo.findUserByFirstNameAndLastName(fName, lName);
+        User user = userRepo.findUserByFirstNameAndLastName(firstName, lastName);
         userRepo.delete(user);
-        return ResponseEntity.ok("User wa deleted successfully!");
+        return ResponseEntity.ok("User was deleted successfully!");
     }
 
     @DeleteMapping("delete/{id}")
     private ResponseEntity<?> deleteUserById(@PathVariable Long id){
         if(!(userRepo.existsById(id)))
-            throw new NotFoundException("User with id: "+ id + ", doesn't exist.");
+            throw new NotFoundException("User with id: "+ id + " doesn't exist.");
 
         userRepo.deleteById(id);
         return ResponseEntity.ok("The user has been deleted successfully!");
