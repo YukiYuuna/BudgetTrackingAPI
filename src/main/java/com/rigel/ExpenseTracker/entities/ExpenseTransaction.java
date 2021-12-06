@@ -6,11 +6,11 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Objects;
 
 
 @Entity
 @Table(name = "expense_transaction")
-@Data
 public class ExpenseTransaction {
 
     @Id
@@ -34,7 +34,7 @@ public class ExpenseTransaction {
     @JsonIgnore
     private ExpenseCategory expenseCategory;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "Id")
     @JsonIgnore
     @NotNull
@@ -50,4 +50,57 @@ public class ExpenseTransaction {
         this.expenseCategory = expenseCategory;
         this.description = description;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public Double getExpenseAmount() {
+        return expenseAmount;
+    }
+
+    public void setExpenseAmount(Double expenseAmount) {
+        this.expenseAmount = expenseAmount;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public ExpenseCategory getExpenseCategory() {
+        return expenseCategory;
+    }
+
+    public void setExpenseCategory(ExpenseCategory expenseCategory) {
+        this.expenseCategory = expenseCategory;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
 }

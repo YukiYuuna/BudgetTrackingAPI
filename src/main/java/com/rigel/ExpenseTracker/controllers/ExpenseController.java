@@ -9,6 +9,9 @@ import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
 import com.rigel.ExpenseTracker.repositories.ExpenseTransactionRepository;
 import com.rigel.ExpenseTracker.repositories.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
@@ -50,6 +53,27 @@ public class ExpenseController {
         return expenseTransactionRepository.findExpenseTransactionById(id);
     }
 
+    @GetMapping("/transactions/user")
+    public ResponseEntity<?> filterTransactions(Long userId, int currentPage, int perPage) {
+        HashMap<String, Object> result = new LinkedHashMap<>();
+
+        if (!userRepository.existsById(userId))
+            throw new NotFoundException("User with id:" + userId + " doesn't exist.");
+
+        User user = userRepository.findUserById(userId);
+        String username = Stream.of(user.getFirstName(), user.getLastName())
+                .map(Object::toString)
+                .collect(Collectors.joining(" "));
+        result.put("user", username);
+
+        Pageable pageable = PageRequest.of(currentPage - 1, perPage);
+        Page<ExpenseTransaction> expenseTransactions = expenseTransactionRepository.filterTransactions(pageable, user.getEmail());
+        result.put("totalTransactions", expenseTransactions.getTotalElements());
+        result.put("totalPages", expenseTransactions.getTotalPages());
+        result.put("transactions", expenseTransactions.getContent());
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping("/transaction/{date}/{userId}")
     private ResponseEntity<?> fetchTransactionsByDate(@PathVariable String date, @PathVariable Long userId) {
 
@@ -77,6 +101,7 @@ public class ExpenseController {
         if(expenseTransactions.size() == 0)
             throw new NotFoundException("There are no transactions on " + date + " made by " + username);
 
+        result.put("date", date);
         result.put("totalSpent", expenseTransactions.stream()
                 .map(ExpenseTransaction::getExpenseAmount)
                 .reduce(0.0, Double::sum));

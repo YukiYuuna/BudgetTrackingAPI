@@ -2,7 +2,10 @@ package com.rigel.ExpenseTracker.repositories;
 
 import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
 import com.rigel.ExpenseTracker.entities.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,5 +21,12 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
     List<ExpenseTransaction> findAllByDate(LocalDate date);
 
     boolean existsExpenseTransactionByExpenseCategory_CategoryName(String categoryName);
+
+    @Query("SELECT e "
+            + "FROM ExpenseTransaction e "
+            + "WHERE "
+            + "lower(e.user.email) "
+            + "LIKE :#{#email == null || #email.isEmpty()? '%' : #email + '%'} ")
+    Page<ExpenseTransaction> filterTransactions(Pageable pageable, String email);
 
 }
