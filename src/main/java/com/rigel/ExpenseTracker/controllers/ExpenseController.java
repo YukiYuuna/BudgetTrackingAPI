@@ -149,6 +149,22 @@ public class ExpenseController {
         return ResponseEntity.ok(returnJson);
     }
 
+    @PutMapping("/transaction/{id}")
+    public ResponseEntity<?> modifyTransaction(@RequestBody ExpenseTransaction expenseTransaction, @PathVariable Long id){
+        return expenseTransactionRepository.findById(id)
+                .map(transaction -> {
+                    transaction.setExpenseCategory(expenseTransaction.getExpenseCategory());
+                    transaction.setExpenseAmount(expenseTransaction.getExpenseAmount());
+                    transaction.setDate(expenseTransaction.getDate());
+                    transaction.setDescription(expenseTransaction.getDescription());
+                    transaction.setCategory(expenseTransaction.getCategory());
+                    return ResponseEntity.ok(expenseTransactionRepository.save(transaction));
+                })
+                .orElseGet(() -> {
+                    return ResponseEntity.ok(expenseTransactionRepository.save(expenseTransaction));
+                });
+    }
+
     @DeleteMapping("/delete/categories")
     public ResponseEntity<?> deleteAllCategories() {
         if (expenseCategoryRepository.findAll().size() == 0)
