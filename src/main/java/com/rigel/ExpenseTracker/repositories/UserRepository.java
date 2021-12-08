@@ -10,7 +10,11 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    User findUserById(Long id);
+    @Query("SELECT u "
+            + "FROM User u "
+            + "WHERE "
+            + "u.id = ?1")
+    User fetchUserById(Long id);
 
     User findUserByFirstNameAndLastName(String firstName, String lastName);
 

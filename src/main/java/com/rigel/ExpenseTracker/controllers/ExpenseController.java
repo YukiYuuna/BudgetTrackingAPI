@@ -60,7 +60,7 @@ public class ExpenseController {
         if (!userRepository.existsById(userId))
             throw new NotFoundException("User with id:" + userId + " doesn't exist.");
 
-        User user = userRepository.findUserById(userId);
+        User user = userRepository.fetchUserById(userId);
         String username = Stream.of(user.getFirstName(), user.getLastName())
                 .map(Object::toString)
                 .collect(Collectors.joining(" "));
@@ -83,7 +83,7 @@ public class ExpenseController {
         String username;
 
         if (userRepository.existsById(userId)) {
-            user = userRepository.findUserById(userId);
+            user = userRepository.fetchUserById(userId);
             username = Stream.of(user.getFirstName(), user.getLastName())
                     .map(Object::toString)
                     .collect(Collectors.joining(" "));
@@ -99,7 +99,7 @@ public class ExpenseController {
                 expenseTransactions.add(transaction);
 
         if(expenseTransactions.size() == 0)
-            throw new NotFoundException("There are no transactions on " + date + " made by " + username);
+            throw new NotFoundException("There are no transactions on " + date + ", made by " + username);
 
         result.put("date", date);
         result.put("totalSpent", expenseTransactions.stream()
@@ -130,16 +130,19 @@ public class ExpenseController {
         if (!(userRepository.existsById(userId)))
             throw new NotFoundException("User with id:" + userId + " doesn't exist.");
 
-        User user = userRepository.findUserById(userId);
+        User user = userRepository.fetchUserById(userId);
         double userBudget = user.getCurrentBudget() - expenseAmount;
         user.setCurrentBudget(userBudget);
         returnJson.put("userInfo", user);
 
         if (expenseCategoryRepository.existsExpenseCategoryByCategoryName(expenseCategory)) {
-            expenseTransaction = new ExpenseTransaction(localDate, expenseAmount, expenseCategory, expenseCategoryRepository.findExpenseCategoryByCategoryName(expenseCategory), description);
+            expenseTransaction = new ExpenseTransaction(localDate,
+                    expenseAmount,
+                    expenseCategory,
+                    expenseCategoryRepository.findExpenseCategoryByCategoryName(expenseCategory),
+                    description);
         } else {
-            ExpenseCategory nonExistingCategory = new ExpenseCategory();
-            nonExistingCategory.setCategoryName(expenseCategory);
+            ExpenseCategory nonExistingCategory = new ExpenseCategory(expenseCategory);
             expenseTransaction = new ExpenseTransaction(localDate, expenseAmount, expenseCategory, nonExistingCategory, description);
         }
         expenseTransaction.setUser(user);
@@ -149,8 +152,16 @@ public class ExpenseController {
         return ResponseEntity.ok(returnJson);
     }
 
-    @PutMapping("/transaction/{id}")
+    @PutMapping("/transaction/modify/{id}")
     public ResponseEntity<?> modifyTransaction(@RequestBody ExpenseTransaction expenseTransaction, @PathVariable Long id){
+        if(!expenseTransactionRepository.existsById(id)){
+            throw new NotFoundException("There is no transaction with id: " + id);
+        }
+
+        if(expenseCategoryRepository.existsExpenseCategoryByCategoryName(expenseTransaction.getCategory())){
+            expenseCategoryRepository.save(new ExpenseCategory(expenseTransaction.getCategory()));
+        }
+
         return expenseTransactionRepository.findById(id)
                 .map(transaction -> {
                     transaction.setExpenseCategory(expenseTransaction.getExpenseCategory());

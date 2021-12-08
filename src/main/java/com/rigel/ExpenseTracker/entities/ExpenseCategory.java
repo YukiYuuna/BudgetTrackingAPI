@@ -18,7 +18,7 @@ public class ExpenseCategory {
     @Column(name = "category_name")
     private String categoryName;
 
-    @OneToMany(mappedBy = "expenseCategory", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "expenseCategory")
     @JsonIgnore
     private Set<ExpenseTransaction> expenseTransactions;
 

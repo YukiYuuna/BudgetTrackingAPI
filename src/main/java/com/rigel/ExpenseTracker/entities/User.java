@@ -26,7 +26,7 @@ public class User {
     @Column(name = "budget")
     private Double currentBudget;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     private List<ExpenseTransaction> expenseTransactions;
 
     public User() {

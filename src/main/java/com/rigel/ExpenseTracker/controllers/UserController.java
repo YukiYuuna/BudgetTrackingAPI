@@ -1,5 +1,7 @@
 package com.rigel.ExpenseTracker.controllers;
 
+import com.rigel.ExpenseTracker.entities.ExpenseCategory;
+import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
 import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.exception.BadRequestException;
 import com.rigel.ExpenseTracker.exception.NotFoundException;
@@ -29,11 +31,11 @@ public class UserController {
     }
 
     @GetMapping("/fetch/{id}")
-    private ResponseEntity<?> fetchUserById(@PathVariable Long id){
+    private ResponseEntity<?> fetchById(@PathVariable Long id){
         if(!(userRepo.existsById(id)))
             throw new NotFoundException("Oops, user with id:" + id + " doesn't exist");
 
-        return ResponseEntity.ok(userRepo.findUserById(id));
+        return ResponseEntity.ok(userRepo.findById(id));
     }
 
     @GetMapping("/filter")
@@ -54,6 +56,27 @@ public class UserController {
             return ResponseEntity.ok(fName + " " + lName + " has been added successfully!");
         }
         throw new BadRequestException("You should provide all data, including your first and last name, your age, email and current budget!");
+    }
+
+    @PutMapping("/modify/{id}")
+    public ResponseEntity<?> modifyUserInfo(@RequestBody User updatedUser, @PathVariable Long id){
+        if(!userRepo.existsById(id)){
+            throw new NotFoundException("There is no user with id : " + id);
+        }
+
+        return userRepo.findById(id)
+                .map(user -> {
+                    user.setFirstName(updatedUser.getFirstName());
+                    user.setLastName(updatedUser.getLastName());
+                    user.setEmail(updatedUser.getEmail());
+                    user.setAge(updatedUser.getAge());
+                    user.setCurrentBudget(updatedUser.getCurrentBudget());
+                    user.setExpenseTransactions(user.getExpenseTransactions());
+                    return ResponseEntity.ok(userRepo.save(user));
+                })
+                .orElseGet(() -> {
+                    return ResponseEntity.ok(userRepo.save(updatedUser));
+                });
     }
 
     @DeleteMapping("/delete")
