@@ -54,7 +54,7 @@ public class ExpenseController {
     }
 
     @GetMapping("/transactions/user")
-    public ResponseEntity<?> filterTransactions(Long userId, int currentPage, int perPage) {
+    public ResponseEntity<?> filterTransactions(Long userId, @Nullable Integer currentPage, @Nullable Integer perPage) {
         HashMap<String, Object> result = new LinkedHashMap<>();
 
         if (!userRepository.existsById(userId))
@@ -66,7 +66,13 @@ public class ExpenseController {
                 .collect(Collectors.joining(" "));
         result.put("user", username);
 
-        Pageable pageable = PageRequest.of(currentPage - 1, perPage);
+        Pageable pageable;
+        if(currentPage != null && perPage != null){
+            pageable = PageRequest.of(currentPage - 1, perPage);
+        } else{
+            pageable = PageRequest.of(0,expenseTransactionRepository.findAll().size());
+        }
+
         Page<ExpenseTransaction> expenseTransactions = expenseTransactionRepository.filterTransactions(pageable, user.getEmail());
         result.put("totalTransactions", expenseTransactions.getTotalElements());
         result.put("totalPages", expenseTransactions.getTotalPages());
@@ -158,11 +164,11 @@ public class ExpenseController {
             throw new NotFoundException("There is no transaction with id: " + id);
         }
 
-        if(expenseCategoryRepository.existsExpenseCategoryByCategoryName(expenseTransaction.getCategory())){
+        if(!expenseCategoryRepository.existsExpenseCategoryByCategoryName(expenseTransaction.getCategory())){
             expenseCategoryRepository.save(new ExpenseCategory(expenseTransaction.getCategory()));
         }
 
-        return expenseTransactionRepository.findById(id)
+        return expenseTransactionRepository.findById(id  )
                 .map(transaction -> {
                     transaction.setExpenseCategory(expenseTransaction.getExpenseCategory());
                     transaction.setExpenseAmount(expenseTransaction.getExpenseAmount());
