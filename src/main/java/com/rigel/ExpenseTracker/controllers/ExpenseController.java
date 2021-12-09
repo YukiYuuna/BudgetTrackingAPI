@@ -9,6 +9,7 @@ import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
 import com.rigel.ExpenseTracker.repositories.ExpenseTransactionRepository;
 import com.rigel.ExpenseTracker.repositories.UserRepository;
+import com.sun.istack.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +49,9 @@ public class ExpenseController {
 
     @GetMapping("/transaction/{id}")
     private ExpenseTransaction fetchTransactionById(@PathVariable Long id) {
+        if(id == null)
+            throw new BadRequestException("No transaction id provided in the URL.");
+
         if(!expenseTransactionRepository.existsById(id))
             throw new NotFoundException("Transaction with id " + id + " does not exist.");
         return expenseTransactionRepository.findExpenseTransactionById(id);
@@ -67,10 +71,12 @@ public class ExpenseController {
         result.put("user", username);
 
         Pageable pageable;
-        if(currentPage != null && perPage != null){
+        if((currentPage != null && perPage != null) && (currentPage > 0 && perPage > 0)){
             pageable = PageRequest.of(currentPage - 1, perPage);
-        } else{
+        } else if (currentPage == null && perPage == null){
             pageable = PageRequest.of(0,expenseTransactionRepository.findAll().size());
+        } else {
+            throw new BadRequestException("The value of currentPage and/or perPage parameters cannot be under or equal to 0.");
         }
 
         Page<ExpenseTransaction> expenseTransactions = expenseTransactionRepository.filterTransactions(pageable, user.getEmail());
@@ -82,6 +88,8 @@ public class ExpenseController {
 
     @GetMapping("/transaction/{date}/{userId}")
     private ResponseEntity<?> fetchTransactionsByDate(@PathVariable String date, @PathVariable Long userId) {
+        if(userId == null)
+            throw new BadRequestException("Wrong URL. No userId provided in the URL.");
 
         HashMap<String, Object> result = new LinkedHashMap<>();
         LocalDate day = LocalDate.parse(date);
@@ -119,6 +127,8 @@ public class ExpenseController {
 
     @PostMapping("/add/category")
     public ResponseEntity<?> addExpenseCategory(String name) {
+        if(name == null || name.isEmpty())
+            throw new BadRequestException("The category must have a name. Please provide it by adding a parameter: name");
         if (expenseCategoryRepository.existsExpenseCategoryByCategoryName(name)) {
             throw new BadRequestException("A category with this name already exists!");
         }
@@ -127,6 +137,9 @@ public class ExpenseController {
 
     @PostMapping("/add/transaction")
     public ResponseEntity<?> addExpenseTransaction(Long userId, String date, Double expenseAmount, String expenseCategory, @Nullable String description) {
+
+        if(date.isEmpty() || expenseCategory.isEmpty() || expenseAmount == null || userId == null)
+            throw new BadRequestException("All parameters should be provided. This includes: userId, date, expenseAmount and expenseCategory. Description is optional.");
 
         Map<String, Object> returnJson = new HashMap<>();
 
@@ -160,6 +173,9 @@ public class ExpenseController {
 
     @PutMapping("/transaction/modify/{id}")
     public ResponseEntity<?> modifyTransaction(@RequestBody ExpenseTransaction expenseTransaction, @PathVariable Long id){
+        if(id == null)
+            throw new BadRequestException("Wrong URL. No transaction id provided in the URL.");
+
         if(!expenseTransactionRepository.existsById(id)){
             throw new NotFoundException("There is no transaction with id: " + id);
         }
@@ -193,6 +209,9 @@ public class ExpenseController {
 
     @DeleteMapping("/delete/category/{id}")
     public ResponseEntity<?> deleteCategoryById(@PathVariable Long id) {
+        if(id == null)
+            throw new BadRequestException("Wrong URL. No category id provided in the URL.");
+
         if (!(expenseCategoryRepository.existsById(id)))
             throw new NotFoundException("Category with id:" + id + " doesn't exist!");
 
@@ -211,6 +230,9 @@ public class ExpenseController {
 
     @DeleteMapping("/delete/transaction/{id}")
     ResponseEntity<?> deleteTransactionById(@PathVariable Long id) {
+        if(id == null)
+            throw new BadRequestException("Wrong URL. No transaction id provided in the URL.");
+
         if (!(expenseTransactionRepository.existsById(id)))
             throw new NotFoundException("Transaction with id: " + id + " doesn't exist!");
 
