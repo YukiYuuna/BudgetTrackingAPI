@@ -17,6 +17,7 @@ public class ExpenseTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @Column(name = "date")
     private LocalDate date;
 

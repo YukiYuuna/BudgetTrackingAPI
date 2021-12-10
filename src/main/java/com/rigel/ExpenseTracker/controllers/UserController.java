@@ -1,11 +1,10 @@
 package com.rigel.ExpenseTracker.controllers;
 
-import com.rigel.ExpenseTracker.entities.ExpenseCategory;
-import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
 import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.exception.BadRequestException;
 import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.repositories.*;
+import com.sun.istack.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @CrossOrigin(origins = "*")
 public class UserController {
 
@@ -39,8 +38,10 @@ public class UserController {
     }
 
     @GetMapping("/filter")
-    private ResponseEntity<?> filterUserByFirstAndLastName(String firstName, String lastName, int currentPage, int perPage){
-       Pageable pageable = PageRequest.of(currentPage - 1, perPage);
+    private ResponseEntity<?> filterUserByFirstAndLastName(String firstName, String lastName, @Nullable Integer currentPage, @Nullable Integer perPage){
+
+        Pageable pageable = createPagination(currentPage, perPage, userRepo.findAll().size());
+
         Page<User> users = userRepo.filterUsers(pageable, firstName, lastName);
         Map<String, Object> response = new HashMap<>();
         response.put("totalUsers", users.getTotalElements());
@@ -60,23 +61,27 @@ public class UserController {
 
     @PutMapping("/modify/{id}")
     public ResponseEntity<?> modifyUserInfo(@RequestBody User updatedUser, @PathVariable Long id){
-        if(!userRepo.existsById(id)){
-            throw new NotFoundException("There is no user with id : " + id);
-        }
+        try {
+            if (!userRepo.existsById(id)) {
+                throw new NotFoundException("There is no user with id : " + id);
+            }
 
-        return userRepo.findById(id)
-                .map(user -> {
-                    user.setFirstName(updatedUser.getFirstName());
-                    user.setLastName(updatedUser.getLastName());
-                    user.setEmail(updatedUser.getEmail());
-                    user.setAge(updatedUser.getAge());
-                    user.setCurrentBudget(updatedUser.getCurrentBudget());
-                    user.setExpenseTransactions(user.getExpenseTransactions());
-                    return ResponseEntity.ok(userRepo.save(user));
-                })
-                .orElseGet(() -> {
-                    return ResponseEntity.ok(userRepo.save(updatedUser));
-                });
+            return userRepo.findById(id)
+                    .map(user -> {
+                        user.setFirstName(updatedUser.getFirstName());
+                        user.setLastName(updatedUser.getLastName());
+                        user.setEmail(updatedUser.getEmail());
+                        user.setAge(updatedUser.getAge());
+                        user.setCurrentBudget(updatedUser.getCurrentBudget());
+                        user.setExpenseTransactions(user.getExpenseTransactions());
+                        return ResponseEntity.ok(userRepo.save(user));
+                    })
+                    .orElseGet(() -> {
+                        return ResponseEntity.ok(userRepo.save(updatedUser));
+                    });
+        } catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/delete")
@@ -96,5 +101,17 @@ public class UserController {
 
         userRepo.deleteById(id);
         return ResponseEntity.ok("The user has been deleted successfully!");
+    }
+
+    static Pageable createPagination(Integer currentPage, Integer perPage, int size) {
+        Pageable pageable;
+        if((currentPage != null && perPage != null) && (currentPage > 0 && perPage > 0)){
+            pageable = PageRequest.of(currentPage - 1, perPage);
+        } else if (currentPage == null && perPage == null){
+            pageable = PageRequest.of(0, size);
+        } else {
+            throw new BadRequestException("The value of currentPage and/or perPage parameters cannot be under or equal to 0.");
+        }
+        return pageable;
     }
 }

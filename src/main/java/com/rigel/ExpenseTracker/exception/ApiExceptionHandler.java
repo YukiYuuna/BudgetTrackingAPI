@@ -14,11 +14,11 @@ public class ApiExceptionHandler {
     public ResponseEntity<Object> handleNotFoundException(NotFoundException e) {
 
 //        Creating a payload for the exception details:
-        HttpStatus badRequest = HttpStatus.NOT_FOUND;
-        RestApiException exception = new RestApiException(badRequest, LocalDateTime.now(),e.getMessage());
+        HttpStatus notFound = HttpStatus.NOT_FOUND;
+        RestApiException exception = new RestApiException(notFound, LocalDateTime.now(),e.getMessage());
 
 //        returning the response entity for the exception
-        return new ResponseEntity<>(exception, badRequest);
+        return new ResponseEntity<>(exception, notFound);
     }
 
     @ExceptionHandler(value = {BadRequestException.class})
@@ -26,5 +26,12 @@ public class ApiExceptionHandler {
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
         RestApiException exception = new RestApiException(badRequest, LocalDateTime.now(), e.getMessage());
         return new ResponseEntity<>(exception, badRequest);
+    }
+
+    @ExceptionHandler(value = {NotValidUrlException.class})
+    public ResponseEntity<Object> handleNotValidUrlException(NotValidUrlException e) {
+        HttpStatus notValidUrl = HttpStatus.NOT_ACCEPTABLE;
+        RestApiException exception = new RestApiException(notValidUrl, LocalDateTime.now(), e.getMessage());
+        return new ResponseEntity<>(exception, notValidUrl);
     }
 }
