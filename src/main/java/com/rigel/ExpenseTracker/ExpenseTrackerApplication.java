@@ -28,12 +28,7 @@ public class ExpenseTrackerApplication extends WebMvcConfigurationSupport {
 	public Docket swaggerConfiguration() {
 		return new Docket(DocumentationType.SWAGGER_2)
 				.host("localhost:8080")
-				.pathProvider(new RelativePathProvider(getServletContext()) {
-					@Override
-					public String getApplicationBasePath() {
-						return "/api";
-					}
-				});
+				.pathProvider(new RelativePathProvider(getServletContext()));
 
 	}
 	@Override

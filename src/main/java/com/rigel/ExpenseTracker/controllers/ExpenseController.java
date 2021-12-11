@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import static com.rigel.ExpenseTracker.controllers.UserController.createPagination;
 
 @RestController
-@RequestMapping("/api/expense")
+@RequestMapping("/expense")
 @CrossOrigin(origins = "*")
 public class ExpenseController {
 
@@ -169,13 +169,13 @@ public class ExpenseController {
             expenseCategoryRepository.save(new ExpenseCategory(expenseTransaction.getCategory()));
         }
 
-        return expenseTransactionRepository.findById(id  )
+        return expenseTransactionRepository.findById(id)
                 .map(transaction -> {
-                    transaction.setExpenseCategory(expenseTransaction.getExpenseCategory());
-                    transaction.setExpenseAmount(expenseTransaction.getExpenseAmount());
-                    transaction.setDate(expenseTransaction.getDate());
-                    transaction.setDescription(expenseTransaction.getDescription());
-                    transaction.setCategory(expenseTransaction.getCategory());
+                    transaction.setExpenseCategory(expenseTransaction.getExpenseCategory() == null ? transaction.getExpenseCategory() : expenseTransaction.getExpenseCategory());
+                    transaction.setExpenseAmount(expenseTransaction.getExpenseAmount() == null ? transaction.getExpenseAmount() : expenseTransaction.getExpenseAmount());
+                    transaction.setDate(expenseTransaction.getDate() == null ? transaction.getDate() : expenseTransaction.getDate());
+                    transaction.setDescription(expenseTransaction.getDescription() == null ? transaction.getDescription() : expenseTransaction.getDescription());
+                    transaction.setCategory(expenseTransaction.getCategory() == null ? transaction.getCategory() : expenseTransaction.getCategory());
                     return ResponseEntity.ok(expenseTransactionRepository.save(transaction));
                 })
                 .orElseGet(() -> {

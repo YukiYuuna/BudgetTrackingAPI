@@ -30,7 +30,7 @@ public class ExpenseTransaction {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "expense_category_id", referencedColumnName = "Id")
     @JsonIgnore
     private ExpenseCategory expenseCategory;

@@ -26,7 +26,7 @@ public class User {
     @Column(name = "budget")
     private Double currentBudget;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<ExpenseTransaction> expenseTransactions;
 
     public User() {

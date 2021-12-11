@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/user")
 @CrossOrigin(origins = "*")
 public class UserController {
 
@@ -32,7 +32,7 @@ public class UserController {
     @GetMapping("/fetch/{id}")
     private ResponseEntity<?> fetchById(@PathVariable Long id){
         if(!(userRepo.existsById(id)))
-            throw new NotFoundException("Oops, user with id:" + id + " doesn't exist");
+            throw new NotFoundException("Oops, user with id " + id + " doesn't exist");
 
         return ResponseEntity.ok(userRepo.findById(id));
     }
@@ -68,12 +68,12 @@ public class UserController {
 
             return userRepo.findById(id)
                     .map(user -> {
-                        user.setFirstName(updatedUser.getFirstName());
-                        user.setLastName(updatedUser.getLastName());
-                        user.setEmail(updatedUser.getEmail());
-                        user.setAge(updatedUser.getAge());
-                        user.setCurrentBudget(updatedUser.getCurrentBudget());
-                        user.setExpenseTransactions(user.getExpenseTransactions());
+                        user.setFirstName(updatedUser.getFirstName() == null ? user.getFirstName() : updatedUser.getFirstName());
+                        user.setLastName(updatedUser.getLastName() == null ? user.getLastName() : updatedUser.getLastName());
+                        user.setEmail(updatedUser.getEmail() == null ? user.getEmail() : updatedUser.getEmail());
+                        user.setAge(updatedUser.getAge() == 0 ? user.getAge() : updatedUser.getAge());
+                        user.setCurrentBudget(updatedUser.getCurrentBudget() == null ? user.getCurrentBudget() : updatedUser.getCurrentBudget());
+                        user.setExpenseTransactions(user.getExpenseTransactions() == null ? user.getExpenseTransactions() : updatedUser.getExpenseTransactions());
                         return ResponseEntity.ok(userRepo.save(user));
                     })
                     .orElseGet(() -> {
