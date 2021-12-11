@@ -1,5 +1,7 @@
 package com.rigel.ExpenseTracker.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -26,6 +28,7 @@ public class User {
     @Column(name = "budget")
     private Double currentBudget;
 
+    //    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<ExpenseTransaction> expenseTransactions;
 

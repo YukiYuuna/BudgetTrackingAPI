@@ -13,12 +13,13 @@ public class ExpenseCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @Column(name = "category_name")
     private String categoryName;
 
-    @OneToMany(mappedBy = "expenseCategory")
+    @OneToMany(mappedBy = "expenseCategory", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<ExpenseTransaction> expenseTransactions;
 

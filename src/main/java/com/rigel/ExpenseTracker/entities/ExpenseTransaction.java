@@ -15,6 +15,7 @@ public class ExpenseTransaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @NotNull
@@ -30,7 +31,7 @@ public class ExpenseTransaction {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "expense_category_id", referencedColumnName = "Id")
     @JsonIgnore
     private ExpenseCategory expenseCategory;
@@ -38,7 +39,6 @@ public class ExpenseTransaction {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "Id")
     @JsonIgnore
-    @NotNull
     private User user;
 
     public ExpenseTransaction() {

@@ -51,11 +51,18 @@ public class UserController {
     }
 
     @PostMapping("/save")
-    private ResponseEntity<?> saveUserToDB(String fName, String lName, String email, Integer age, Double currentBudget) {
-        if (fName != null && lName != null && email != null && age != null && currentBudget != null) {
-            userRepo.save(new User(fName, lName, email, age, currentBudget));
-            return ResponseEntity.ok(fName + " " + lName + " has been added successfully!");
+    private ResponseEntity<?> saveUserToDB(@RequestBody User user) {
+        String firstName= user.getFirstName();
+        String lastName= user.getLastName();
+        String email= user.getEmail();
+        int age= user.getAge();
+        Double currentBudget= user.getCurrentBudget();
+
+        if (firstName != null && lastName != null && email != null && age != 0 && currentBudget != null) {
+            userRepo.save(new User(firstName, lastName, email , age, currentBudget));
+            return ResponseEntity.ok(firstName + " " + lastName + " has been added successfully!");
         }
+
         throw new BadRequestException("You should provide all data, including your first and last name, your age, email and current budget!");
     }
 

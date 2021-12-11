@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
+
+import javax.websocket.server.PathParam;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -116,26 +118,29 @@ public class ExpenseController {
     }
 
     @PostMapping("/add/category")
-    public ResponseEntity<?> addExpenseCategory(String name) {
-        if(name == null || name.isEmpty())
+    public ResponseEntity<?> addExpenseCategory(@RequestBody ExpenseCategory category) {
+        String categoryName = category.getCategoryName();
+        if(categoryName == null || categoryName.isEmpty())
             throw new NotValidUrlException("The category must have a name. Please provide it by adding a parameter: name");
 
-        if (expenseCategoryRepository.existsExpenseCategoryByCategoryName(name)) {
+        if (expenseCategoryRepository.existsExpenseCategoryByCategoryName(categoryName))
             throw new BadRequestException("A category with this name already exists!");
-        }
-        return ResponseEntity.ok(expenseCategoryRepository.save(new ExpenseCategory(name)));
+
+        return ResponseEntity.ok(expenseCategoryRepository.save(category));
     }
 
-    @PostMapping("/add/transaction")
-    public ResponseEntity<?> addExpenseTransaction(Long userId, String date, Double expenseAmount, String expenseCategory, @Nullable String description) {
+    @PostMapping("/add/transaction/{userId}")
+    public ResponseEntity<?> addExpenseTransaction(@PathVariable Long userId, @RequestBody ExpenseTransaction transaction) {
+
+        Double expenseAmount = transaction.getExpenseAmount();
+        String expenseCategory = transaction.getCategory();
 
         Map<String, Object> returnJson = new HashMap<>();
 
         ExpenseTransaction expenseTransaction;
-        LocalDate localDate = LocalDate.parse(date);
 
         if (!(userRepository.existsById(userId)))
-            throw new NotFoundException("User with id:" + userId + " doesn't exist.");
+            throw new NotFoundException("User with id " + userId + " doesn't exist.");
 
         User user = userRepository.fetchUserById(userId);
         double userBudget = user.getCurrentBudget() - expenseAmount;
@@ -143,18 +148,15 @@ public class ExpenseController {
         returnJson.put("userInfo", user);
 
         if (expenseCategoryRepository.existsExpenseCategoryByCategoryName(expenseCategory)) {
-            expenseTransaction = new ExpenseTransaction(localDate,
-                    expenseAmount,
-                    expenseCategory,
-                    expenseCategoryRepository.findExpenseCategoryByCategoryName(expenseCategory),
-                    description);
+            transaction.setExpenseCategory(expenseCategoryRepository.findExpenseCategoryByCategoryName(expenseCategory));
         } else {
             ExpenseCategory nonExistingCategory = new ExpenseCategory(expenseCategory);
-            expenseTransaction = new ExpenseTransaction(localDate, expenseAmount, expenseCategory, nonExistingCategory, description);
+            transaction.setExpenseCategory(nonExistingCategory);
         }
-        expenseTransaction.setUser(user);
-        expenseTransactionRepository.save(expenseTransaction);
-        returnJson.put("transactionInfo", expenseTransaction);
+
+        transaction.setUser(user);
+        expenseTransactionRepository.save(transaction);
+        returnJson.put("transactionInfo", transaction);
 
         return ResponseEntity.ok(returnJson);
     }
