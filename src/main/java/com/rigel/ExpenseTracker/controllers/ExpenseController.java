@@ -5,6 +5,7 @@ import com.rigel.ExpenseTracker.entities.ExpenseCategory;
 import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
 import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.exception.BadRequestException;
+import com.rigel.ExpenseTracker.exception.NotAllowedException;
 import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.exception.NotValidUrlException;
 import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
@@ -59,7 +60,7 @@ public class ExpenseController {
     }
 
     @GetMapping("/transactions/user")
-    public ResponseEntity<?> filterTransactions(Long userId, @Nullable Integer currentPage, @Nullable Integer perPage) {
+    public ResponseEntity<?> filterTransactions(Long userId, @RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage) {
 
         HashMap<String, Object> result = new LinkedHashMap<>();
         if (!userRepository.existsById(userId))
@@ -123,21 +124,27 @@ public class ExpenseController {
         if(categoryName == null || categoryName.isEmpty())
             throw new NotValidUrlException("The category must have a name. Please provide it by adding a parameter: name");
 
-        if (expenseCategoryRepository.existsExpenseCategoryByCategoryName(categoryName))
-            throw new BadRequestException("A category with this name already exists!");
+        if (expenseCategoryRepository.existsById(category.getId()))
+            throw new BadRequestException("A category of this type already exists!");
+
+        if(category.getId() != null)
+            throw new NotAllowedException("You are not allow to modify the id of the category. It is generated randomly!");
 
         return ResponseEntity.ok(expenseCategoryRepository.save(category));
     }
 
-    @PostMapping("/add/transaction/{userId}")
-    public ResponseEntity<?> addExpenseTransaction(@PathVariable Long userId, @RequestBody ExpenseTransaction transaction) {
+    @PostMapping("/add/transaction")
+    public ResponseEntity<?> addExpenseTransaction(@RequestParam Long userId, @RequestBody ExpenseTransaction transaction) {
+
+        if(expenseTransactionRepository.existsById(transaction.getId()))
+            throw new BadRequestException("Transaction with this id already exists.");
+        if(transaction.getId() != null)
+            throw new NotAllowedException("You are not allow to modify the id of the transaction. It is generated randomly!");
 
         Double expenseAmount = transaction.getExpenseAmount();
         String expenseCategory = transaction.getCategory();
 
         Map<String, Object> returnJson = new HashMap<>();
-
-        ExpenseTransaction expenseTransaction;
 
         if (!(userRepository.existsById(userId)))
             throw new NotFoundException("User with id " + userId + " doesn't exist.");
@@ -161,7 +168,7 @@ public class ExpenseController {
         return ResponseEntity.ok(returnJson);
     }
 
-    @PutMapping("/transaction/modify/{id}")
+    @PutMapping("/modify/transaction/{id}")
     public ResponseEntity<?> modifyTransaction(@RequestBody ExpenseTransaction expenseTransaction, @PathVariable Long id){
         if(!expenseTransactionRepository.existsById(id)){
             throw new NotFoundException("There is no transaction with id: " + id);
@@ -180,9 +187,7 @@ public class ExpenseController {
                     transaction.setCategory(expenseTransaction.getCategory() == null ? transaction.getCategory() : expenseTransaction.getCategory());
                     return ResponseEntity.ok(expenseTransactionRepository.save(transaction));
                 })
-                .orElseGet(() -> {
-                    return ResponseEntity.ok(expenseTransactionRepository.save(expenseTransaction));
-                });
+                .orElseThrow(() -> new NotFoundException("There is no transaction with id " + id));
     }
 
     @DeleteMapping("/delete/categories")

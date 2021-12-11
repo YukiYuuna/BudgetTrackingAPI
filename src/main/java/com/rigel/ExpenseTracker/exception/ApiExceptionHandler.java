@@ -30,6 +30,15 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(value = {NotValidUrlException.class})
     public ResponseEntity<Object> handleNotValidUrlException(NotValidUrlException e) {
+        return notAllowedException(e);
+    }
+
+    @ExceptionHandler(value = {NotAllowedException.class})
+    public ResponseEntity<Object> handleNotAllowedException(NotAllowedException e) {
+        return notAllowedException(e);
+    }
+
+    private ResponseEntity<Object> notAllowedException(RuntimeException e){
         HttpStatus notValidUrl = HttpStatus.NOT_ACCEPTABLE;
         RestApiException exception = new RestApiException(notValidUrl, LocalDateTime.now(), e.getMessage());
         return new ResponseEntity<>(exception, notValidUrl);

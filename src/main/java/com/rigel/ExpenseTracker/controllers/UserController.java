@@ -2,6 +2,7 @@ package com.rigel.ExpenseTracker.controllers;
 
 import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.exception.BadRequestException;
+import com.rigel.ExpenseTracker.exception.NotAllowedException;
 import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.repositories.*;
 import com.sun.istack.Nullable;
@@ -52,6 +53,10 @@ public class UserController {
 
     @PostMapping("/save")
     private ResponseEntity<?> saveUserToDB(@RequestBody User user) {
+
+        if(user.getId() != null)
+            throw new NotAllowedException("You are not allow to modify the id of the user. It is generated randomly!");
+
         String firstName= user.getFirstName();
         String lastName= user.getLastName();
         String email= user.getEmail();
@@ -83,9 +88,7 @@ public class UserController {
                         user.setExpenseTransactions(user.getExpenseTransactions() == null ? user.getExpenseTransactions() : updatedUser.getExpenseTransactions());
                         return ResponseEntity.ok(userRepo.save(user));
                     })
-                    .orElseGet(() -> {
-                        return ResponseEntity.ok(userRepo.save(updatedUser));
-                    });
+                    .orElseThrow(() -> new NotFoundException("There is no user with id " + id));
         } catch (Exception e){
             return ResponseEntity.badRequest().build();
         }
