@@ -6,6 +6,7 @@ import com.rigel.ExpenseTracker.exception.NotAllowedException;
 import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.repositories.*;
 import com.sun.istack.Nullable;
+import io.swagger.annotations.ApiParam;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @CrossOrigin(origins = "*")
 public class UserController {
 
@@ -25,6 +26,10 @@ public class UserController {
         this.userRepo = userRepository;
     }
 
+    /**
+     * Shows all users of the expense tracker app.
+     * @return all users in the app.
+     */
     @GetMapping("/fetch")
     private ResponseEntity<?> fetchAllUsers(){
         return ResponseEntity.ok(userRepo.findAll());
@@ -39,6 +44,7 @@ public class UserController {
     }
 
     @GetMapping("/filter")
+    @ApiParam("FIlters the users by first nad last name, using pagination.")
     private ResponseEntity<?> filterUserByFirstAndLastName(String firstName, String lastName, @Nullable Integer currentPage, @Nullable Integer perPage){
 
         Pageable pageable = createPagination(currentPage, perPage, userRepo.findAll().size());

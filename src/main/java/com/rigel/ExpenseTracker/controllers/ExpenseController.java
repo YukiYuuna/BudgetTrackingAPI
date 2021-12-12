@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import static com.rigel.ExpenseTracker.controllers.UserController.createPagination;
 
 @RestController
-@RequestMapping("/expense")
+@RequestMapping("/api/expenses")
 @CrossOrigin(origins = "*")
 public class ExpenseController {
 
