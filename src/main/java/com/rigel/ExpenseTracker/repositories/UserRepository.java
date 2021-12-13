@@ -31,7 +31,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByFirstNameAndLastName(String fName, String lName);
 
-    User findUserByExpenseTransactions(ExpenseTransaction expenseTransaction);
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE User u SET u.currentBudget = ?2 WHERE u.id = ?1")

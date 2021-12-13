@@ -4,6 +4,7 @@ import com.rigel.ExpenseTracker.entities.ExpenseCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Optional;
 import java.util.Set;
 
 public interface ExpenseCategoryRepository  extends JpaRepository<ExpenseCategory, Long> {
@@ -13,8 +14,8 @@ public interface ExpenseCategoryRepository  extends JpaRepository<ExpenseCategor
 
     ExpenseCategory findExpenseCategoryById(Long id);
 
-    Boolean existsExpenseCategoryByCategoryName(String name);
+    Optional<ExpenseCategory> findExpenseCategoryByCategoryName(String categoryName);
 
-    ExpenseCategory findExpenseCategoryByCategoryName(String name);
+    Boolean existsByCategoryName(String categoryName);
 
 }

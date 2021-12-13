@@ -61,23 +61,14 @@ public class UserController {
     }
 
     @PostMapping("/save")
-    private ResponseEntity<?> saveUserToDB(@RequestBody User user) {
+    private ResponseEntity<?> saveUserToDB(String firstName, String lastName, String email, @Nullable Integer age, Double currentBudget) {
 
-        if(user.getId() != null)
-            throw new NotAllowedException("You are not allow to modify the id of the user. It is generated randomly!");
-
-        String firstName= user.getFirstName();
-        String lastName= user.getLastName();
-        String email= user.getEmail();
-        int age= user.getAge();
-        Double currentBudget= user.getCurrentBudget();
-
-        if (firstName != null && lastName != null && email != null && age != 0 && currentBudget != null) {
+        if (firstName != null && lastName != null && email != null && currentBudget != null) {
             userRepo.save(new User(firstName, lastName, email , age, currentBudget));
             return ResponseEntity.ok(firstName + " " + lastName + " has been added successfully!");
         }
 
-        throw new BadRequestException("You should provide all data, including your first and last name, your age, email and current budget!");
+        throw new BadRequestException("You should provide all data, including your first and last name, email and current budget! Only age is not mandatory.");
     }
 
     @PutMapping("/modify/{id}")
