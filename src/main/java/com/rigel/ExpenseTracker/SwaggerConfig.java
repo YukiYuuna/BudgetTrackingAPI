@@ -25,7 +25,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.rigel.ExpenseTracker.controllers"))
-                .paths(regex("/api.*"))
+                .paths(regex("/.*"))
                 .build()
                 .apiInfo(apiDetails());
     }

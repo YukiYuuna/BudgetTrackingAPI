@@ -6,6 +6,7 @@ import com.rigel.ExpenseTracker.exception.NotAllowedException;
 import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.repositories.*;
 import com.sun.istack.Nullable;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/user")
 @CrossOrigin(origins = "*")
 public class UserController {
 
@@ -44,7 +45,9 @@ public class UserController {
     }
 
     @GetMapping("/filter")
-    @ApiParam("FIlters the users by first nad last name, using pagination.")
+    @ApiOperation(value = "Filters the users by first nad last name, using pagination.",
+    notes = "Provide the first and second name of the user, as well as the current page and how many users you want per page, in order to get a response.",
+    response = ResponseEntity.class)
     private ResponseEntity<?> filterUserByFirstAndLastName(String firstName, String lastName, @Nullable Integer currentPage, @Nullable Integer perPage){
 
         Pageable pageable = createPagination(currentPage, perPage, userRepo.findAll().size());
