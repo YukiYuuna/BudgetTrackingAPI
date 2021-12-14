@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -134,32 +135,36 @@ public class ExpenseController {
 
     @PostMapping("/add/transaction")
     public ResponseEntity<?> addExpenseTransaction(@RequestParam Long userId, @RequestParam String date, @RequestParam Double expenseAmount, @RequestParam String categoryName, @RequestParam @Nullable String description) {
-        LocalDate day = LocalDate.parse(date);
-        String categoryNameToLower = categoryName.toLowerCase();
-        Map<String, Object> returnJson = new HashMap<>();
+        try {
+            LocalDate day = LocalDate.parse(date);
+            String categoryNameToLower = categoryName.toLowerCase();
+            Map<String, Object> returnJson = new HashMap<>();
 
-        if (!(userRepository.existsById(userId)))
-            throw new NotFoundException("User with id " + userId + " doesn't exist.");
+            if (!(userRepository.existsById(userId)))
+                throw new NotFoundException("User with id " + userId + " doesn't exist.");
 
-        User user = userRepository.fetchUserById(userId);
-        double userBudget = user.getCurrentBudget() - expenseAmount;
-        user.setCurrentBudget(userBudget);
-        returnJson.put("userInfo", user);
+            User user = userRepository.fetchUserById(userId);
+            double userBudget = user.getCurrentBudget() - expenseAmount;
+            user.setCurrentBudget(userBudget);
+            returnJson.put("userInfo", user);
 
-        ExpenseTransaction transaction =  new ExpenseTransaction(day, expenseAmount, categoryNameToLower, description);
-        Optional<ExpenseCategory> category = expenseCategoryRepository.findExpenseCategoryByCategoryName(categoryNameToLower);
-        if (category.isPresent()) {
-            transaction.setExpenseCategory(category.get());
-        } else {
-            ExpenseCategory nonExistingCategory = new ExpenseCategory(categoryNameToLower);
-            transaction.setExpenseCategory(nonExistingCategory);
+            ExpenseTransaction transaction = new ExpenseTransaction(day, expenseAmount, categoryNameToLower, description);
+            Optional<ExpenseCategory> category = expenseCategoryRepository.findExpenseCategoryByCategoryName(categoryNameToLower);
+            if (category.isPresent()) {
+                transaction.setExpenseCategory(category.get());
+            } else {
+                ExpenseCategory nonExistingCategory = new ExpenseCategory(categoryNameToLower);
+                transaction.setExpenseCategory(nonExistingCategory);
+            }
+
+            transaction.setUser(user);
+            expenseTransactionRepository.save(transaction);
+            returnJson.put("transactionInfo", transaction);
+
+            return ResponseEntity.ok(returnJson);
+        } catch(DateTimeException dte){
+            throw new BadRequestException("Date has incorrect format. Please provide the date in this format: YYYY-MM-DD");
         }
-
-        transaction.setUser(user);
-        expenseTransactionRepository.save(transaction);
-        returnJson.put("transactionInfo", transaction);
-
-        return ResponseEntity.ok(returnJson);
     }
 
     @PutMapping("/modify/transaction/{id}")
