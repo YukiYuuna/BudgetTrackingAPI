@@ -35,7 +35,7 @@ public class ExpenseTransaction {
     @JsonIgnore
     private ExpenseCategory expenseCategory;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "Id")
     @JsonIgnore
     private User user;

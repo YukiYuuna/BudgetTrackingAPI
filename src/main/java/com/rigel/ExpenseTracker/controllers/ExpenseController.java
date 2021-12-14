@@ -169,23 +169,25 @@ public class ExpenseController {
     }
 
     @PutMapping("/modify/transaction/{id}")
-    public ResponseEntity<?> modifyTransaction(@RequestBody ExpenseTransaction expenseTransaction, @PathVariable Long id){
+    public ResponseEntity<?> modifyTransaction(@RequestBody ExpenseTransaction modifiedTransaction, @PathVariable Long id){
         if(!expenseTransactionRepository.existsById(id)){
             throw new NotFoundException("There is no transaction with id: " + id);
         }
 
-        String categoryName = expenseTransaction.getCategory().toLowerCase();
+        String categoryName = modifiedTransaction.getCategory().toLowerCase();
         if(expenseCategoryRepository.findExpenseCategoryByCategoryName(categoryName).isPresent()){
             expenseCategoryRepository.save(new ExpenseCategory(categoryName));
         }
 
         return expenseTransactionRepository.findById(id)
                 .map(transaction -> {
-                    transaction.setExpenseCategory(expenseTransaction.getExpenseCategory() == null ? transaction.getExpenseCategory() : expenseTransaction.getExpenseCategory());
-                    transaction.setExpenseAmount(expenseTransaction.getExpenseAmount() == null ? transaction.getExpenseAmount() : expenseTransaction.getExpenseAmount());
-                    transaction.setDate(expenseTransaction.getDate() == null ? transaction.getDate() : expenseTransaction.getDate());
-                    transaction.setDescription(expenseTransaction.getDescription() == null ? transaction.getDescription() : expenseTransaction.getDescription());
-                    transaction.setCategory(expenseTransaction.getCategory() == null ? transaction.getCategory() : expenseTransaction.getCategory());
+                    transaction.setExpenseCategory(modifiedTransaction.getExpenseCategory() == null ? transaction.getExpenseCategory() : modifiedTransaction.getExpenseCategory());
+                    transaction.setDate(modifiedTransaction.getDate() == null ? transaction.getDate() : modifiedTransaction.getDate());
+                    transaction.setDescription(modifiedTransaction.getDescription() == null ? transaction.getDescription() : modifiedTransaction.getDescription());
+                    transaction.setCategory(modifiedTransaction.getCategory() == null ? transaction.getCategory() : modifiedTransaction.getCategory());
+
+                    setBudgetOfUser(transaction, transaction.getExpenseAmount(), modifiedTransaction.getExpenseAmount());
+
                     return ResponseEntity.ok(expenseTransactionRepository.save(transaction));
                 })
                 .orElseThrow(() -> new NotFoundException("There is no transaction with id " + id));
@@ -227,4 +229,15 @@ public class ExpenseController {
         return ResponseEntity.ok("The transaction has been deleted");
     }
 
+    private void setBudgetOfUser(ExpenseTransaction transaction, Double curBudget, Double modBudget){
+        if(modBudget != null) {
+            Double change = modBudget - curBudget;
+            User user = transaction.getUser();
+            transaction.setExpenseAmount(modBudget);
+            user.setCurrentBudget(user.getCurrentBudget() - change);
+            userRepository.saveAndFlush(user);
+        } else{
+            transaction.setExpenseAmount(curBudget);
+        }
+    }
 }

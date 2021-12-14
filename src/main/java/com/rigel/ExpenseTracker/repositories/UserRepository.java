@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -31,10 +32,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByFirstNameAndLastName(String fName, String lName);
 
-
-    @Modifying(clearAutomatically = true)
-    @Query("UPDATE User u SET u.currentBudget = ?2 WHERE u.id = ?1")
-    User setCurrentBudget(Long id, Double modifiedBudget);
-
-
+//    @Modifying
+//    @Query("UPDATE User u SET u.currentBudget = :modifiedBudget WHERE u.id = :id")
+//    void updateBudget(@Param(value = "id")Long id, @Param(value = "modifiedBudget")Double modifiedBudget);
 }
