@@ -30,7 +30,7 @@ public class ExpenseTransaction {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "expense_category_id", referencedColumnName = "Id")
     @JsonIgnore
     private ExpenseCategory expenseCategory;
@@ -43,11 +43,10 @@ public class ExpenseTransaction {
     public ExpenseTransaction() {
     }
 
-    public ExpenseTransaction(LocalDate date, Double expenseAmount, String categoryName, ExpenseCategory expenseCategory, String description) {
+    public ExpenseTransaction(LocalDate date, Double expenseAmount, String categoryName, String description) {
         this.date = date;
         this.expenseAmount = expenseAmount;
         this.category = categoryName;
-        this.expenseCategory = expenseCategory;
         this.description = description;
     }
 

@@ -133,16 +133,9 @@ public class ExpenseController {
     }
 
     @PostMapping("/add/transaction")
-    public ResponseEntity<?> addExpenseTransaction(@RequestParam Long userId, @RequestBody ExpenseTransaction transaction) {
-
-        if(expenseTransactionRepository.existsById(transaction.getId()))
-            throw new BadRequestException("Transaction with this id already exists.");
-        if(transaction.getId() != null)
-            throw new NotAllowedException("You are not allow to modify the id of the transaction. It is generated randomly!");
-
-        Double expenseAmount = transaction.getExpenseAmount();
-        String expenseCategory = transaction.getCategory();
-
+    public ResponseEntity<?> addExpenseTransaction(@RequestParam Long userId, @RequestParam String date, @RequestParam Double expenseAmount, @RequestParam String categoryName, @RequestParam @Nullable String description) {
+        LocalDate day = LocalDate.parse(date);
+        String categoryNameToLower = categoryName.toLowerCase();
         Map<String, Object> returnJson = new HashMap<>();
 
         if (!(userRepository.existsById(userId)))
@@ -153,11 +146,12 @@ public class ExpenseController {
         user.setCurrentBudget(userBudget);
         returnJson.put("userInfo", user);
 
-        Optional<ExpenseCategory> category = expenseCategoryRepository.findExpenseCategoryByCategoryName(expenseCategory.toLowerCase());
+        ExpenseTransaction transaction =  new ExpenseTransaction(day, expenseAmount, categoryNameToLower, description);
+        Optional<ExpenseCategory> category = expenseCategoryRepository.findExpenseCategoryByCategoryName(categoryNameToLower);
         if (category.isPresent()) {
             transaction.setExpenseCategory(category.get());
         } else {
-            ExpenseCategory nonExistingCategory = new ExpenseCategory(expenseCategory.toLowerCase());
+            ExpenseCategory nonExistingCategory = new ExpenseCategory(categoryNameToLower);
             transaction.setExpenseCategory(nonExistingCategory);
         }
 
@@ -175,7 +169,9 @@ public class ExpenseController {
         }
 
         String categoryName = modifiedTransaction.getCategory().toLowerCase();
-        if(expenseCategoryRepository.findExpenseCategoryByCategoryName(categoryName).isPresent()){
+        Optional<ExpenseCategory> expenseCategory = expenseCategoryRepository
+                .findExpenseCategoryByCategoryName(categoryName);
+        if(expenseCategory.isEmpty()){
             expenseCategoryRepository.save(new ExpenseCategory(categoryName));
         }
 
