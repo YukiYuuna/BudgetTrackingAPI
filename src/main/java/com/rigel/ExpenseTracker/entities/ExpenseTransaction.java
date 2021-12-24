@@ -6,7 +6,8 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Objects;
+
+import static javax.persistence.CascadeType.*;
 
 
 @Entity
@@ -30,13 +31,13 @@ public class ExpenseTransaction {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-    @JoinColumn(name = "expense_category_id", referencedColumnName = "Id")
+    @ManyToOne(fetch = FetchType.LAZY,  cascade = ALL)
+    @JoinColumn(name = "expense_category_id", referencedColumnName = "id")
     @JsonIgnore
     private ExpenseCategory expenseCategory;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "Id")
+    @ManyToOne(cascade = ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     @JsonIgnore
     private User user;
 

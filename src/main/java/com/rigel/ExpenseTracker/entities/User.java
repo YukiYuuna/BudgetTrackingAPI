@@ -28,7 +28,7 @@ public class User {
     @Column(name = "budget")
     private Double currentBudget;
 
-    //    @JsonIgnore
+//    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<ExpenseTransaction> expenseTransactions;
 

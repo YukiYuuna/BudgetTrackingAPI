@@ -72,26 +72,22 @@ public class UserController {
     }
 
     @PutMapping("/modify/{id}")
-    public ResponseEntity<?> modifyUserInfo(@RequestBody User updatedUser, @PathVariable Long id){
-        try {
-            if (!userRepo.existsById(id)) {
-                throw new NotFoundException("There is no user with id : " + id);
-            }
-
-            return userRepo.findById(id)
-                    .map(user -> {
-                        user.setFirstName(updatedUser.getFirstName() == null ? user.getFirstName() : updatedUser.getFirstName());
-                        user.setLastName(updatedUser.getLastName() == null ? user.getLastName() : updatedUser.getLastName());
-                        user.setEmail(updatedUser.getEmail() == null ? user.getEmail() : updatedUser.getEmail());
-                        user.setAge(updatedUser.getAge() == 0 ? user.getAge() : updatedUser.getAge());
-                        user.setCurrentBudget(updatedUser.getCurrentBudget() == null ? user.getCurrentBudget() : updatedUser.getCurrentBudget());
-                        user.setExpenseTransactions(user.getExpenseTransactions() == null ? user.getExpenseTransactions() : updatedUser.getExpenseTransactions());
-                        return ResponseEntity.ok(userRepo.save(user));
-                    })
-                    .orElseThrow(() -> new NotFoundException("There is no user with id " + id));
-        } catch (Exception e){
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<?> modifyUserInfo(@RequestBody User updatedUser, @PathVariable Long id) {
+        if (!userRepo.existsById(id)) {
+            throw new NotFoundException("There is no user with id : " + id);
         }
+
+        return userRepo.findById(id)
+                .map(user -> {
+                    user.setFirstName(updatedUser.getFirstName() == null ? user.getFirstName() : updatedUser.getFirstName());
+                    user.setLastName(updatedUser.getLastName() == null ? user.getLastName() : updatedUser.getLastName());
+                    user.setEmail(updatedUser.getEmail() == null ? user.getEmail() : updatedUser.getEmail());
+                    user.setAge(updatedUser.getAge() == 0 ? user.getAge() : updatedUser.getAge());
+                    user.setCurrentBudget(updatedUser.getCurrentBudget() == null ? user.getCurrentBudget() : updatedUser.getCurrentBudget());
+                    user.setExpenseTransactions(user.getExpenseTransactions() == null ? user.getExpenseTransactions() : updatedUser.getExpenseTransactions());
+                    return ResponseEntity.ok(userRepo.save(user));
+                })
+                .orElseThrow(() -> new NotFoundException("There is no user with id " + id));
     }
 
     @DeleteMapping("/delete")

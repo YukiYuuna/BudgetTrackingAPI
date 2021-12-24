@@ -32,7 +32,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByFirstNameAndLastName(String fName, String lName);
 
-//    @Modifying
-//    @Query("UPDATE User u SET u.currentBudget = :modifiedBudget WHERE u.id = :id")
-//    void updateBudget(@Param(value = "id")Long id, @Param(value = "modifiedBudget")Double modifiedBudget);
 }

@@ -11,6 +11,8 @@ import com.rigel.ExpenseTracker.exception.NotValidUrlException;
 import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
 import com.rigel.ExpenseTracker.repositories.ExpenseTransactionRepository;
 import com.rigel.ExpenseTracker.repositories.UserRepository;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +42,7 @@ public class ExpenseController {
         this.userRepository = userRepository;
     }
 
+//    @ApiOperation(value = "Get all expense transactions.", tags = "getTransactions")
     @GetMapping("/transactions")
     public List<ExpenseTransaction> fetchAllExpenseTransactions() {
         return expenseTransactionRepository.findAll();
@@ -187,7 +190,7 @@ public class ExpenseController {
                     transaction.setDescription(modifiedTransaction.getDescription() == null ? transaction.getDescription() : modifiedTransaction.getDescription());
                     transaction.setCategory(modifiedTransaction.getCategory() == null ? transaction.getCategory() : modifiedTransaction.getCategory());
 
-                    setBudgetOfUser(transaction, transaction.getExpenseAmount(), modifiedTransaction.getExpenseAmount());
+                    setBudgetOfUser(transaction, modifiedTransaction.getExpenseAmount());
 
                     return ResponseEntity.ok(expenseTransactionRepository.save(transaction));
                 })
@@ -230,15 +233,15 @@ public class ExpenseController {
         return ResponseEntity.ok("The transaction has been deleted");
     }
 
-    private void setBudgetOfUser(ExpenseTransaction transaction, Double curBudget, Double modBudget){
+    private void setBudgetOfUser(ExpenseTransaction transaction, Double modBudget){
         if(modBudget != null) {
-            Double change = modBudget - curBudget;
+            Double change = modBudget - transaction.getExpenseAmount();
             User user = transaction.getUser();
             transaction.setExpenseAmount(modBudget);
             user.setCurrentBudget(user.getCurrentBudget() - change);
             userRepository.saveAndFlush(user);
         } else{
-            transaction.setExpenseAmount(curBudget);
+            transaction.setExpenseAmount(transaction.getExpenseAmount());
         }
     }
 }
