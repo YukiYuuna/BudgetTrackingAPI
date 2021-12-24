@@ -36,11 +36,6 @@ public class ExpenseTransaction {
     @JsonIgnore
     private ExpenseCategory expenseCategory;
 
-    @ManyToOne(cascade = ALL)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @JsonIgnore
-    private User user;
-
     public ExpenseTransaction() {
     }
 
@@ -93,14 +88,6 @@ public class ExpenseTransaction {
 
     public void setExpenseCategory(ExpenseCategory expenseCategory) {
         this.expenseCategory = expenseCategory;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
 }

@@ -11,8 +11,10 @@ import com.rigel.ExpenseTracker.exception.NotValidUrlException;
 import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
 import com.rigel.ExpenseTracker.repositories.ExpenseTransactionRepository;
 import com.rigel.ExpenseTracker.repositories.UserRepository;
+import com.rigel.ExpenseTracker.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -28,22 +30,17 @@ import java.util.stream.Stream;
 import static com.rigel.ExpenseTracker.controllers.UserController.createPagination;
 
 @RestController
-@RequestMapping("/expenses")
+@RequestMapping("/api")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class ExpenseController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final ExpenseCategoryRepository expenseCategoryRepository;
     private final ExpenseTransactionRepository expenseTransactionRepository;
 
-    public ExpenseController(UserRepository userRepository, ExpenseCategoryRepository expenseCategoryRepository, ExpenseTransactionRepository expenseTransactionRepository) {
-        this.expenseCategoryRepository = expenseCategoryRepository;
-        this.expenseTransactionRepository = expenseTransactionRepository;
-        this.userRepository = userRepository;
-    }
-
 //    @ApiOperation(value = "Get all expense transactions.", tags = "getTransactions")
-    @GetMapping("/transactions")
+    @GetMapping("/expensetransactions")
     public List<ExpenseTransaction> fetchAllExpenseTransactions() {
         return expenseTransactionRepository.findAll();
     }

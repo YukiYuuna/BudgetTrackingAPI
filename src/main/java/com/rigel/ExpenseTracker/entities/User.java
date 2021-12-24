@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="users")
@@ -12,6 +13,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "first_name")
     private String firstName;
@@ -22,29 +26,34 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "age")
-    private int age;
-
     @Column(name = "budget")
     private Double currentBudget;
 
 //    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<ExpenseTransaction> expenseTransactions;
+    private Set<ExpenseCategory> expenseCategories;
 
     public User() {
     }
 
-    public User(String firstName, String lastName, String email, int age, Double currentBudget) {
+    public User(String username, String firstName, String lastName, String email, Double currentBudget) {
+        this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.age = age;
         this.currentBudget = currentBudget;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getFirstName() {
@@ -71,14 +80,6 @@ public class User {
         this.email = email;
     }
 
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
     public Double getCurrentBudget() {
         return currentBudget;
     }
@@ -87,11 +88,11 @@ public class User {
         this.currentBudget = currentBudget;
     }
 
-    public List<ExpenseTransaction> getExpenseTransactions() {
-        return expenseTransactions;
+    public Set<ExpenseCategory> getExpenseCategories() {
+        return expenseCategories;
     }
 
-    public void setExpenseTransactions(List<ExpenseTransaction> expenseTransactions) {
-        this.expenseTransactions = expenseTransactions;
+    public void setExpenseCategories(Set<ExpenseCategory> expenseCategories) {
+        this.expenseCategories = expenseCategories;
     }
 }

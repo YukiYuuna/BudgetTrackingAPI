@@ -7,6 +7,8 @@ import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
 
+import static javax.persistence.CascadeType.ALL;
+
 @Entity
 @Table(name = "expense_category")
 public class ExpenseCategory {
@@ -21,6 +23,11 @@ public class ExpenseCategory {
     @OneToMany(mappedBy = "expenseCategory", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<ExpenseTransaction> expenseTransactions;
+
+    @ManyToOne(cascade = ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JsonIgnore
+    private User user;
 
     public ExpenseCategory() {
     }
@@ -49,4 +56,11 @@ public class ExpenseCategory {
         this.expenseTransactions = expenseTransactions;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
