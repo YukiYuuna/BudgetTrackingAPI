@@ -25,8 +25,8 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
     @Query("SELECT e "
             + "FROM ExpenseTransaction e "
             + "WHERE "
-            + "lower(e.user.email) "
-            + "LIKE :#{#email == null || #email.isEmpty()? '%' : #email + '%'} ")
-    Page<ExpenseTransaction> filterTransactions(Pageable pageable, String email);
+            + "lower(e.category) "
+            + "LIKE :#{#username == null || #username.isEmpty()? '%' : #username + '%'} ")
+    Page<ExpenseTransaction> filterTransactionsByUser(Pageable pageable, String categoryN);
 
 }

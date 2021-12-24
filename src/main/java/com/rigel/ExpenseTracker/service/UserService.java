@@ -17,7 +17,7 @@ public interface UserService {
 //    Saving the category/ies to the user
     ExpenseCategory saveCategory(ExpenseCategory expenseCategory);
 
-    void addCategory(String username, String categoryName);
+    void addExpenseCategory(String username, String categoryName);
 
     User getUser(String username);
 

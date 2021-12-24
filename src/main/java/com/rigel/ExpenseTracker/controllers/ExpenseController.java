@@ -11,6 +11,7 @@ import com.rigel.ExpenseTracker.exception.NotValidUrlException;
 import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
 import com.rigel.ExpenseTracker.repositories.ExpenseTransactionRepository;
 import com.rigel.ExpenseTracker.repositories.UserRepository;
+import com.rigel.ExpenseTracker.service.ExpenseCategoryService;
 import com.rigel.ExpenseTracker.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Tag;
@@ -36,44 +37,42 @@ import static com.rigel.ExpenseTracker.controllers.UserController.createPaginati
 public class ExpenseController {
 
     private final UserService userService;
-    private final ExpenseCategoryRepository expenseCategoryRepository;
-    private final ExpenseTransactionRepository expenseTransactionRepository;
+    private final ExpenseCategoryService expenseCategoryService;
 
 //    @ApiOperation(value = "Get all expense transactions.", tags = "getTransactions")
-    @GetMapping("/expensetransactions")
-    public List<ExpenseTransaction> fetchAllExpenseTransactions() {
-        return expenseTransactionRepository.findAll();
+    @GetMapping("/expense/transactions")
+    public List<ExpenseTransaction> getAllExpenseTransactions() {
+        return expenseCategoryService.getExpenseTransactions();
     }
 
     @GetMapping("/categories")
-    public Set<ExpenseCategory> fetchAllExpenseCategories() {
-        return expenseCategoryRepository.findAllCategories();
+    public Set<ExpenseCategory> getAllExpenseCategories() {
+        return expenseCategoryService.getExpenseCategories();
     }
 
-
     @GetMapping("/transaction/{id}")
-    private ExpenseTransaction fetchTransactionById(@PathVariable Long id) {
-        if(!expenseTransactionRepository.existsById(id))
+    private ExpenseTransaction getTransactionById(@PathVariable Long id) {
+        Optional<ExpenseTransaction> transaction = expenseCategoryService.getExpenseTransaction(id);
+        if(transaction.isEmpty())
             throw new NotFoundException("Transaction with id " + id + " does not exist.");
-        return expenseTransactionRepository.findExpenseTransactionById(id);
+        return transaction.get();
     }
 
     @GetMapping("/transactions/user")
-    public ResponseEntity<?> filterTransactions(Long userId, @RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage) {
+    public ResponseEntity<?> filterTransactions(String username, @RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage) {
+
+//        TODO: Figure out how to get transaction based on their Expense CATEGORY or User
 
         HashMap<String, Object> result = new LinkedHashMap<>();
-        if (!userRepository.existsById(userId))
-            throw new NotFoundException("User with id:" + userId + " doesn't exist.");
+        if (!userService.usernameExists(username))
+            throw new NotFoundException("User with username:" + username + " doesn't exist.");
 
-        User user = userRepository.fetchUserById(userId);
-        String username = Stream.of(user.getFirstName(), user.getLastName())
-                .map(Object::toString)
-                .collect(Collectors.joining(" "));
+        User user = userService.getUser(username);
         result.put("user", username);
 
-        Pageable pageable = createPagination(currentPage, perPage, expenseTransactionRepository.findAll().size());
+        Pageable pageable = createPagination(currentPage, perPage, expenseCategoryService.getExpenseTransactions().size());
 
-        Page<ExpenseTransaction> expenseTransactions = expenseTransactionRepository.filterTransactions(pageable, user.getEmail());
+        Page<ExpenseTransaction> expenseTransactions = expenseCategoryService.getFilteredUsers(pageable, userService.);
         result.put("totalTransactions", expenseTransactions.getTotalElements());
         result.put("totalPages", expenseTransactions.getTotalPages());
         result.put("transactions", expenseTransactions.getContent());

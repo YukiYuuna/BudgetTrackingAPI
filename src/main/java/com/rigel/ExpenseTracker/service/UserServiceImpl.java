@@ -36,10 +36,9 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void addCategory(String username, String categoryName) {
+    public void addExpenseCategory(String username, String categoryName) {
         User user = userRepo.findByUsername(username);
         ExpenseCategory category = expensesRepo.findByCategoryName(categoryName);
-
         user.getExpenseCategories().add(category);
     }
 

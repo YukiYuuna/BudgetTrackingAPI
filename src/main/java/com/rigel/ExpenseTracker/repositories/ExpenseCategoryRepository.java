@@ -9,15 +9,15 @@ import java.util.Set;
 
 public interface ExpenseCategoryRepository  extends JpaRepository<ExpenseCategory, Long> {
 
-    @Query("SELECT c FROM ExpenseCategory c")
+    @Query("SELECT DISTINCT(c.categoryName) FROM ExpenseCategory c")
     Set<ExpenseCategory> findAllCategories();
-
-    ExpenseCategory findExpenseCategoryById(Long id);
 
     ExpenseCategory findByCategoryName(String categoryName);
 
     Optional<ExpenseCategory> findExpenseCategoryByCategoryName(String categoryName);
 
     Boolean existsByCategoryName(String categoryName);
+
+    void deleteExpenseCategoryByCategoryName(String name);
 
 }
