@@ -2,6 +2,7 @@ package com.rigel.ExpenseTracker.service;
 
 import com.rigel.ExpenseTracker.entities.ExpenseCategory;
 import com.rigel.ExpenseTracker.entities.User;
+import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
 import com.rigel.ExpenseTracker.repositories.IncomeCategoryRepository;
 import com.rigel.ExpenseTracker.repositories.UserRepository;
@@ -37,6 +38,8 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void addExpenseCategory(String username, String categoryName) {
+        if(!userRepo.existsByUsername(username))
+            throw new NotFoundException("User with this username doesn't exist!");
         User user = userRepo.findByUsername(username);
         ExpenseCategory category = expensesRepo.findByCategoryName(categoryName);
         user.getExpenseCategories().add(category);
@@ -44,6 +47,8 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User getUser(String username) {
+        if(!userRepo.existsByUsername(username))
+            throw new NotFoundException("User with this username doesn't exist!");
         return userRepo.findByUsername(username);
     }
 
@@ -70,5 +75,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public void deleteUser(String username) {
         userRepo.deleteUserByUsername(username);
+    }
+
+    @Override
+    public void saveUserDataAndFlush(User user) {
+        userRepo.saveAndFlush(user);
     }
 }

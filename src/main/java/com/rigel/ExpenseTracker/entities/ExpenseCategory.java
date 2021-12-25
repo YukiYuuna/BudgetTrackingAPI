@@ -15,6 +15,7 @@ public class ExpenseCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @Column(name = "category_name")

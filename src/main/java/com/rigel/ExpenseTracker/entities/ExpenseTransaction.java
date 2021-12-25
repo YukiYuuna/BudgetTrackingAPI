@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 import static javax.persistence.CascadeType.*;
 
@@ -35,6 +36,11 @@ public class ExpenseTransaction {
     @JoinColumn(name = "expense_category_id", referencedColumnName = "id")
     @JsonIgnore
     private ExpenseCategory expenseCategory;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", referencedColumnName = "Id")
+    @JsonIgnore
+    private User user;
 
     public ExpenseTransaction() {
     }
@@ -90,4 +96,11 @@ public class ExpenseTransaction {
         this.expenseCategory = expenseCategory;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

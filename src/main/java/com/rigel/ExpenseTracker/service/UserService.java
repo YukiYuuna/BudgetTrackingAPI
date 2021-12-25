@@ -30,4 +30,6 @@ public interface UserService {
     Optional<User> getByUsername(String username);
 
     void deleteUser(String username);
+
+    void saveUserDataAndFlush(User user);
 }

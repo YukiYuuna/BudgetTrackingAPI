@@ -34,10 +34,8 @@ public class UserController {
 
     @GetMapping("/user/{username}")
     private ResponseEntity<User> getByUsername(@PathVariable String username){
-        if(!(userService.usernameExists(username)))
-            throw new NotFoundException("Oops, user with this username doesn't exist");
-
-        return ResponseEntity.ok().body(userService.getUser(username));
+        User user = userService.getUser(username);
+        return ResponseEntity.ok().body(user);
     }
 
     @GetMapping("/users/filter")

@@ -33,6 +33,10 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<ExpenseCategory> expenseCategories;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<ExpenseTransaction> expenseTransactions;
+
     public User() {
     }
 

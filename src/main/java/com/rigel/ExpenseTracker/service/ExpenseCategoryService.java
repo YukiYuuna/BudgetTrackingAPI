@@ -32,9 +32,11 @@ public interface ExpenseCategoryService {
 
     boolean expenseTransactionExists(Long transactionId);
 
-    void deleteAllExpenseTransaction();
-
     void deleteExpenseTransactionById(Long transactionId);
 
-    Page<ExpenseTransaction> getFilteredUsers(Pageable pageable, String categoryName);
+    Page<ExpenseTransaction> getFilteredTransactions(Pageable pageable, String categoryName);
+
+    List<ExpenseTransaction> getTransactionsByCategory(String categoryName);
+
+    List<ExpenseTransaction> getTransactionByUser(User user);
 }

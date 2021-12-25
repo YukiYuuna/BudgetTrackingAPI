@@ -80,17 +80,22 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
     }
 
     @Override
-    public void deleteAllExpenseTransaction() {
-        expenseTransactionRepo.deleteAll();
-    }
-
-    @Override
     public void deleteExpenseTransactionById(Long transactionId) {
         expenseTransactionRepo.deleteById(transactionId);
     }
 
     @Override
-    public Page<ExpenseTransaction> getFilteredUsers(Pageable pageable, String categoryName) {
-        return expenseTransactionRepo.filterTransactions(pageable, categoryName);
+    public Page<ExpenseTransaction> getFilteredTransactions(Pageable pageable, String categoryName) {
+        return expenseTransactionRepo.filterTransactionsByCategory(pageable, categoryName);
+    }
+
+    @Override
+    public List<ExpenseTransaction> getTransactionsByCategory(String categoryName) {
+        return expenseTransactionRepo.findExpenseTransactionByExpenseCategory_CategoryName(categoryName);
+    }
+
+    @Override
+    public List<ExpenseTransaction> getTransactionByUser(User user) {
+        return expenseTransactionRepo.findExpenseTransactionByUser(user);
     }
 }
