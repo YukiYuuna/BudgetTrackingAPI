@@ -62,21 +62,17 @@ public class ExpenseController {
     public ResponseEntity<?> filterTransactions(String categoryName, @RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage) {
 
         HashMap<String, Object> result = new LinkedHashMap<>();
-        Optional<ExpenseCategory> expenseCategory = expenseCategoryService.getExpenseCategory(categoryName);
+        ExpenseCategory expenseCategory = expenseCategoryService.getExpenseCategory(categoryName);
 
-        if(expenseCategory.isPresent()){
-            result.put("category", expenseCategory);
-            Pageable pageable = createPagination(currentPage, perPage, expenseCategoryService.getExpenseTransactions().size());
-            Page<ExpenseTransaction> expenseTransactions = expenseCategoryService.getFilteredTransactions(pageable, expenseCategory.get().getCategoryName());
+        result.put("category", expenseCategory);
+        Pageable pageable = createPagination(currentPage, perPage, expenseCategoryService.getExpenseTransactions().size());
+        Page<ExpenseTransaction> expenseTransactions = expenseCategoryService.getFilteredTransactions(pageable, expenseCategory.getCategoryName());
 
-            result.put("totalTransactions", expenseTransactions.getTotalElements());
-            result.put("totalPages", expenseTransactions.getTotalPages());
-            result.put("transactions", expenseTransactions.getContent());
+        result.put("totalTransactions", expenseTransactions.getTotalElements());
+        result.put("totalPages", expenseTransactions.getTotalPages());
+        result.put("transactions", expenseTransactions.getContent());
 
-            return ResponseEntity.ok(result);
-        } else{
-            throw new NotFoundException("Expense category with name - " + categoryName + " doesn't exist.");
-        }
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/transaction/{date}/{username}")
@@ -136,7 +132,7 @@ public class ExpenseController {
             result.put("userInfo", user);
 
             ExpenseTransaction transaction = new ExpenseTransaction(day, expenseAmount, dbCategoryName, description);
-            Optional<ExpenseCategory> category = expenseCategoryService.getExpenseCategory(dbCategoryName);
+            Optional<ExpenseCategory> category = expenseCategoryService.getOptionalExpenseCategory(dbCategoryName);
             if (category.isPresent()) {
                 transaction.setExpenseCategory(category.get());
             } else {
@@ -162,7 +158,7 @@ public class ExpenseController {
             throw new NotAllowedException("Either provide the same id or don't provide id for the transaction at all.");
 
         String dbCategoryName = modifiedTransaction.getCategory().toLowerCase();
-        Optional<ExpenseCategory> expenseCategory = expenseCategoryService.getExpenseCategory(dbCategoryName);
+        Optional<ExpenseCategory> expenseCategory = expenseCategoryService.getOptionalExpenseCategory(dbCategoryName);
         if(expenseCategory.isEmpty()){
             expenseCategoryService.saveExpenseCategory(new ExpenseCategory(dbCategoryName));
         }
@@ -190,22 +186,26 @@ public class ExpenseController {
     }
 
     @DeleteMapping("/delete/user/transactions")
-    public ResponseEntity<?> deleteAllTransactions(String username) {
-        Optional<User> user = userService.getUser(username);
-        if(user.isEmpty())
-            throw new NotFoundException("There are no transactions made by user: " + user.ge);
+    public ResponseEntity<String> deleteAllUserTransactions(String username) {
+        expenseCategoryService.deleteAllUserExpenseTransaction(userService.getUser(username));
+        return ResponseEntity.ok("All transactions made by user " + username + ", have been deleted successfully!");
+    }
 
-        expenseTransactionRepository.deleteAll();
-        return ResponseEntity.ok("All transactions have been deleted");
+    @DeleteMapping("/delete/user/category/transactions")
+    public ResponseEntity<String> deleteAllUserTransactions(String username, String categoryName) {
+        User user = userService.getUser(username);
+        ExpenseCategory category = expenseCategoryService.getExpenseCategory(categoryName);
+         for (ExpenseTransaction transaction : category.getExpenseTransactions()){
+             if(transaction.getUser() == user || transaction.getUser().equals(user))
+                 expenseCategoryService.deleteTransactionById(transaction.getId());
+         }
+        return ResponseEntity.ok().body("All transactions made by user - " + username + ", in category - " + categoryName + ", have been deleted successfully!");
     }
 
     @DeleteMapping("/delete/transaction/{id}")
-    ResponseEntity<?> deleteTransactionById(@PathVariable Long id) {
-        if (!(expenseTransactionRepository.existsById(id)))
-            throw new NotFoundException("Transaction with id: " + id + " doesn't exist!");
-
-        expenseTransactionRepository.deleteById(id);
-        return ResponseEntity.ok("The transaction has been deleted");
+    ResponseEntity<String> deleteTransactionById(@PathVariable Long id) {
+        expenseCategoryService.deleteTransactionById(id);
+        return ResponseEntity.ok().body("The transaction has been deleted successfully!");
     }
 
     private void setBudgetOfUser(ExpenseTransaction transaction, Double modBudget){

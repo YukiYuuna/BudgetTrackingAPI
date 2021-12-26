@@ -3,6 +3,8 @@ package com.rigel.ExpenseTracker.service;
 import com.rigel.ExpenseTracker.entities.ExpenseCategory;
 import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
 import com.rigel.ExpenseTracker.entities.User;
+import com.rigel.ExpenseTracker.exception.BadRequestException;
+import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,8 +47,17 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
     }
 
     @Override
-    public Optional<ExpenseCategory> getExpenseCategory(String categoryName) {
-        return expenseCategoryRepo.findExpenseCategoryByCategoryName(categoryName.toLowerCase());
+    public ExpenseCategory getExpenseCategory(String categoryName) {
+        Optional<ExpenseCategory> category = expenseCategoryRepo.findExpenseCategoryByCategoryName(categoryName.toLowerCase());
+        if(category.isEmpty())
+            throw new BadRequestException("A category with this name doesn't exist!");
+
+        return category.get();
+    }
+
+    @Override
+    public Optional<ExpenseCategory> getOptionalExpenseCategory(String category) {
+        return expenseCategoryRepo.findExpenseCategoryByCategoryName(category);
     }
 
     @Override
@@ -80,8 +91,11 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
     }
 
     @Override
-    public void deleteExpenseTransactionById(Long transactionId) {
-        expenseTransactionRepo.deleteById(transactionId);
+    public void deleteAllUserExpenseTransaction(User user) {
+        if(user.getExpenseTransactions().size() == 0)
+            throw new NotFoundException("There are no transactions made by " + user.getUsername());
+
+        expenseTransactionRepo.deleteExpenseTransactionsByUser(user);
     }
 
     @Override
@@ -97,5 +111,12 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
     @Override
     public List<ExpenseTransaction> getTransactionByUser(User user) {
         return expenseTransactionRepo.findExpenseTransactionByUser(user);
+    }
+
+    @Override
+    public void deleteTransactionById(Long transactionId) {
+        if(!expenseTransactionRepo.existsById(transactionId))
+            throw new NotFoundException("Transaction with id: " + transactionId + " doesn't exist!");
+        expenseTransactionRepo.deleteById(transactionId);
     }
 }

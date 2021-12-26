@@ -27,4 +27,6 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
             + "LIKE :#{#category == null || #category.isEmpty()? '%' : #category + '%'} ")
     Page<ExpenseTransaction> filterTransactionsByCategory(Pageable pageable, String category);
 
+    void deleteExpenseTransactionsByUser(User user);
+
 }

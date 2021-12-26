@@ -99,4 +99,8 @@ public class User {
     public void setExpenseCategories(Set<ExpenseCategory> expenseCategories) {
         this.expenseCategories = expenseCategories;
     }
+
+    public List<ExpenseTransaction> getExpenseTransactions() {
+        return expenseTransactions;
+    }
 }

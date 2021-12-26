@@ -32,12 +32,12 @@ public class ExpenseTransaction {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY,  cascade = ALL)
+    @ManyToOne(fetch = FetchType.LAZY,  cascade = {PERSIST, MERGE, REFRESH, DETACH})
     @JoinColumn(name = "expense_category_id", referencedColumnName = "id")
     @JsonIgnore
     private ExpenseCategory expenseCategory;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {PERSIST, MERGE, REFRESH, DETACH})
     @JoinColumn(name = "user_id", referencedColumnName = "Id")
     @JsonIgnore
     private User user;

@@ -18,7 +18,9 @@ public interface ExpenseCategoryService {
 
     void addTransaction(String categoryName, Long transactionId);
 
-    Optional<ExpenseCategory> getExpenseCategory(String categoryName);
+    ExpenseCategory getExpenseCategory(String categoryName);
+
+    Optional<ExpenseCategory> getOptionalExpenseCategory(String category);
 
     Set<ExpenseCategory> getExpenseCategories();
 
@@ -32,11 +34,13 @@ public interface ExpenseCategoryService {
 
     boolean expenseTransactionExists(Long transactionId);
 
-    void deleteExpenseTransactionById(Long transactionId);
+    void deleteAllUserExpenseTransaction(User user);
 
     Page<ExpenseTransaction> getFilteredTransactions(Pageable pageable, String categoryName);
 
     List<ExpenseTransaction> getTransactionsByCategory(String categoryName);
 
     List<ExpenseTransaction> getTransactionByUser(User user);
+
+    void deleteTransactionById(Long transactionId);
 }

@@ -1,6 +1,7 @@
 package com.rigel.ExpenseTracker.service;
 
 import com.rigel.ExpenseTracker.entities.ExpenseCategory;
+import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
 import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
