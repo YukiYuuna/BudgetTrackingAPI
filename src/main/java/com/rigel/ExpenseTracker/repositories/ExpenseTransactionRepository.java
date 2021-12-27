@@ -14,19 +14,19 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
 
     List<ExpenseTransaction> findExpenseTransactionByExpenseCategory_CategoryName(String name);
 
-    List<ExpenseTransaction> findAllByUser(User user);
-
     ExpenseTransaction findExpenseTransactionById(Long id);
 
     List<ExpenseTransaction> findAllByDate(LocalDate date);
 
-    boolean existsExpenseTransactionByExpenseCategory_CategoryName(String categoryName);
+    List<ExpenseTransaction> findExpenseTransactionByUser(User user);
 
     @Query("SELECT e "
             + "FROM ExpenseTransaction e "
             + "WHERE "
-            + "lower(e.user.email) "
-            + "LIKE :#{#email == null || #email.isEmpty()? '%' : #email + '%'} ")
-    Page<ExpenseTransaction> filterTransactions(Pageable pageable, String email);
+            + "lower(e.category) "
+            + "LIKE :#{#category == null || #category.isEmpty()? '%' : #category + '%'} ")
+    Page<ExpenseTransaction> filterTransactionsByCategory(Pageable pageable, String category);
+
+    void deleteExpenseTransactionsByUser(User user);
 
 }

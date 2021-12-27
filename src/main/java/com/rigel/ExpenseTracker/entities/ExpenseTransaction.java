@@ -6,7 +6,9 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Objects;
+import java.util.List;
+
+import static javax.persistence.CascadeType.*;
 
 
 @Entity
@@ -30,12 +32,12 @@ public class ExpenseTransaction {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-    @JoinColumn(name = "expense_category_id", referencedColumnName = "Id")
+    @ManyToOne(fetch = FetchType.LAZY,  cascade = {PERSIST, MERGE, REFRESH, DETACH})
+    @JoinColumn(name = "expense_category_id", referencedColumnName = "id")
     @JsonIgnore
     private ExpenseCategory expenseCategory;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {PERSIST, MERGE, REFRESH, DETACH})
     @JoinColumn(name = "user_id", referencedColumnName = "Id")
     @JsonIgnore
     private User user;
@@ -101,5 +103,4 @@ public class ExpenseTransaction {
     public void setUser(User user) {
         this.user = user;
     }
-
 }

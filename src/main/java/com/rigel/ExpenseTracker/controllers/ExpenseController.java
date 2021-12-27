@@ -11,6 +11,11 @@ import com.rigel.ExpenseTracker.exception.NotValidUrlException;
 import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
 import com.rigel.ExpenseTracker.repositories.ExpenseTransactionRepository;
 import com.rigel.ExpenseTracker.repositories.UserRepository;
+import com.rigel.ExpenseTracker.service.ExpenseCategoryService;
+import com.rigel.ExpenseTracker.service.UserService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -26,79 +31,59 @@ import java.util.stream.Stream;
 import static com.rigel.ExpenseTracker.controllers.UserController.createPagination;
 
 @RestController
-@RequestMapping("/expenses")
+@RequestMapping("/api")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class ExpenseController {
 
-    private final UserRepository userRepository;
-    private final ExpenseCategoryRepository expenseCategoryRepository;
-    private final ExpenseTransactionRepository expenseTransactionRepository;
+    private final UserService userService;
+    private final ExpenseCategoryService expenseCategoryService;
 
-    public ExpenseController(UserRepository userRepository, ExpenseCategoryRepository expenseCategoryRepository, ExpenseTransactionRepository expenseTransactionRepository) {
-        this.expenseCategoryRepository = expenseCategoryRepository;
-        this.expenseTransactionRepository = expenseTransactionRepository;
-        this.userRepository = userRepository;
+//    @ApiOperation(value = "Get all expense transactions.", tags = "getTransactions")
+    @GetMapping("/expense/transactions")
+    public List<ExpenseTransaction> getAllExpenseTransactions() {
+        return expenseCategoryService.getExpenseTransactions();
     }
 
-    @GetMapping("/transactions")
-    public List<ExpenseTransaction> fetchAllExpenseTransactions() {
-        return expenseTransactionRepository.findAll();
+    @GetMapping("/expense/categories")
+    public Set<ExpenseCategory> getAllExpenseCategories() {
+        return expenseCategoryService.getExpenseCategories();
     }
 
-    @GetMapping("/categories")
-    public Set<ExpenseCategory> fetchAllExpenseCategories() {
-        return expenseCategoryRepository.findAllCategories();
-    }
-
-
-    @GetMapping("/transaction/{id}")
-    private ExpenseTransaction fetchTransactionById(@PathVariable Long id) {
-        if(!expenseTransactionRepository.existsById(id))
+    @GetMapping("/expense/transaction/{id}")
+    private ExpenseTransaction getTransactionById(@PathVariable Long id) {
+        Optional<ExpenseTransaction> transaction = expenseCategoryService.getExpenseTransaction(id);
+        if(transaction.isEmpty())
             throw new NotFoundException("Transaction with id " + id + " does not exist.");
-        return expenseTransactionRepository.findExpenseTransactionById(id);
+        return transaction.get();
     }
 
-    @GetMapping("/transactions/user")
-    public ResponseEntity<?> filterTransactions(Long userId, @RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage) {
+    @GetMapping("/expense/transactions/category")
+    public ResponseEntity<?> filterTransactions(String categoryName, @RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage) {
 
         HashMap<String, Object> result = new LinkedHashMap<>();
-        if (!userRepository.existsById(userId))
-            throw new NotFoundException("User with id:" + userId + " doesn't exist.");
+        ExpenseCategory expenseCategory = expenseCategoryService.getExpenseCategory(categoryName);
 
-        User user = userRepository.fetchUserById(userId);
-        String username = Stream.of(user.getFirstName(), user.getLastName())
-                .map(Object::toString)
-                .collect(Collectors.joining(" "));
-        result.put("user", username);
+        result.put("category", expenseCategory);
+        Pageable pageable = createPagination(currentPage, perPage, expenseCategoryService.getExpenseTransactions().size());
+        Page<ExpenseTransaction> expenseTransactions = expenseCategoryService.getFilteredTransactions(pageable, expenseCategory.getCategoryName());
 
-        Pageable pageable = createPagination(currentPage, perPage, expenseTransactionRepository.findAll().size());
-
-        Page<ExpenseTransaction> expenseTransactions = expenseTransactionRepository.filterTransactions(pageable, user.getEmail());
         result.put("totalTransactions", expenseTransactions.getTotalElements());
         result.put("totalPages", expenseTransactions.getTotalPages());
         result.put("transactions", expenseTransactions.getContent());
+
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/transaction/{date}/{userId}")
-    private ResponseEntity<?> fetchTransactionsByDate(@PathVariable String date, @PathVariable Long userId) {
+    @GetMapping("expense/transaction/{date}/{username}")
+    private ResponseEntity<?> getTransactionsByDate(@PathVariable String date, @PathVariable String username) {
 
         HashMap<String, Object> result = new LinkedHashMap<>();
         LocalDate day = LocalDate.parse(date);
-        User user;
-        String username;
+        User user = userService.getUser(username);
 
-        if (userRepository.existsById(userId)) {
-            user = userRepository.fetchUserById(userId);
-            username = Stream.of(user.getFirstName(), user.getLastName())
-                    .map(Object::toString)
-                    .collect(Collectors.joining(" "));
-            result.put("user", username);
-        } else{
-            throw new NotFoundException("User with id:" + userId + " doesn't exist.");
-        }
-
-        List<ExpenseTransaction> userTransactions = expenseTransactionRepository.findAllByUser(user);
+        result.put("username", username);
+        List<ExpenseTransaction> userTransactions = expenseCategoryService.getTransactionByUser(user);
         List<ExpenseTransaction> expenseTransactions = new ArrayList<>();
         for (ExpenseTransaction transaction : userTransactions)
             if (transaction.getDate().equals(day))
@@ -117,128 +102,114 @@ public class ExpenseController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/add/category")
-    public ResponseEntity<?> addExpenseCategory(@RequestBody ExpenseCategory category) {
-        String finalName = category.getCategoryName().toLowerCase();
-        if(finalName.isEmpty())
+    @PostMapping("/add/expense/category")
+    public ResponseEntity<ExpenseCategory> addExpenseCategory(@RequestBody ExpenseCategory category) {
+        String dbName = category.getCategoryName().toLowerCase();
+        if(dbName.isEmpty())
             throw new NotValidUrlException("The category must have a name. Please provide it by adding a parameter: name");
 
-        if (expenseCategoryRepository.existsByCategoryName(finalName))
+        if (expenseCategoryService.expenseCategoryExists(dbName))
             throw new BadRequestException("A category with this name already exists!");
 
-        if(category.getId() != null)
-            throw new NotAllowedException("You are not allow to modify the id of the category. It is generated randomly!");
+//        if(category.getId() != null)
+//            throw new NotAllowedException("You are not allow to modify the id of the category. It is generated randomly!");
 
-        category.setCategoryName(finalName);
-        return ResponseEntity.ok(expenseCategoryRepository.save(category));
+        category.setCategoryName(dbName);
+        return ResponseEntity.ok().body(expenseCategoryService.saveExpenseCategory(category));
     }
 
-    @PostMapping("/add/transaction")
-    public ResponseEntity<?> addExpenseTransaction(@RequestParam Long userId, @RequestParam String date, @RequestParam Double expenseAmount, @RequestParam String categoryName, @RequestParam @Nullable String description) {
+    @PostMapping("/add/expense/transaction")
+    public ResponseEntity<Map<String, Object>> addExpenseTransaction(@RequestParam String username, @RequestParam String date, @RequestParam Double expenseAmount, @RequestParam String categoryName, @RequestParam @Nullable String description) {
         try {
             LocalDate day = LocalDate.parse(date);
-            String categoryNameToLower = categoryName.toLowerCase();
-            Map<String, Object> returnJson = new HashMap<>();
+            String dbCategoryName = categoryName.toLowerCase();
+            Map<String, Object> result = new HashMap<>();
 
-            if (!(userRepository.existsById(userId)))
-                throw new NotFoundException("User with id " + userId + " doesn't exist.");
+            User user = userService.getUser(username);
 
-            User user = userRepository.fetchUserById(userId);
             double userBudget = user.getCurrentBudget() - expenseAmount;
             user.setCurrentBudget(userBudget);
-            returnJson.put("userInfo", user);
+            result.put("userInfo", user);
 
-            ExpenseTransaction transaction = new ExpenseTransaction(day, expenseAmount, categoryNameToLower, description);
-            Optional<ExpenseCategory> category = expenseCategoryRepository.findExpenseCategoryByCategoryName(categoryNameToLower);
+            ExpenseTransaction transaction = new ExpenseTransaction(day, expenseAmount, dbCategoryName, description);
+            Optional<ExpenseCategory> category = expenseCategoryService.getOptionalExpenseCategory(dbCategoryName);
             if (category.isPresent()) {
                 transaction.setExpenseCategory(category.get());
             } else {
-                ExpenseCategory nonExistingCategory = new ExpenseCategory(categoryNameToLower);
+                ExpenseCategory nonExistingCategory = new ExpenseCategory(dbCategoryName);
                 transaction.setExpenseCategory(nonExistingCategory);
             }
 
             transaction.setUser(user);
-            expenseTransactionRepository.save(transaction);
-            returnJson.put("transactionInfo", transaction);
-
-            return ResponseEntity.ok(returnJson);
+            expenseCategoryService.saveTransaction(transaction);
+            result.put("transactionInfo", transaction);
+            return ResponseEntity.ok().body(result);
         } catch(DateTimeException dte){
             throw new BadRequestException("Date has incorrect format. Please provide the date in this format: YYYY-MM-DD");
         }
     }
 
-    @PutMapping("/modify/transaction/{id}")
-    public ResponseEntity<?> modifyTransaction(@RequestBody ExpenseTransaction modifiedTransaction, @PathVariable Long id){
-        if(!expenseTransactionRepository.existsById(id)){
-            throw new NotFoundException("There is no transaction with id: " + id);
-        }
+    @PutMapping("/modify/expense/transaction/{transactionId}")
+    public Optional<?> modifyTransaction(@PathVariable Long transactionId, @RequestBody ExpenseTransaction modifiedTransaction){
+        if(!expenseCategoryService.expenseTransactionExists(transactionId))
+            throw new NotFoundException("There is no transaction with id: " + transactionId);
+        if(modifiedTransaction.getId() != null || !(modifiedTransaction.getId() == transactionId))
+            throw new NotAllowedException("Either provide the same id or don't provide id for the transaction at all.");
 
-        String categoryName = modifiedTransaction.getCategory().toLowerCase();
-        Optional<ExpenseCategory> expenseCategory = expenseCategoryRepository
-                .findExpenseCategoryByCategoryName(categoryName);
+        String dbCategoryName = modifiedTransaction.getCategory().toLowerCase();
+        Optional<ExpenseCategory> expenseCategory = expenseCategoryService.getOptionalExpenseCategory(dbCategoryName);
         if(expenseCategory.isEmpty()){
-            expenseCategoryRepository.save(new ExpenseCategory(categoryName));
+            expenseCategoryService.saveExpenseCategory(new ExpenseCategory(dbCategoryName));
         }
 
-        return expenseTransactionRepository.findById(id)
+        return expenseCategoryService.getExpenseTransaction(transactionId)
                 .map(transaction -> {
                     transaction.setExpenseCategory(modifiedTransaction.getExpenseCategory() == null ? transaction.getExpenseCategory() : modifiedTransaction.getExpenseCategory());
                     transaction.setDate(modifiedTransaction.getDate() == null ? transaction.getDate() : modifiedTransaction.getDate());
                     transaction.setDescription(modifiedTransaction.getDescription() == null ? transaction.getDescription() : modifiedTransaction.getDescription());
                     transaction.setCategory(modifiedTransaction.getCategory() == null ? transaction.getCategory() : modifiedTransaction.getCategory());
 
-                    setBudgetOfUser(transaction, transaction.getExpenseAmount(), modifiedTransaction.getExpenseAmount());
+                    setBudgetOfUser(transaction, modifiedTransaction.getExpenseAmount());
 
-                    return ResponseEntity.ok(expenseTransactionRepository.save(transaction));
-                })
-                .orElseThrow(() -> new NotFoundException("There is no transaction with id " + id));
+                    return ResponseEntity.ok().body(expenseCategoryService.saveTransaction(transaction));
+                });
     }
 
-    @DeleteMapping("/delete/categories")
-    public ResponseEntity<?> deleteAllCategories() {
-        if (expenseCategoryRepository.findAll().size() == 0)
-            throw new NotFoundException("There are no categories!");
-
-        expenseCategoryRepository.deleteAll();
-        return ResponseEntity.ok("All categories have been deleted");
+    @DeleteMapping("/delete/expense/category")
+    public ResponseEntity<String> deleteCategoryById(String username, String categoryName) {
+        expenseCategoryService.deleteExpenseCategory(username, categoryName);
+        return ResponseEntity.ok().body("The category has been deleted!");
     }
 
-    @DeleteMapping("/delete/category/{id}")
-    public ResponseEntity<?> deleteCategoryById(@PathVariable Long id) {
-        if (!(expenseCategoryRepository.existsById(id)))
-            throw new NotFoundException("Category with id:" + id + " doesn't exist!");
-
-        expenseCategoryRepository.deleteById(id);
-        return ResponseEntity.ok("The category has been deleted!");
+    @DeleteMapping("/delete/expense/category/transactions")
+    public ResponseEntity<String> deleteAllUserTransactions(String username, String categoryName) {
+        deleteTransactionsByCategory(
+                expenseCategoryService.getExpenseCategory(categoryName),
+                userService.getUser(username));
+        return ResponseEntity.ok().body("All transactions made by user - " + username + ", in category - " + categoryName + ", have been deleted successfully!");
     }
 
-    @DeleteMapping("/delete/transactions")
-    public ResponseEntity<?> deleteAllTransactions() {
-        if (expenseTransactionRepository.findAll().size() == 0)
-            throw new NotFoundException("There are no transactions!");
-
-        expenseTransactionRepository.deleteAll();
-        return ResponseEntity.ok("All transactions have been deleted");
+    @DeleteMapping("/delete/expense/transaction/{id}")
+    ResponseEntity<String> deleteTransactionById(@PathVariable Long id) {
+        expenseCategoryService.deleteTransactionById(id);
+        return ResponseEntity.ok().body("The transaction has been deleted successfully!");
     }
 
-    @DeleteMapping("/delete/transaction/{id}")
-    ResponseEntity<?> deleteTransactionById(@PathVariable Long id) {
-        if (!(expenseTransactionRepository.existsById(id)))
-            throw new NotFoundException("Transaction with id: " + id + " doesn't exist!");
-
-        expenseTransactionRepository.deleteById(id);
-        return ResponseEntity.ok("The transaction has been deleted");
-    }
-
-    private void setBudgetOfUser(ExpenseTransaction transaction, Double curBudget, Double modBudget){
+    private void setBudgetOfUser(ExpenseTransaction transaction, Double modBudget){
         if(modBudget != null) {
-            Double change = modBudget - curBudget;
+            Double change = modBudget - transaction.getExpenseAmount();
             User user = transaction.getUser();
             transaction.setExpenseAmount(modBudget);
             user.setCurrentBudget(user.getCurrentBudget() - change);
-            userRepository.saveAndFlush(user);
+            userService.saveUserDataAndFlush(user);
         } else{
-            transaction.setExpenseAmount(curBudget);
+            transaction.setExpenseAmount(transaction.getExpenseAmount());
+        }
+    }
+    private void deleteTransactionsByCategory(ExpenseCategory category, User user){
+        for (ExpenseTransaction transaction : category.getExpenseTransactions()){
+            if(transaction.getUser() == user || transaction.getUser().equals(user))
+                expenseCategoryService.deleteTransactionById(transaction.getId());
         }
     }
 }

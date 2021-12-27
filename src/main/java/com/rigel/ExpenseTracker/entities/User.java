@@ -1,17 +1,32 @@
 package com.rigel.ExpenseTracker.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="users")
+@AllArgsConstructor
+@Getter
+@Setter
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
+
+    @Column(name = "username")
+    private String username;
+
+    @JsonIgnore
+    @Column(name = "password")
+    private String password;
 
     @Column(name = "first_name")
     private String firstName;
@@ -22,76 +37,32 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "age")
-    private int age;
-
     @Column(name = "budget")
     private Double currentBudget;
 
-    //    @JsonIgnore
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = { @JoinColumn(name = "ROLE_ID")})
+    private Set<Role> roles;
+
+//    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private Set<ExpenseCategory> expenseCategories;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<ExpenseTransaction> expenseTransactions;
 
     public User() {
     }
 
-    public User(String firstName, String lastName, String email, int age, Double currentBudget) {
+    public User(String username, String password, String firstName, String lastName, String email, Double currentBudget) {
+        this.username = username;
+        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.age = age;
         this.currentBudget = currentBudget;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public Double getCurrentBudget() {
-        return currentBudget;
-    }
-
-    public void setCurrentBudget(Double currentBudget) {
-        this.currentBudget = currentBudget;
-    }
-
-    public List<ExpenseTransaction> getExpenseTransactions() {
-        return expenseTransactions;
-    }
-
-    public void setExpenseTransactions(List<ExpenseTransaction> expenseTransactions) {
-        this.expenseTransactions = expenseTransactions;
     }
 }

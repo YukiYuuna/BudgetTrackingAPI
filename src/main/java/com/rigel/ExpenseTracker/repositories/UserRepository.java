@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u "
@@ -17,22 +19,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
             + "u.id = ?1")
     User fetchUserById(Long id);
 
-    User findUserByFirstNameAndLastName(String firstName, String lastName);
+    User findByUsername(String username);
 
     @Query("SELECT u "
             + "FROM User u "
             + "WHERE "
-            + "lower(u.firstName) "
-            + "LIKE :#{#firstName == null || #firstName.isEmpty()? '%' : #firstName + '%'} "
-            + "AND lower(u.lastName) "
-            + "LIKE :#{#lastName == null || #lastName.isEmpty()? '%' : #lastName + '%'}")
-    Page<User> filterUsers(Pageable pageable, String firstName, String lastName);
+            + "lower(u.username) "
+            + "LIKE :#{#username == null || #username.isEmpty()? '%' : #username + '%'} ")
+    Page<User> filterUsers(Pageable pageable, String username);
+
+    Optional<User> findUserByUsername(String username);
 
     boolean existsById(Long id);
 
-    boolean existsByFirstNameAndLastName(String fName, String lName);
+    boolean existsByUsername(String username);
 
-//    @Modifying
-//    @Query("UPDATE User u SET u.currentBudget = :modifiedBudget WHERE u.id = :id")
-//    void updateBudget(@Param(value = "id")Long id, @Param(value = "modifiedBudget")Double modifiedBudget);
+    void deleteUserByUsername(String username);
 }

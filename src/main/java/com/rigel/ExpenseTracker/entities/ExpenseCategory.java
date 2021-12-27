@@ -7,20 +7,28 @@ import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
 
+import static javax.persistence.CascadeType.*;
+
 @Entity
 @Table(name = "expense_category")
 public class ExpenseCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @Column(name = "category_name")
     private String categoryName;
 
-    @OneToMany(mappedBy = "expenseCategory", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "expenseCategory")
     @JsonIgnore
     private Set<ExpenseTransaction> expenseTransactions;
+
+    @ManyToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH})
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JsonIgnore
+    private User user;
 
     public ExpenseCategory() {
     }
@@ -49,4 +57,11 @@ public class ExpenseCategory {
         this.expenseTransactions = expenseTransactions;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
