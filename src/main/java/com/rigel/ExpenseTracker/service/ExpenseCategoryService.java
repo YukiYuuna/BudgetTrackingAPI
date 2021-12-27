@@ -26,7 +26,7 @@ public interface ExpenseCategoryService {
 
     boolean expenseCategoryExists(String categoryName);
 
-    void deleteExpenseCategory(String categoryName);
+    void deleteExpenseCategory(String username, String categoryName);
 
     Optional<ExpenseTransaction> getExpenseTransaction(Long id);
 

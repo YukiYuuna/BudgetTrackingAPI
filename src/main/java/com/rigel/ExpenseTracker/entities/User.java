@@ -1,18 +1,24 @@
 package com.rigel.ExpenseTracker.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name="users")
+@AllArgsConstructor
+@Getter
+@Setter
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
     @Column(name = "username")
@@ -34,6 +40,12 @@ public class User {
     @Column(name = "budget")
     private Double currentBudget;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = { @JoinColumn(name = "ROLE_ID")})
+    private Set<Role> roles;
+
 //    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<ExpenseCategory> expenseCategories;
@@ -52,69 +64,5 @@ public class User {
         this.lastName = lastName;
         this.email = email;
         this.currentBudget = currentBudget;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Double getCurrentBudget() {
-        return currentBudget;
-    }
-
-    public void setCurrentBudget(Double currentBudget) {
-        this.currentBudget = currentBudget;
-    }
-
-    public Set<ExpenseCategory> getExpenseCategories() {
-        return expenseCategories;
-    }
-
-    public void setExpenseCategories(Set<ExpenseCategory> expenseCategories) {
-        this.expenseCategories = expenseCategories;
-    }
-
-    public List<ExpenseTransaction> getExpenseTransactions() {
-        return expenseTransactions;
     }
 }

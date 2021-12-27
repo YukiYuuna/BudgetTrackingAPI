@@ -1,6 +1,7 @@
 package com.rigel.ExpenseTracker.repositories;
 
 import com.rigel.ExpenseTracker.entities.ExpenseCategory;
+import com.rigel.ExpenseTracker.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -18,6 +19,5 @@ public interface ExpenseCategoryRepository  extends JpaRepository<ExpenseCategor
 
     Boolean existsByCategoryName(String categoryName);
 
-    void deleteExpenseCategoryByCategoryName(String name);
-
+    void deleteExpenseCategoryByUserAndAndCategoryName(User user, String categoryName);
 }

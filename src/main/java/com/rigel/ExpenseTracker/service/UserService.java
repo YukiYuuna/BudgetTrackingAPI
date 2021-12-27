@@ -2,6 +2,7 @@ package com.rigel.ExpenseTracker.service;
 
 import com.rigel.ExpenseTracker.entities.ExpenseCategory;
 import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
+import com.rigel.ExpenseTracker.entities.Role;
 import com.rigel.ExpenseTracker.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +15,10 @@ public interface UserService {
 //    whenever we call this method, a user will be saved to the DB
     User saveUser(User user);
 
-//    Saving the category/ies to the user
+    Role saveRole(Role role);
+
+    void addRoleToUser(String username, String password);
+
     ExpenseCategory saveCategory(ExpenseCategory expenseCategory);
 
     void addExpenseCategory(String username, String categoryName);

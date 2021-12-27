@@ -23,6 +23,7 @@ import java.util.Set;
 @Slf4j
 public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
 
+    private final UserRepository userRepo;
     private final ExpenseCategoryRepository expenseCategoryRepo;
     private final ExpenseTransactionRepository expenseTransactionRepo;
     private final IncomeTransactionRepository incomeTransactionRepo;
@@ -71,11 +72,14 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
     }
 
     @Override
-    public void deleteExpenseCategory(String categoryName) {
+    public void deleteExpenseCategory(String username, String categoryName) {
         if (!(expenseCategoryRepo.existsByCategoryName(categoryName)))
             throw new NotFoundException("This category doesn't exist!");
+        Optional<User> user = userRepo.findUserByUsername(username);
+        if(user.isEmpty())
+            throw new NotFoundException("User not found in the database.");
 
-        expenseCategoryRepo.deleteExpenseCategoryByCategoryName(categoryName);
+        expenseCategoryRepo.deleteExpenseCategoryByUserAndAndCategoryName(user.get(), categoryName);
     }
 
     @Override

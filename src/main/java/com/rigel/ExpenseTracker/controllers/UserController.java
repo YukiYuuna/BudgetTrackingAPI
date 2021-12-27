@@ -1,11 +1,13 @@
 package com.rigel.ExpenseTracker.controllers;
 
+import com.rigel.ExpenseTracker.entities.Role;
 import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.exception.BadRequestException;
 import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.service.UserService;
 import com.sun.istack.Nullable;
 import io.swagger.annotations.ApiOperation;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,7 +40,7 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
-    @GetMapping("/users/filter")
+    @GetMapping("/user/filter")
     @ApiOperation(value = "Filters the users by username, using pagination.",
     notes = "Provide the username, the current page and how many users you want per page, in order to get a response.",
     response = ResponseEntity.class)
@@ -61,7 +63,18 @@ public class UserController {
             return ResponseEntity.ok().body(firstName + " " + lastName + " has been added successfully!");
         }
 
-        throw new BadRequestException("Make sure you provide all data, including: username, first and last name, current budget!");
+        throw new BadRequestException("Make sure you provide all data, including: username, password, first name, last name and current budget!");
+    }
+
+    @PostMapping("/user/role/save")
+    public ResponseEntity<Role> saveRole(@RequestBody Role role){
+        return ResponseEntity.ok().body(userService.saveRole(role));
+    }
+
+    @PostMapping("/user/role/user/save")
+    public ResponseEntity<?> addRoleToUser(@RequestBody RoleToUserForm form){
+        userService.addRoleToUser(form.getUsername(), form.getRoleName());
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/modify/{username}")
@@ -85,7 +98,7 @@ public class UserController {
                 });
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/user/delete")
     public ResponseEntity<?> deleteUser(String username) {
         if (!(userService.usernameExists(username)))
            throw new NotFoundException("User with username: " + username + " doesn't exist.");
@@ -105,4 +118,10 @@ public class UserController {
         }
         return pageable;
     }
+}
+
+@Data
+class RoleToUserForm{
+    private String username;
+    private String roleName;
 }

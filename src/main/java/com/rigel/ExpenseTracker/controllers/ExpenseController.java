@@ -176,18 +176,12 @@ public class ExpenseController {
     }
 
     @DeleteMapping("/delete/expense/category")
-    public ResponseEntity<String> deleteCategoryById(String categoryName) {
-        expenseCategoryService.deleteExpenseCategory(categoryName);
+    public ResponseEntity<String> deleteCategoryById(String username, String categoryName) {
+        expenseCategoryService.deleteExpenseCategory(username, categoryName);
         return ResponseEntity.ok().body("The category has been deleted!");
     }
 
-    @DeleteMapping("/delete/expense/user/transactions")
-    public ResponseEntity<String> deleteAllUserTransactions(String username) {
-        expenseCategoryService.deleteAllUserExpenseTransaction(userService.getUser(username));
-        return ResponseEntity.ok().body("All transactions made by user " + username + ", have been deleted successfully!");
-    }
-
-    @DeleteMapping("/delete/expense/user/category/transactions")
+    @DeleteMapping("/delete/expense/category/transactions")
     public ResponseEntity<String> deleteAllUserTransactions(String username, String categoryName) {
         deleteTransactionsByCategory(
                 expenseCategoryService.getExpenseCategory(categoryName),
