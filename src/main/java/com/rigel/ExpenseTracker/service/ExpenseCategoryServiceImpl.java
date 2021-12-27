@@ -72,6 +72,9 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
 
     @Override
     public void deleteExpenseCategory(String categoryName) {
+        if (!(expenseCategoryRepo.existsByCategoryName(categoryName)))
+            throw new NotFoundException("This category doesn't exist!");
+
         expenseCategoryRepo.deleteExpenseCategoryByCategoryName(categoryName);
     }
 

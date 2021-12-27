@@ -55,9 +55,9 @@ public class UserController {
     }
 
     @PostMapping("/user/save")
-    private ResponseEntity<String> saveUser(String username, String firstName, String lastName, String email, Double currentBudget) {
-        if (username !=  null && firstName != null && lastName != null && email != null && currentBudget != null) {
-            userService.saveUser(new User(username, firstName, lastName, email, currentBudget));
+    private ResponseEntity<String> saveUser(String username, String password, String firstName, String lastName, String email, Double currentBudget) {
+        if (username !=  null && password != null && firstName != null && lastName != null && email != null && currentBudget != null) {
+            userService.saveUser(new User(username, password, firstName, lastName, email, currentBudget));
             return ResponseEntity.ok().body(firstName + " " + lastName + " has been added successfully!");
         }
 
@@ -74,6 +74,7 @@ public class UserController {
                 .map(user -> {
 //                    TODO:
                     user.setUsername(updatedUser.getUsername() == null ? user.getUsername() : updatedUser.getUsername());
+                    user.setPassword(user.getPassword());
                     user.setFirstName(updatedUser.getFirstName() == null ? user.getFirstName() : updatedUser.getFirstName());
                     user.setLastName(updatedUser.getLastName() == null ? user.getLastName() : updatedUser.getLastName());
                     user.setEmail(updatedUser.getEmail() == null ? user.getEmail() : updatedUser.getEmail());

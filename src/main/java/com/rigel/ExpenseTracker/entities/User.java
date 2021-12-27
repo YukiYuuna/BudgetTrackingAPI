@@ -3,6 +3,7 @@ package com.rigel.ExpenseTracker.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -16,6 +17,10 @@ public class User {
 
     @Column(name = "username")
     private String username;
+
+    @JsonIgnore
+    @Column(name = "password")
+    private String password;
 
     @Column(name = "first_name")
     private String firstName;
@@ -40,12 +45,21 @@ public class User {
     public User() {
     }
 
-    public User(String username, String firstName, String lastName, String email, Double currentBudget) {
+    public User(String username, String password, String firstName, String lastName, String email, Double currentBudget) {
         this.username = username;
+        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.currentBudget = currentBudget;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Long getId() {

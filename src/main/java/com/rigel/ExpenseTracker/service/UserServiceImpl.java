@@ -1,7 +1,6 @@
 package com.rigel.ExpenseTracker.service;
 
 import com.rigel.ExpenseTracker.entities.ExpenseCategory;
-import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
 import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
@@ -11,24 +10,52 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepo;
     private final ExpenseCategoryRepository expensesRepo;
     private final IncomeCategoryRepository incomeRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final Set<GrantedAuthority> authorities = new HashSet<>();
+
+    public Collection<GrantedAuthority> getAuthorities() {
+        if(authorities.size() == 1)
+            return authorities;
+        this.authorities.add(new SimpleGrantedAuthority("USER"));
+        return authorities;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepo.findByUsername(username);
+        if(user == null) {
+            log.error("User not found in the database");;
+            throw new NotFoundException("User with this username not found in the database!");
+        }else{
+            log.info("User found in the database: {}", username);
+        }
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), getAuthorities());
+    }
 
     @Override
     public User saveUser(User user) {
+        log.info("User was saved to the database successfully!");
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepo.save(user);
     }
 
