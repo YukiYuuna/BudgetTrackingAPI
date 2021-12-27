@@ -19,7 +19,7 @@ public class Role {
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
 
     @Id
-    @Column(name = "ROLE_ID")
+    @Column(name = "role_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int roleId;
 

@@ -13,7 +13,8 @@ public class IncomeTransaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "income_transaction_id")
+    private Long incomeTransactionId;
 
     @Column(name = "date")
     private LocalDate date;
@@ -21,22 +22,27 @@ public class IncomeTransaction {
     @Column(name = "income_amount")
     private Double incomeAmount;
 
+    @Column(name = "description")
+    private String description;
+
     @ManyToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name = "income_category_id", referencedColumnName = "Id")
+    @JoinColumn(name = "income_transaction_id", referencedColumnName = "income_category_id")
+    @JsonIgnore
     private IncomeCategory incomeCategory;
 
-    @JsonIgnore
     @ManyToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name = "users_id", referencedColumnName = "Id")
-    private User users;
+    @JoinColumn(name = "income_transaction_id", referencedColumnName = "user_id")
+    @JsonIgnore
+    private User user;
 
     public IncomeTransaction() {
     }
 
-    public IncomeTransaction(LocalDate date, Double incomeAmount, IncomeCategory incomeCategory) {
+    public IncomeTransaction(LocalDate date, Double incomeAmount, IncomeCategory incomeCategory, String description) {
         this.date = date;
         this.incomeAmount = incomeAmount;
         this.incomeCategory = incomeCategory;
+        this.description = description;
     }
 
 }

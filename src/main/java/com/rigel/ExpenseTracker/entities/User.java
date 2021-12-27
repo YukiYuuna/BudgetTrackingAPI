@@ -3,9 +3,11 @@ package com.rigel.ExpenseTracker.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -19,7 +21,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long id;
+    private Long userId;
 
     @Column(name = "username")
     private String username;
@@ -43,7 +45,7 @@ public class User {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",
             joinColumns = {@JoinColumn(name = "user_id")},
-            inverseJoinColumns = { @JoinColumn(name = "ROLE_ID")})
+            inverseJoinColumns = { @JoinColumn(name = "role_id")})
     private Set<Role> roles;
 
 //    @JsonIgnore
@@ -53,6 +55,14 @@ public class User {
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<ExpenseTransaction> expenseTransactions;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private Set<IncomeCategory> incomeCategories;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<IncomeTransaction> incomeTransactions;
 
     public User() {
     }
