@@ -28,11 +28,11 @@ public interface ExpenseCategoryService {
 
     void deleteExpenseCategory(String username, String categoryName);
 
-    Optional<ExpenseTransaction> getExpenseTransaction(Long id);
+    Optional<ExpenseTransaction> getExpenseTransaction(String username, Long id);
 
     List<ExpenseTransaction> getExpenseTransactions();
 
-    boolean expenseTransactionExists(Long transactionId);
+    boolean expenseTransactionExists(String username, Long transactionId);
 
     void deleteAllUserExpenseTransaction(User user);
 

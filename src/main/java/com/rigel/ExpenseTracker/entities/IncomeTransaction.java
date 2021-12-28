@@ -6,6 +6,9 @@ import lombok.Data;
 import javax.persistence.*;
 import java.time.LocalDate;
 
+import static javax.persistence.CascadeType.*;
+import static javax.persistence.CascadeType.DETACH;
+
 @Entity
 @Table(name = "income_transaction")
 @Data
@@ -25,12 +28,12 @@ public class IncomeTransaction {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {PERSIST, MERGE, REFRESH, DETACH})
     @JoinColumn(name = "income_transaction_id", referencedColumnName = "income_category_id")
     @JsonIgnore
     private IncomeCategory incomeCategory;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade=ALL)
     @JoinColumn(name = "income_transaction_id", referencedColumnName = "user_id")
     @JsonIgnore
     private User user;

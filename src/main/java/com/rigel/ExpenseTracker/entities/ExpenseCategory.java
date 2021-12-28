@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -29,9 +30,9 @@ public class ExpenseCategory {
 
     @JsonIgnore
     @OneToMany(mappedBy = "expenseCategory")
-    private Set<ExpenseTransaction> expenseTransactions;
+    private List<ExpenseTransaction> expenseTransactions;
 
-    @ManyToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH})
+    @ManyToOne(cascade = ALL)
     @JoinColumn(name = "expense_category_id", referencedColumnName = "user_id")
     @JsonIgnore
     private User user;
@@ -41,5 +42,18 @@ public class ExpenseCategory {
 
     public ExpenseCategory(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ExpenseCategory category = (ExpenseCategory) o;
+        return Objects.equals(expenseCategoryId, category.expenseCategoryId) && Objects.equals(categoryName, category.categoryName) && Objects.equals(expenseTransactions, category.expenseTransactions) && Objects.equals(user, category.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(expenseCategoryId, categoryName, expenseTransactions, user);
     }
 }

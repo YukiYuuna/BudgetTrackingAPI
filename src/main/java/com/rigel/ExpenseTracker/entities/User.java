@@ -48,7 +48,7 @@ public class User {
             inverseJoinColumns = { @JoinColumn(name = "role_id")})
     private Set<Role> roles;
 
-//    @JsonIgnore
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<ExpenseCategory> expenseCategories;
 

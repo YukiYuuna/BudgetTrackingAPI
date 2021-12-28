@@ -30,9 +30,9 @@ public class IncomeCategory {
 
     @JsonIgnore
     @OneToMany(mappedBy = "incomeCategory")
-    private Set<IncomeTransaction> incomeTransactions;
+    private List<IncomeTransaction> incomeTransactions;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {PERSIST, MERGE, REFRESH, DETACH})
+    @ManyToOne(fetch = FetchType.EAGER, cascade = ALL)
     @JoinColumn(name = "income_category_id", referencedColumnName = "user_id")
     @JsonIgnore
     private User user;

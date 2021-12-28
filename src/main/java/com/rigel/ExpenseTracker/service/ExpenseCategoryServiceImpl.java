@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -83,8 +84,8 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
     }
 
     @Override
-    public Optional<ExpenseTransaction> getExpenseTransaction(Long transactionId) {
-        return expenseTransactionRepo.findById(transactionId);
+    public Optional<ExpenseTransaction> getExpenseTransaction(String username, Long transactionId) {
+        return findExpenseTransactionByUser(username, transactionId);
     }
 
     @Override
@@ -93,8 +94,10 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
     }
 
     @Override
-    public boolean expenseTransactionExists(Long transactionId) {
-        return expenseTransactionRepo.existsById(transactionId);
+    public boolean expenseTransactionExists(String username, Long transactionId) {
+        if(findExpenseTransactionByUser(username, transactionId).isEmpty())
+            return false;
+        return true;
     }
 
     @Override
@@ -125,5 +128,18 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
         if(!expenseTransactionRepo.existsById(transactionId))
             throw new NotFoundException("Transaction with id: " + transactionId + " doesn't exist!");
         expenseTransactionRepo.deleteById(transactionId);
+    }
+
+    private Optional<ExpenseTransaction> findExpenseTransactionByUser(String username, Long id){
+        Optional<User> user = userRepo.findUserByUsername(username);
+        if(user.isEmpty())
+            throw new NotFoundException("User not found in the database.");
+
+        Optional<ExpenseTransaction> transaction = user.get()
+                .getExpenseTransactions().stream()
+                .filter(transactions -> transactions.getExpenseTransactionId().equals(id))
+                .findFirst();
+
+        return  transaction;
     }
 }

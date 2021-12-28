@@ -12,28 +12,25 @@ import java.util.Optional;
 
 public interface UserService {
 
-//    whenever we call this method, a user will be saved to the DB
     User saveUser(User user);
+
+    Integer numberOfUsers();
 
     Role saveRole(Role role);
 
-    void addRoleToUser(String username, String password);
+    void addRoleToUser(String password);
 
-    ExpenseCategory saveCategory(ExpenseCategory expenseCategory);
+    void addExpenseCategory(String categoryName);
 
-    void addExpenseCategory(String username, String categoryName);
+    User getUser();
 
-    User getUser(String username);
+    Page<User> getUsers(Pageable pageable);
 
-    List<User> getUsers();
+    boolean usernameExists();
 
-    Page<User> getFilteredUsers(Pageable pageable, String username);
+    Optional<User> getOptionalUser();
 
-    boolean usernameExists(String username);
-
-    Optional<User> getByUsername(String username);
-
-    void deleteUser(String username);
+    void deleteUser();
 
     void saveUserDataAndFlush(User user);
 }

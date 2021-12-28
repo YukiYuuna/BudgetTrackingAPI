@@ -44,7 +44,7 @@ public class ExpenseTransaction {
     @JsonIgnore
     private ExpenseCategory expenseCategory;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {PERSIST, MERGE, REFRESH, DETACH})
+    @ManyToOne(fetch = FetchType.EAGER, cascade = ALL)
     @JoinColumn(name = "expense_transaction_id", referencedColumnName = "user_id")
     @JsonIgnore
     private User user;

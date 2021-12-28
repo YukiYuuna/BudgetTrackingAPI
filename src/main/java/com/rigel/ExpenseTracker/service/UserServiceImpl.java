@@ -1,5 +1,6 @@
 package com.rigel.ExpenseTracker.service;
 
+import com.rigel.ExpenseTracker.IAuthenticationFacade;
 import com.rigel.ExpenseTracker.entities.ExpenseCategory;
 import com.rigel.ExpenseTracker.entities.Role;
 import com.rigel.ExpenseTracker.entities.User;
@@ -11,10 +12,13 @@ import com.rigel.ExpenseTracker.repositories.RoleRepo;
 import com.rigel.ExpenseTracker.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,7 +38,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final RoleRepo roleRepo;
     private final ExpenseCategoryRepository expensesRepo;
     private final IncomeCategoryRepository incomeRepo;
+    private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private IAuthenticationFacade authenticationFacade;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -57,6 +65,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public Integer numberOfUsers() {
+        return userRepo.findAll().size();
+    }
+
+    @Override
     public Role saveRole(Role role) {
         log.info("Role saved to the database successfully!");
         if(roleRepo.existsByRoleName(role.getRoleName()))
@@ -65,7 +78,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void addRoleToUser(String username, String roleName) {
+    public void addRoleToUser(String roleName) {
+        String username = getUsernameByAuthentication();
+
         Optional<User> user = userRepo.findUserByUsername(username);
         if(user.isEmpty())
             throw new NotFoundException("User with this username doesn't exist!");
@@ -75,49 +90,54 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public ExpenseCategory saveCategory(ExpenseCategory expenseCategory) {
-        return expensesRepo.save(expenseCategory);
-    }
+    public void addExpenseCategory(String categoryName) {
+//        getting the username of the logged-in user:
+        String username = getUsernameByAuthentication();
 
-    @Override
-    public void addExpenseCategory(String username, String categoryName) {
         if(!userRepo.existsByUsername(username))
             throw new NotFoundException("User with this username doesn't exist!");
+
         User user = userRepo.findByUsername(username);
         ExpenseCategory category = expensesRepo.findByCategoryName(categoryName);
         user.getExpenseCategories().add(category);
     }
 
     @Override
-    public User getUser(String username) {
+    public User getUser() {
+        String username = getUsernameByAuthentication();
         if(!userRepo.existsByUsername(username))
             throw new NotFoundException("User with this username doesn't exist!");
+
         return userRepo.findByUsername(username);
     }
 
     @Override
-    public List<User> getUsers() {
-        return userRepo.findAll();
-    }
-
-    @Override
-    public boolean usernameExists(String username) {
-        return userRepo.existsByUsername(username);
-    }
-
-    @Override
-    public Page<User> getFilteredUsers(Pageable pageable, String username) {
+    public Page<User> getUsers(Pageable pageable) {
+        String username = getUsernameByAuthentication();
         return userRepo.filterUsers(pageable,username);
     }
 
     @Override
-    public Optional<User> getByUsername(String username) {
+    public boolean usernameExists() {
+        String username = getUsernameByAuthentication();
+        return userRepo.existsByUsername(username);
+    }
+
+    @Override
+    public Optional<User> getOptionalUser() {
+        String username = getUsernameByAuthentication();
         return userRepo.findUserByUsername(username);
     }
 
     @Override
-    public void deleteUser(String username) {
-        userRepo.deleteUserByUsername(username);
+    public void deleteUser() {
+        String username = getUsernameByAuthentication();
+        Optional<User> user = userRepo.findUserByUsername(username);
+
+        if (user.isEmpty())
+            throw new NotFoundException("User with username: " + username + " doesn't exist.");
+
+        userRepo.delete(user.get());
     }
 
     @Override
@@ -131,5 +151,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
         }
         return authorities;
+    }
+
+    public String getUsernameByAuthentication(){
+        return authenticationFacade.getAuthentication().getName();
     }
 }

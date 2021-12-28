@@ -153,7 +153,7 @@ public class ExpenseController {
     public Optional<?> modifyTransaction(@PathVariable Long transactionId, @RequestBody ExpenseTransaction modifiedTransaction){
         if(!expenseCategoryService.expenseTransactionExists(transactionId))
             throw new NotFoundException("There is no transaction with id: " + transactionId);
-        if(modifiedTransaction.getId() != null || !(modifiedTransaction.getId() == transactionId))
+        if(modifiedTransaction.getExpenseTransactionId() != null || !(modifiedTransaction.getExpenseTransactionId() == transactionId))
             throw new NotAllowedException("Either provide the same id or don't provide id for the transaction at all.");
 
         String dbCategoryName = modifiedTransaction.getCategory().toLowerCase();
@@ -209,7 +209,7 @@ public class ExpenseController {
     private void deleteTransactionsByCategory(ExpenseCategory category, User user){
         for (ExpenseTransaction transaction : category.getExpenseTransactions()){
             if(transaction.getUser() == user || transaction.getUser().equals(user))
-                expenseCategoryService.deleteTransactionById(transaction.getId());
+                expenseCategoryService.deleteTransactionById(transaction.getExpenseTransactionId());
         }
     }
 }
