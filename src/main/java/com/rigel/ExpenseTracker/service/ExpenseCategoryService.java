@@ -6,41 +6,47 @@ import com.rigel.ExpenseTracker.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 public interface ExpenseCategoryService {
 
-    ExpenseCategory saveExpenseCategory(ExpenseCategory category);
+    void saveExpenseCategoryToDB(ExpenseCategory category);
 
-    ExpenseTransaction saveTransaction(ExpenseTransaction transaction);
+    void saveExpenseTransactionToDB(ExpenseTransaction transaction);
 
-    void addTransaction(String categoryName, Long transactionId);
+    Optional<ExpenseCategory> getOptionalExpenseCategory(String categoryName);
 
     ExpenseCategory getExpenseCategory(String categoryName);
 
-    Optional<ExpenseCategory> getOptionalExpenseCategory(String category);
-
     Set<ExpenseCategory> getExpenseCategories();
+
+    HashMap<String, Object> getAllUserTransactions(Pageable pageable);
+
+    Optional<ExpenseTransaction> getTransactionById(Long transactionId);
+
+    Page<ExpenseTransaction> getTransactionsByCategoryAndUsername(Pageable pageable, String categoryName, String username);
+
+    HashMap<String, Object> getExpenseTransactionByDate(String date);
+
+    Page<ExpenseTransaction> getExpenseTransactions(Pageable pageable);
+
+    void addExpenseCategory(String categoryName);
+
+    void addExpenseTransaction(String date, Double expenseAmount, String categoryName, String description);
+
+    boolean expenseTransactionExists(Long transactionId);
 
     boolean expenseCategoryExists(String categoryName);
 
-    void deleteExpenseCategory(String username, String categoryName);
-
-    Optional<ExpenseTransaction> getExpenseTransaction(String username, Long id);
-
-    List<ExpenseTransaction> getExpenseTransactions();
-
-    boolean expenseTransactionExists(String username, Long transactionId);
-
-    void deleteAllUserExpenseTransaction(User user);
-
-    Page<ExpenseTransaction> getFilteredTransactions(Pageable pageable, String categoryName);
-
-    List<ExpenseTransaction> getTransactionsByCategory(String categoryName);
-
-    List<ExpenseTransaction> getTransactionByUser(User user);
+    void deleteTransactionByUser();
 
     void deleteTransactionById(Long transactionId);
+
+    void deleteTransactionsByCategory(String categoryName);
+
+    void deleteExpenseCategory(String categoryName);
+
 }

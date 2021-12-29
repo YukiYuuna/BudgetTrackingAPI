@@ -16,11 +16,11 @@ public interface UserService {
 
     Integer numberOfUsers();
 
+    Double totalBudgetOfUser();
+
     Role saveRole(Role role);
 
     void addRoleToUser(String password);
-
-    void addExpenseCategory(String categoryName);
 
     User getUser();
 

@@ -44,6 +44,10 @@ public class ExpenseCategory {
         this.categoryName = categoryName;
     }
 
+    public void addTransactionToExpenseCategory(ExpenseTransaction expenseTransaction){
+        this.expenseTransactions.add(expenseTransaction);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

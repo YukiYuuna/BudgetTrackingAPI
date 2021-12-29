@@ -2,19 +2,18 @@ package com.rigel.ExpenseTracker.service;
 
 import com.rigel.ExpenseTracker.IAuthenticationFacade;
 import com.rigel.ExpenseTracker.entities.ExpenseCategory;
+import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
 import com.rigel.ExpenseTracker.entities.Role;
 import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.exception.BadRequestException;
 import com.rigel.ExpenseTracker.exception.NotFoundException;
-import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
-import com.rigel.ExpenseTracker.repositories.IncomeCategoryRepository;
-import com.rigel.ExpenseTracker.repositories.RoleRepo;
-import com.rigel.ExpenseTracker.repositories.UserRepository;
+import com.rigel.ExpenseTracker.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,8 +23,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @Service
@@ -36,7 +40,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepo;
     private final RoleRepo roleRepo;
-    private final ExpenseCategoryRepository expensesRepo;
+    private final ExpenseCategoryRepository expenseCategoryRepo;
+    private final ExpenseTransactionRepository expenseTransactionRepo;
     private final IncomeCategoryRepository incomeRepo;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
@@ -70,6 +75,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public Double totalBudgetOfUser() {
+        return userExists(getUsernameByAuthentication()).get().getCurrentBudget();
+    }
+
+    @Override
     public Role saveRole(Role role) {
         log.info("Role saved to the database successfully!");
         if(roleRepo.existsByRoleName(role.getRoleName()))
@@ -90,54 +100,31 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void addExpenseCategory(String categoryName) {
-//        getting the username of the logged-in user:
-        String username = getUsernameByAuthentication();
-
-        if(!userRepo.existsByUsername(username))
-            throw new NotFoundException("User with this username doesn't exist!");
-
-        User user = userRepo.findByUsername(username);
-        ExpenseCategory category = expensesRepo.findByCategoryName(categoryName);
-        user.getExpenseCategories().add(category);
-    }
-
-    @Override
     public User getUser() {
-        String username = getUsernameByAuthentication();
-        if(!userRepo.existsByUsername(username))
-            throw new NotFoundException("User with this username doesn't exist!");
-
-        return userRepo.findByUsername(username);
+        Optional<User> user = userExists(getUsernameByAuthentication());
+        return user.get();
     }
 
     @Override
     public Page<User> getUsers(Pageable pageable) {
-        String username = getUsernameByAuthentication();
-        return userRepo.filterUsers(pageable,username);
+        return userRepo.filterUsers(pageable,getUsernameByAuthentication());
     }
 
     @Override
     public boolean usernameExists() {
-        String username = getUsernameByAuthentication();
-        return userRepo.existsByUsername(username);
+        return userRepo.existsByUsername(getUsernameByAuthentication());
     }
 
     @Override
     public Optional<User> getOptionalUser() {
-        String username = getUsernameByAuthentication();
-        return userRepo.findUserByUsername(username);
+        return userRepo.findUserByUsername(getUsernameByAuthentication());
     }
 
     @Override
     public void deleteUser() {
-        String username = getUsernameByAuthentication();
-        Optional<User> user = userRepo.findUserByUsername(username);
-
-        if (user.isEmpty())
-            throw new NotFoundException("User with username: " + username + " doesn't exist.");
-
-        userRepo.delete(user.get());
+        userRepo.delete(
+                userExists(getUsernameByAuthentication())
+                        .get());
     }
 
     @Override
@@ -155,5 +142,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     public String getUsernameByAuthentication(){
         return authenticationFacade.getAuthentication().getName();
+    }
+
+    private Optional<User> userExists(String username){
+        Optional<User> user = userRepo.findUserByUsername(username);
+        if (user.isEmpty())
+            throw new NotFoundException("User with username: " + username + " doesn't exist.");
+        return user;
     }
 }

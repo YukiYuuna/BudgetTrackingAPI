@@ -1,6 +1,7 @@
 package com.rigel.ExpenseTracker.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rigel.ExpenseTracker.exception.BadRequestException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name="users")
@@ -74,5 +76,23 @@ public class User {
         this.lastName = lastName;
         this.email = email;
         this.currentBudget = currentBudget;
+    }
+
+    public void addExpenseCategoryToUser(ExpenseCategory expenseCategory){
+        if(expenseCategories.stream()
+                .anyMatch(category -> category.getCategoryName().equals(expenseCategory.getCategoryName())))
+            throw new BadRequestException("Category already exists.");
+
+        this.expenseCategories.add(expenseCategory);
+    }
+
+    public void addExpenseAmountToUser(ExpenseTransaction expenseTransaction){
+        this.currentBudget -= expenseTransaction.getExpenseAmount();
+    }
+
+    public void removeCategoryFromUser(String categoryName){
+        this.expenseCategories = this.getExpenseCategories().stream()
+                .filter(category -> !(category.getCategoryName().equals(categoryName)))
+                .collect(Collectors.toSet());
     }
 }
