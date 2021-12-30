@@ -48,7 +48,7 @@ public class ExpenseController {
     }
 
     @GetMapping("/expense/categories")
-    public Set<ExpenseCategory> getAllExpenseCategories() {
+    public Set<ExpenseCategory> getAllUserExpenseCategories() {
         return expenseCategoryService.getExpenseCategories();
     }
 
@@ -148,12 +148,6 @@ public class ExpenseController {
             userService.saveUserDataAndFlush(user);
         } else{
             transaction.setExpenseAmount(transaction.getExpenseAmount());
-        }
-    }
-    private void deleteTransactionsByCategory(ExpenseCategory category, User user){
-        for (ExpenseTransaction transaction : category.getExpenseTransactions()){
-            if(transaction.getUser() == user || transaction.getUser().equals(user))
-                expenseCategoryService.deleteTransactionById(transaction.getExpenseTransactionId());
         }
     }
 

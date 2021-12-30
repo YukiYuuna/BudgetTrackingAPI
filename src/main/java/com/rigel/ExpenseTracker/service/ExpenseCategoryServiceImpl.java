@@ -208,9 +208,15 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
 
     @Override
     public void deleteTransactionById(Long transactionId) {
-        if(!expenseTransactionRepo.existsById(transactionId))
+        Optional<User> user = userExists(getUsernameByAuthentication());
+        Optional<ExpenseTransaction> expenseTransaction =  user.get()
+                .getExpenseTransactions().stream()
+                .filter(transaction -> transaction.getExpenseTransactionId().equals(transactionId))
+                .findFirst();
+        if(expenseTransaction.isEmpty())
             throw new NotFoundException("Transaction with id: " + transactionId + " doesn't exist!");
-        expenseTransactionRepo.deleteById(transactionId);
+
+        expenseTransactionRepo.delete(expenseTransaction.get());
     }
 
     @Override

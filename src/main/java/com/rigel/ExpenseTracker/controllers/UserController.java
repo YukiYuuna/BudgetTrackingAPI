@@ -30,7 +30,7 @@ public class UserController {
      * @return all users in the app.
      */
     @GetMapping("/user}")
-    private ResponseEntity<User> getByUsername(){
+    private ResponseEntity<User> getUserInfo(){
         User user = userService.getUser();
         return ResponseEntity.ok().body(user);
     }
@@ -84,7 +84,7 @@ public class UserController {
     }
 
     @DeleteMapping("/user/delete")
-    public ResponseEntity<?> deleteUser(String username) {
+    public ResponseEntity<?> deleteUser() {
         userService.deleteUser();
         return ResponseEntity.ok("User was deleted successfully!");
     }
