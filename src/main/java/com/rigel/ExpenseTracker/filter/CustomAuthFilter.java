@@ -49,12 +49,13 @@ public class CustomAuthFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = (User)authentication.getPrincipal();
-        Algorithm algo = Algorithm.HMAC256("secret".getBytes());
+        Algorithm algo = Algorithm.HMAC256("secretAlgorithm".getBytes());
+
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000)) // 10min
                 .withIssuer(request.getRequestURL().toString())
-                .withClaim("categories", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(algo);
 
         String refreshToken = JWT.create()
@@ -63,7 +64,6 @@ public class CustomAuthFilter extends UsernamePasswordAuthenticationFilter {
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algo);
 
-//         When a user logs in successfully, he should have the access / refresh token in its response headers
         Map<String, String> tokens = new HashMap<>();
         tokens.put("accessToken", accessToken);
         tokens.put("refreshToken", refreshToken);

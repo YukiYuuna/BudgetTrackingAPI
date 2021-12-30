@@ -51,16 +51,6 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/user/save")
-    private ResponseEntity<String> saveUser(String username, String password, String firstName, String lastName, String email, Double currentBudget) {
-        if (username !=  null && password != null && firstName != null && lastName != null && email != null && currentBudget != null) {
-            userService.saveUser(new User(username, password, firstName, lastName, email, currentBudget));
-            return ResponseEntity.ok().body(firstName + " " + lastName + " has been added successfully!");
-        }
-
-        throw new BadRequestException("Make sure you provide all data, including: username, password, first name, last name and current budget!");
-    }
-
     @PostMapping("/user/save/role")
     public ResponseEntity<Role> saveRole(@RequestBody Role role){
         return ResponseEntity.ok().body(userService.saveRole(role));

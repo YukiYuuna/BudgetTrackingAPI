@@ -31,18 +31,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        CustomAuthFilter customAuthFilter = new CustomAuthFilter(authenticationManagerBean());
+        customAuthFilter.setFilterProcessesUrl("/api/login");
+
         http.csrf().disable();
         http.authorizeRequests()
+                .antMatchers("/api/register").permitAll()
+                .antMatchers("/api/login/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/users").hasRole(Role.ADMIN)
-                .antMatchers(HttpMethod.GET, "/api/user/**").hasRole(Role.ADMIN)
+                .antMatchers( "/api/user/**").hasRole(Role.ADMIN)
                 .antMatchers(HttpMethod.GET, "/api/expense/transactions").hasRole(Role.ADMIN)
-                .antMatchers(HttpMethod.GET, "/api/expense/categories").hasRole(Role.ADMIN)
                 .antMatchers(HttpMethod.GET, "/api/expense/categories").hasRole(Role.ADMIN)
                 .antMatchers("/api/modify/**").hasAnyRole(Role.ADMIN, Role.USER).and().httpBasic();
         http.authorizeRequests().anyRequest().permitAll();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
 //        http.authorizeRequests().anyRequest(GET, "")
-        http.addFilter(new CustomAuthFilter(authenticationManagerBean()));
+        http.addFilter(customAuthFilter);
     }
 
     @Bean

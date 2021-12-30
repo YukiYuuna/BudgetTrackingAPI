@@ -31,6 +31,7 @@ public class Role {
 
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
+
     @Override
     public int hashCode() {
         final int prime = 31;

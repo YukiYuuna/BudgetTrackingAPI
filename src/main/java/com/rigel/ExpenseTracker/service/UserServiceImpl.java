@@ -66,6 +66,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public User saveUser(User user) {
         log.info("User was saved to the database successfully!");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        Set<Role> roles = new HashSet<>();
+        roles.add(new Role(Role.ROLE_USER));
+
+        if(Objects.equals(user.getUsername(), "admin")) {
+            roles.add(new Role(Role.ROLE_ADMIN));
+        }
+
+        user.setRoles(roles);
         return userRepo.save(user);
     }
 
