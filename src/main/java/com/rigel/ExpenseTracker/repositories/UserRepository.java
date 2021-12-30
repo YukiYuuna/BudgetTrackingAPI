@@ -22,11 +22,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByUsername(String username);
 
     @Query("SELECT u "
-            + "FROM User u "
-            + "WHERE "
-            + "lower(u.username) "
-            + "LIKE :#{#username == null || #username.isEmpty()? '%' : #username + '%'} ")
-    Page<User> filterUsers(Pageable pageable, String username);
+            + "FROM User u")
+    Page<User> filterUsers(Pageable pageable);
 
     Optional<User> findUserByUsername(String username);
 

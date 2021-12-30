@@ -104,12 +104,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public Page<User> getUsers(Pageable pageable) {
-        return userRepo.filterUsers(pageable,getUsernameByAuthentication());
-    }
-
-    @Override
-    public List<User> getAllDBUsers() {
-        return userRepo.findAll();
+        return userRepo.filterUsers(pageable);
     }
 
     @Override

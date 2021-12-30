@@ -14,11 +14,13 @@ import com.rigel.ExpenseTracker.entities.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,7 +41,7 @@ public class SecurityController {
     }
 
     @GetMapping("/refresh/token")
-    public void getRefreshToken(HttpServletRequest request, HttpServletResponse response){
+    public void getRefreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authHeader = request.getHeader(AUTHORIZATION);
         if(authHeader != null && authHeader.startsWith("Bearer ")){
             try{
@@ -65,9 +67,13 @@ public class SecurityController {
 
                 response.setContentType(APPLICATION_JSON_VALUE);
                 new ObjectMapper().writeValue(response.getOutputStream(), tokens);
-            }catch(Exception e){
-                log.error("Error logging in: {}", e.getMessage());
-                throw new ForbiddenException("Error while logging in: " + e.getMessage());
+            }catch(Exception exception){
+                response.setHeader("error", exception.getMessage());
+                response.setStatus(HttpStatus.FORBIDDEN.value());
+                Map<String, String> error = new HashMap<>();
+                error.put("errorMessage", exception.getMessage());
+                response.setContentType(APPLICATION_JSON_VALUE);
+                new ObjectMapper().writeValue(response.getOutputStream(), error);
             }
         }
         else{

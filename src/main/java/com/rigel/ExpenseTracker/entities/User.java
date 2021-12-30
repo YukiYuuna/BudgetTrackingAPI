@@ -26,6 +26,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
+    @JsonIgnore
     private Long userId;
 
     @Column(name = "username")
@@ -50,6 +51,7 @@ public class User {
     @JoinTable(name = "user_role",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = { @JoinColumn(name = "role_id")})
+    @JsonIgnore
     private Set<Role> roles;
 
     @JsonIgnore

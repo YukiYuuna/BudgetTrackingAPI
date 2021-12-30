@@ -34,7 +34,6 @@ public class Role {
     }
 
     @ManyToMany(mappedBy = "roles",cascade =  {PERSIST, MERGE, REFRESH, DETACH})
-    @JsonIgnore
     private Set<User> users;
 
     @Override

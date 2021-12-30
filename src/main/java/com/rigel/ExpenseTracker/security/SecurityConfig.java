@@ -47,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(GET, "/api/user").hasAnyRole(ADMIN, USER);
         http.authorizeRequests().antMatchers(PUT, "/api/user/modify").hasAnyRole(ADMIN, USER);
         http.authorizeRequests().antMatchers(POST, "/api/user/save/role", "/api/user/add/role/**").hasAnyRole(ADMIN);
-        http.authorizeRequests() .antMatchers(DELETE, "/api/user/delete").hasAnyRole(ADMIN);
+        http.authorizeRequests() .antMatchers(DELETE, "/api/user/delete").hasAnyRole(USER);
 
 //        For Expenses operations:
         http.authorizeRequests().antMatchers(GET, "/api/expense/transactions").hasAnyRole(ADMIN);
