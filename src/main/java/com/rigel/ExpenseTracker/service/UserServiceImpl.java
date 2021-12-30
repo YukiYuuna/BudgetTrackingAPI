@@ -1,20 +1,17 @@
 package com.rigel.ExpenseTracker.service;
 
-import com.rigel.ExpenseTracker.entities.ExpenseCategory;
 import com.rigel.ExpenseTracker.entities.Role;
 import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.exception.BadRequestException;
 import com.rigel.ExpenseTracker.exception.NotFoundException;
-import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
-import com.rigel.ExpenseTracker.repositories.IncomeCategoryRepository;
-import com.rigel.ExpenseTracker.repositories.RoleRepo;
-import com.rigel.ExpenseTracker.repositories.UserRepository;
+import com.rigel.ExpenseTracker.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,8 +29,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepo;
     private final RoleRepo roleRepo;
-    private final ExpenseCategoryRepository expensesRepo;
-    private final IncomeCategoryRepository incomeRepo;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -53,7 +48,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public User saveUser(User user) {
         log.info("User was saved to the database successfully!");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        if(Objects.equals(user.getUsername(), "admin")) {
+            addRoleInDB(user, Role.ROLE_ADMIN);
+        } else{
+            addRoleInDB(user, Role.ROLE_USER);
+        }
+
         return userRepo.save(user);
+    }
+
+    @Override
+    public Integer numberOfUsers() {
+        return userRepo.findAll().size();
+    }
+
+    @Override
+    public Double totalBudgetOfUser() {
+        return userExists(getUsernameByAuthentication()).get().getCurrentBudget();
     }
 
     @Override
@@ -65,7 +77,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void addRoleToUser(String username, String roleName) {
+    public void addRoleToUser(String roleName) {
+        String username = getUsernameByAuthentication();
+
         Optional<User> user = userRepo.findUserByUsername(username);
         if(user.isEmpty())
             throw new NotFoundException("User with this username doesn't exist!");
@@ -75,49 +89,39 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public ExpenseCategory saveCategory(ExpenseCategory expenseCategory) {
-        return expensesRepo.save(expenseCategory);
+    public User getUser() {
+        Optional<User> user = userExists(getUsernameByAuthentication());
+        return user.get();
     }
 
     @Override
-    public void addExpenseCategory(String username, String categoryName) {
-        if(!userRepo.existsByUsername(username))
-            throw new NotFoundException("User with this username doesn't exist!");
+    public User getUserByUsername(String username) {
         User user = userRepo.findByUsername(username);
-        ExpenseCategory category = expensesRepo.findByCategoryName(categoryName);
-        user.getExpenseCategories().add(category);
-    }
-
-    @Override
-    public User getUser(String username) {
-        if(!userRepo.existsByUsername(username))
-            throw new NotFoundException("User with this username doesn't exist!");
+        if(user == null)
+            throw new NotFoundException("User " + username + " doesn't exist.");
         return userRepo.findByUsername(username);
     }
 
     @Override
-    public List<User> getUsers() {
-        return userRepo.findAll();
+    public Page<User> getUsers(Pageable pageable) {
+        return userRepo.filterUsers(pageable);
     }
 
     @Override
-    public boolean usernameExists(String username) {
-        return userRepo.existsByUsername(username);
+    public boolean usernameExists() {
+        return userRepo.existsByUsername(getUsernameByAuthentication());
     }
 
     @Override
-    public Page<User> getFilteredUsers(Pageable pageable, String username) {
-        return userRepo.filterUsers(pageable,username);
+    public Optional<User> getOptionalUser() {
+        return userRepo.findUserByUsername(getUsernameByAuthentication());
     }
 
     @Override
-    public Optional<User> getByUsername(String username) {
-        return userRepo.findUserByUsername(username);
-    }
-
-    @Override
-    public void deleteUser(String username) {
-        userRepo.deleteUserByUsername(username);
+    public void deleteUser() {
+        userRepo.delete(
+                userExists(getUsernameByAuthentication())
+                        .get());
     }
 
     @Override
@@ -132,4 +136,28 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
         return authorities;
     }
+
+    public String getUsernameByAuthentication(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
+    }
+
+    private Optional<User> userExists(String username){
+        Optional<User> user = userRepo.findUserByUsername(username);
+        if (user.isEmpty())
+            throw new NotFoundException("User with username: " + username + " doesn't exist.");
+        return user;
+    }
+
+    private void addRoleInDB(User user, String roleName){
+        Set<Role> roles = new HashSet<>();
+        if(roleRepo.findAll().stream().noneMatch(role -> role.getRoleName().equals(roleName))) {
+            roles.add(new Role(roleName));
+        }
+        else {
+            roles.add(roleRepo.findByRoleName(roleName));
+        }
+        user.setRoles(roles);
+    }
+
 }

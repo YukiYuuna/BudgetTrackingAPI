@@ -1,13 +1,20 @@
 package com.rigel.ExpenseTracker.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rigel.ExpenseTracker.exception.BadRequestException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static javax.persistence.CascadeType.*;
+import static javax.persistence.CascadeType.DETACH;
 
 @Entity
 @Table(name="users")
@@ -19,12 +26,12 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long id;
+    @JsonIgnore
+    private Long userId;
 
     @Column(name = "username")
     private String username;
 
-    @JsonIgnore
     @Column(name = "password")
     private String password;
 
@@ -40,19 +47,28 @@ public class User {
     @Column(name = "budget")
     private Double currentBudget;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade =  {PERSIST, MERGE, REFRESH, DETACH})
     @JoinTable(name = "user_role",
             joinColumns = {@JoinColumn(name = "user_id")},
-            inverseJoinColumns = { @JoinColumn(name = "ROLE_ID")})
+            inverseJoinColumns = { @JoinColumn(name = "role_id")})
+    @JsonIgnore
     private Set<Role> roles;
 
-//    @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
     private Set<ExpenseCategory> expenseCategories;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user")
     private List<ExpenseTransaction> expenseTransactions;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private Set<IncomeCategory> incomeCategories;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<IncomeTransaction> incomeTransactions;
 
     public User() {
     }
@@ -64,5 +80,23 @@ public class User {
         this.lastName = lastName;
         this.email = email;
         this.currentBudget = currentBudget;
+    }
+
+    public void addExpenseCategoryToUser(ExpenseCategory expenseCategory){
+        if(expenseCategories.stream()
+                .anyMatch(category -> category.getCategoryName().equals(expenseCategory.getCategoryName())))
+            throw new BadRequestException("Category already exists.");
+
+        this.expenseCategories.add(expenseCategory);
+    }
+
+    public void addExpenseAmountToUser(ExpenseTransaction expenseTransaction){
+        this.currentBudget -= expenseTransaction.getExpenseAmount();
+    }
+
+    public void removeCategoryFromUser(String categoryName){
+        this.expenseCategories = this.getExpenseCategories().stream()
+                .filter(category -> !(category.getCategoryName().equals(categoryName)))
+                .collect(Collectors.toSet());
     }
 }

@@ -16,18 +16,4 @@ import java.util.List;
 @RequestMapping("/income")
 @CrossOrigin(origins = "*")
 public class IncomeController {
-
-    private final IncomeCategoryRepository incomeCategoryRepository;
-    private final IncomeTransactionRepository incomeTransactionRepository;
-
-    public IncomeController(IncomeCategoryRepository incomeCategoryRepository, IncomeTransactionRepository incomeTransactionRepository) {
-        this.incomeCategoryRepository = incomeCategoryRepository;
-        this.incomeTransactionRepository = incomeTransactionRepository;
-    }
-
-    @GetMapping("/transactions")
-    public List<IncomeTransaction> fetchAllIncomeTransactions() {
-        return incomeTransactionRepository.findAll();
-    }
-
 }

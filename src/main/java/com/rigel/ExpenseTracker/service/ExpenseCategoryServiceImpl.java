@@ -10,12 +10,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,30 +29,29 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
     private final UserRepository userRepo;
     private final ExpenseCategoryRepository expenseCategoryRepo;
     private final ExpenseTransactionRepository expenseTransactionRepo;
-    private final IncomeTransactionRepository incomeTransactionRepo;
-
 
     @Override
-    public ExpenseCategory saveExpenseCategory(ExpenseCategory category) {
-//        be careful with the case sensitivity of the name when calling this method
-        return expenseCategoryRepo.save(category);
+    public void saveExpenseCategoryToDB(ExpenseCategory category) {
+        expenseCategoryRepo.save(category);
     }
 
     @Override
-    public ExpenseTransaction saveTransaction(ExpenseTransaction transaction) {
-        return expenseTransactionRepo.save(transaction);
+    public void saveExpenseTransactionToDB(ExpenseTransaction transaction) {
+        expenseTransactionRepo.save(transaction);
     }
 
     @Override
-    public void addTransaction(String categoryName, Long transactionId) {
-        ExpenseCategory category = expenseCategoryRepo.findExpenseCategoryByCategoryName(categoryName.toLowerCase()).get();
-        ExpenseTransaction transaction = expenseTransactionRepo.findExpenseTransactionById(transactionId);
-        category.getExpenseTransactions().add(transaction);
+    public Optional<ExpenseCategory> getOptionalExpenseCategory(String categoryName) {
+        Optional<User> user = userExists(getUsernameByAuthentication());
+        return user.get()
+                .getExpenseCategories().stream()
+                .filter(c -> c.getCategoryName().equals(categoryName))
+                .findAny();
     }
 
     @Override
     public ExpenseCategory getExpenseCategory(String categoryName) {
-        Optional<ExpenseCategory> category = expenseCategoryRepo.findExpenseCategoryByCategoryName(categoryName.toLowerCase());
+        Optional<ExpenseCategory> category = getOptionalExpenseCategory(categoryName);
         if(category.isEmpty())
             throw new BadRequestException("A category with this name doesn't exist!");
 
@@ -57,73 +59,186 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
     }
 
     @Override
-    public Optional<ExpenseCategory> getOptionalExpenseCategory(String category) {
-        return expenseCategoryRepo.findExpenseCategoryByCategoryName(category);
-    }
-
-    @Override
     public Set<ExpenseCategory> getExpenseCategories() {
-        return expenseCategoryRepo.findAllCategories();
+        Optional<User> user = userExists(getUsernameByAuthentication());
+        return user.get().getExpenseCategories();
     }
 
     @Override
-    public boolean expenseCategoryExists(String categoryName) {
-        return expenseCategoryRepo.existsByCategoryName(categoryName.toLowerCase());
+    public HashMap<String, Object> getAllUserTransactions(Pageable pageable) {
+        String username = getUsernameByAuthentication();
+        HashMap<String, Object> result = new LinkedHashMap<>();
+        Page<ExpenseTransaction> transactions = expenseTransactionRepo.filterTransactionsByUsername(pageable, username);
+
+        result.put("username", username);
+        result.put("totalTransactions", transactions.getTotalElements());
+        result.put("totalPages", transactions.getTotalPages());
+        result.put("transactions", transactions.getContent());
+
+        return result;
     }
 
     @Override
-    public void deleteExpenseCategory(String username, String categoryName) {
-        if (!(expenseCategoryRepo.existsByCategoryName(categoryName)))
-            throw new NotFoundException("This category doesn't exist!");
-        Optional<User> user = userRepo.findUserByUsername(username);
-        if(user.isEmpty())
-            throw new NotFoundException("User not found in the database.");
-
-        expenseCategoryRepo.deleteExpenseCategoryByUserAndAndCategoryName(user.get(), categoryName);
+    public Optional<ExpenseTransaction> getTransactionById(Long transactionId){
+        Optional<User> user = userExists(getUsernameByAuthentication());
+        return user.get()
+                .getExpenseTransactions().stream()
+                .filter(transaction -> transaction.getExpenseTransactionId().equals(transactionId))
+                .findFirst();
     }
 
     @Override
-    public Optional<ExpenseTransaction> getExpenseTransaction(Long transactionId) {
-        return expenseTransactionRepo.findById(transactionId);
+    public Page<ExpenseTransaction> getTransactionsByCategoryAndUsername(Pageable pageable, String categoryName, String username) {
+        return expenseTransactionRepo.filterTransactionsByUsernameAndCategory(pageable, categoryName, username);
     }
 
     @Override
-    public List<ExpenseTransaction> getExpenseTransactions() {
-        return expenseTransactionRepo.findAll();
+    public HashMap<String, Object> getExpenseTransactionByDate(String date) {
+        try{
+            Optional<User> user = userExists(getUsernameByAuthentication());
+            HashMap<String, Object> result = new LinkedHashMap<>();
+
+            List<ExpenseTransaction> transactions = user.get()
+                    .getExpenseTransactions().stream()
+                    .filter(t -> t.getDate().toString().equals(date))
+                    .collect(Collectors.toList());
+
+            if(transactions.size() == 0)
+                throw new NotFoundException("No transactions have been made on this date - " + date);
+
+            result.put("username", user.get().getUsername());
+            result.put("date", date);
+            result.put("totalSpent", transactions.stream()
+                    .map(ExpenseTransaction::getExpenseAmount)
+                    .reduce(0.0, Double::sum));
+
+            result.put("transactions", transactions);
+            return result;
+        } catch (DateTimeException e){
+            throw new DateTimeException("Please, provide a valid date format: YYYY-MM-DD");
+        }
+    }
+
+    @Override
+    public Page<ExpenseTransaction> getExpenseTransactions(Pageable pageable) {
+        return expenseTransactionRepo.findAll(pageable);
+    }
+
+    @Override
+    public void addExpenseCategory(String categoryName) {
+        Optional<User> user = userExists(getUsernameByAuthentication());
+        Optional<ExpenseCategory> categories =  user.get().getExpenseCategories()
+                .stream().filter(category -> category.getCategoryName().equals(categoryName)).findFirst();
+
+        if (categories.isPresent())
+            throw new BadRequestException("Category with this name - " + categoryName + " already exists.");
+
+        ExpenseCategory expenseCategory = new ExpenseCategory(categoryName);
+        expenseCategory.setUser(user.get());
+        user.get().addExpenseCategoryToUser(expenseCategory);
+        expenseCategoryRepo.save(expenseCategory);
+    }
+
+    @Override
+    public void addExpenseTransaction(String date, Double expenseAmount, String categoryName, String description) {
+        Optional<User> user = userExists(getUsernameByAuthentication());
+
+        LocalDate curDate;
+        try{
+//            Gets the date of the transaction:
+            curDate = LocalDate.parse(date);
+
+//            Creates a new transaction from tha params provided:
+            ExpenseTransaction expenseTransaction = new ExpenseTransaction(curDate, expenseAmount, categoryName, description);
+
+//            Sets the user to the transaction:
+            expenseTransaction.setUser(user.get());
+
+//            Finds if the expense category exists and does operations with it:
+            Optional<ExpenseCategory> category = expenseCategoryRepo.findExpenseCategoryByCategoryName(categoryName);
+
+            if(category.isEmpty()){
+                ExpenseCategory expenseCategory = new ExpenseCategory(categoryName);
+                user.get().addExpenseCategoryToUser(expenseCategory);
+                expenseCategory.addTransactionToExpenseCategory(expenseTransaction);
+            }else{
+                category.get().addTransactionToExpenseCategory(expenseTransaction);
+            }
+            user.get().addExpenseAmountToUser(expenseTransaction);
+            expenseTransactionRepo.save(expenseTransaction);
+        } catch (DateTimeException dte){
+            throw new DateTimeException("Please, provide a correct format for the date of the transaction.(YYYY-MM-DD)");
+        }
     }
 
     @Override
     public boolean expenseTransactionExists(Long transactionId) {
-        return expenseTransactionRepo.existsById(transactionId);
+        if(expenseTransactionRepo.existsExpenseTransactionByUserAndExpenseTransactionId(
+                userExists(getUsernameByAuthentication()).get(), transactionId))
+            return true;
+        return false;
     }
 
     @Override
-    public void deleteAllUserExpenseTransaction(User user) {
-        if(user.getExpenseTransactions().size() == 0)
-            throw new NotFoundException("There are no transactions made by " + user.getUsername());
-
-        expenseTransactionRepo.deleteExpenseTransactionsByUser(user);
+    public boolean expenseCategoryExists(String categoryName) {
+        boolean exists = userExists(getUsernameByAuthentication()).get()
+                .getExpenseCategories()
+                .stream()
+                .anyMatch(c -> c.getCategoryName().equals(categoryName));
+        if(exists)
+            return true;
+        return false;
     }
 
     @Override
-    public Page<ExpenseTransaction> getFilteredTransactions(Pageable pageable, String categoryName) {
-        return expenseTransactionRepo.filterTransactionsByCategory(pageable, categoryName);
-    }
+    public void deleteTransactionByUser() {
+        Optional<User> user = userExists(getUsernameByAuthentication());
+        if(user.get().getExpenseTransactions().size() == 0)
+            throw new NotFoundException("There are no transactions made by " + user.get().getUsername());
 
-    @Override
-    public List<ExpenseTransaction> getTransactionsByCategory(String categoryName) {
-        return expenseTransactionRepo.findExpenseTransactionByExpenseCategory_CategoryName(categoryName);
-    }
-
-    @Override
-    public List<ExpenseTransaction> getTransactionByUser(User user) {
-        return expenseTransactionRepo.findExpenseTransactionByUser(user);
+        expenseTransactionRepo.deleteExpenseTransactionsByUser(user.get());
     }
 
     @Override
     public void deleteTransactionById(Long transactionId) {
-        if(!expenseTransactionRepo.existsById(transactionId))
+        Optional<User> user = userExists(getUsernameByAuthentication());
+        Optional<ExpenseTransaction> expenseTransaction =  user.get()
+                .getExpenseTransactions().stream()
+                .filter(transaction -> transaction.getExpenseTransactionId().equals(transactionId))
+                .findFirst();
+        if(expenseTransaction.isEmpty())
             throw new NotFoundException("Transaction with id: " + transactionId + " doesn't exist!");
-        expenseTransactionRepo.deleteById(transactionId);
+
+        expenseTransactionRepo.delete(expenseTransaction.get());
+    }
+
+    @Override
+    public void deleteExpenseCategory(String categoryName) {
+        expenseCategoryRepo.deleteExpenseCategoryByUserAndAndCategoryName(
+                userExists(getUsernameByAuthentication()).get(),
+                categoryName);
+    }
+
+    @Override
+    public void deleteTransactionsByCategory(String categoryName) {
+        Optional<User> user = userExists(getUsernameByAuthentication());
+        Optional<ExpenseCategory> category = user.get().getExpenseCategories()
+                .stream().filter(name -> name.getCategoryName().equals(categoryName)).findFirst();
+        if(category.isEmpty())
+            throw new NotFoundException("Category with this name doesn't exist.");
+
+        expenseTransactionRepo.deleteExpenseTransactionsByExpenseCategoryAndAndUser(category.get(), user.get());
+    }
+
+    public String getUsernameByAuthentication(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
+    }
+
+    private Optional<User> userExists(String username){
+        Optional<User> user = userRepo.findUserByUsername(username);
+        if (user.isEmpty())
+            throw new NotFoundException("User with username: " + username + " doesn't exist.");
+        return user;
     }
 }

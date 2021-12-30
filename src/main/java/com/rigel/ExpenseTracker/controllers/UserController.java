@@ -9,6 +9,8 @@ import com.sun.istack.Nullable;
 import io.swagger.annotations.ApiOperation;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,35 +22,31 @@ import java.util.*;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
-@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
+
+    @Autowired
+    public UserController(@Lazy UserService userService){
+        this.userService = userService;
+    }
 
     /**
      * Shows all users of the expense tracker app.
      * @return all users in the app.
      */
-    @GetMapping("/users")
-    private ResponseEntity<List<User>> getAllUsers(){
-        return ResponseEntity.ok().body(userService.getUsers());
-    }
-
-    @GetMapping("/user/{username}")
-    private ResponseEntity<User> getByUsername(@PathVariable String username){
-        User user = userService.getUser(username);
+    @GetMapping("/user")
+    private ResponseEntity<User> getUserInfo(){
+        User user = userService.getUser();
         return ResponseEntity.ok().body(user);
     }
 
-    @GetMapping("/user/filter")
-    @ApiOperation(value = "Filters the users by username, using pagination.",
-    notes = "Provide the username, the current page and how many users you want per page, in order to get a response.",
-    response = ResponseEntity.class)
-    private ResponseEntity<Map<String, Object>> filterUserByFirstAndLastName(String username, @Nullable Integer currentPage, @Nullable Integer perPage){
+    @GetMapping("/users")
+    private ResponseEntity<Map<String, Object>> getAllUsers(@Nullable Integer currentPage, @Nullable Integer perPage){
 
-        Pageable pageable = createPagination(currentPage, perPage, userService.getUsers().size());
+        Pageable pageable = createPagination(currentPage, perPage, userService.numberOfUsers());
 
-        Page<User> users = userService.getFilteredUsers(pageable, username);
+        Page<User> users = userService.getUsers(pageable);
         Map<String, Object> response = new HashMap<>();
         response.put("totalUsers", users.getTotalElements());
         response.put("totalPages", users.getTotalPages());
@@ -56,34 +54,24 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/user/save")
-    private ResponseEntity<String> saveUser(String username, String password, String firstName, String lastName, String email, Double currentBudget) {
-        if (username !=  null && password != null && firstName != null && lastName != null && email != null && currentBudget != null) {
-            userService.saveUser(new User(username, password, firstName, lastName, email, currentBudget));
-            return ResponseEntity.ok().body(firstName + " " + lastName + " has been added successfully!");
-        }
-
-        throw new BadRequestException("Make sure you provide all data, including: username, password, first name, last name and current budget!");
-    }
-
-    @PostMapping("/user/role/save")
+    @PostMapping("/user/save/role")
     public ResponseEntity<Role> saveRole(@RequestBody Role role){
         return ResponseEntity.ok().body(userService.saveRole(role));
     }
 
-    @PostMapping("/user/role/user/save")
-    public ResponseEntity<?> addRoleToUser(@RequestBody RoleToUserForm form){
-        userService.addRoleToUser(form.getUsername(), form.getRoleName());
+    @PostMapping("/user/add/role")
+    public ResponseEntity<?> addRoleToUser(@RequestBody String roleName){
+        userService.addRoleToUser(roleName);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/modify/{username}")
-    public Optional<User> modifyUserInfo(@RequestBody User updatedUser, @PathVariable String username) {
-        if (!userService.usernameExists(username)) {
+    @PutMapping("/user/modify")
+    public Optional<User> modifyUserInfo(@RequestBody User updatedUser) {
+        if (!userService.usernameExists()) {
             throw new NotFoundException("User with this username doesn't exists.");
         }
 
-        return userService.getByUsername(username)
+        return userService.getOptionalUser()
                 .map(user -> {
 //                    TODO:
                     user.setUsername(updatedUser.getUsername() == null ? user.getUsername() : updatedUser.getUsername());
@@ -99,11 +87,8 @@ public class UserController {
     }
 
     @DeleteMapping("/user/delete")
-    public ResponseEntity<?> deleteUser(String username) {
-        if (!(userService.usernameExists(username)))
-           throw new NotFoundException("User with username: " + username + " doesn't exist.");
-
-        userService.deleteUser(username);
+    public ResponseEntity<?> deleteUser() {
+        userService.deleteUser();
         return ResponseEntity.ok("User was deleted successfully!");
     }
 
@@ -118,10 +103,4 @@ public class UserController {
         }
         return pageable;
     }
-}
-
-@Data
-class RoleToUserForm{
-    private String username;
-    private String roleName;
 }

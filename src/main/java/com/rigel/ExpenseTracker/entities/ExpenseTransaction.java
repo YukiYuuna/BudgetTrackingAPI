@@ -2,7 +2,10 @@ package com.rigel.ExpenseTracker.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -13,11 +16,14 @@ import static javax.persistence.CascadeType.*;
 
 @Entity
 @Table(name = "expense_transaction")
+@Getter
+@Setter
 public class ExpenseTransaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "expense_transaction_id", insertable = false, updatable = false)
+    private Long expenseTransactionId;
 
     @NotNull
     @Column(name = "date")
@@ -33,12 +39,12 @@ public class ExpenseTransaction {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY,  cascade = {PERSIST, MERGE, REFRESH, DETACH})
-    @JoinColumn(name = "expense_category_id", referencedColumnName = "id")
+    @JoinColumn(name = "expense_category_transaction_id", referencedColumnName = "expense_category_id")
     @JsonIgnore
     private ExpenseCategory expenseCategory;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {PERSIST, MERGE, REFRESH, DETACH})
-    @JoinColumn(name = "user_id", referencedColumnName = "Id")
+    @ManyToOne(cascade = ALL)
+    @JoinColumn(name = "user_expense_transaction_id", referencedColumnName = "user_id")
     @JsonIgnore
     private User user;
 
@@ -50,57 +56,5 @@ public class ExpenseTransaction {
         this.expenseAmount = expenseAmount;
         this.category = categoryName;
         this.description = description;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public Double getExpenseAmount() {
-        return expenseAmount;
-    }
-
-    public void setExpenseAmount(Double expenseAmount) {
-        this.expenseAmount = expenseAmount;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public ExpenseCategory getExpenseCategory() {
-        return expenseCategory;
-    }
-
-    public void setExpenseCategory(ExpenseCategory expenseCategory) {
-        this.expenseCategory = expenseCategory;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }

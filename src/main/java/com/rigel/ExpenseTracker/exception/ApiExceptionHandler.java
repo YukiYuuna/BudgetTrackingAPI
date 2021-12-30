@@ -38,6 +38,13 @@ public class ApiExceptionHandler {
         return notAllowedException(e);
     }
 
+    @ExceptionHandler(value = {ForbiddenException.class})
+    public ResponseEntity<Object> handleNotForbiddenException(ForbiddenException e) {
+        HttpStatus badRequest = HttpStatus.FORBIDDEN;
+        RestApiException exception = new RestApiException(badRequest, LocalDateTime.now(), e.getMessage());
+        return new ResponseEntity<>(exception, badRequest);
+    }
+
     private ResponseEntity<Object> notAllowedException(RuntimeException e){
         HttpStatus notValidUrl = HttpStatus.NOT_ACCEPTABLE;
         RestApiException exception = new RestApiException(notValidUrl, LocalDateTime.now(), e.getMessage());
