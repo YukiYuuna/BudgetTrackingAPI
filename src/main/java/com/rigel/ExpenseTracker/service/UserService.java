@@ -24,6 +24,8 @@ public interface UserService {
 
     User getUser();
 
+    User getUserByUsername(String username);
+
     Page<User> getUsers(Pageable pageable);
 
     boolean usernameExists();

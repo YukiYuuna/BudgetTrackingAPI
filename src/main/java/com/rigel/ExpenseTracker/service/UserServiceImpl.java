@@ -115,6 +115,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public User getUserByUsername(String username) {
+        User user = userRepo.findByUsername(username);
+        if(user == null)
+            throw new NotFoundException("User " + username + " doesn't exist.");
+        return userRepo.findByUsername(username);
+    }
+
+    @Override
     public Page<User> getUsers(Pageable pageable) {
         return userRepo.filterUsers(pageable,getUsernameByAuthentication());
     }

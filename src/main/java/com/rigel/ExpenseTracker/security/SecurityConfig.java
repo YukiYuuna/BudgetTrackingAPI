@@ -2,11 +2,13 @@ package com.rigel.ExpenseTracker.security;
 
 import com.rigel.ExpenseTracker.entities.Role;
 import com.rigel.ExpenseTracker.filter.CustomAuthFilter;
+import com.rigel.ExpenseTracker.filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -35,18 +38,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         customAuthFilter.setFilterProcessesUrl("/api/login");
 
         http.csrf().disable();
+        http.sessionManagement().sessionCreationPolicy(STATELESS);
         http.authorizeRequests()
                 .antMatchers("/api/register").permitAll()
-                .antMatchers("/api/login/**").permitAll()
+                .antMatchers("/api/login/**", "/api/refresh/token").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/users").hasRole(Role.ADMIN)
                 .antMatchers( "/api/user/**").hasRole(Role.ADMIN)
                 .antMatchers(HttpMethod.GET, "/api/expense/transactions").hasRole(Role.ADMIN)
                 .antMatchers(HttpMethod.GET, "/api/expense/categories").hasRole(Role.ADMIN)
                 .antMatchers("/api/modify/**").hasAnyRole(Role.ADMIN, Role.USER).and().httpBasic();
-        http.authorizeRequests().anyRequest().permitAll();
-        http.sessionManagement().sessionCreationPolicy(STATELESS);
-//        http.authorizeRequests().anyRequest(GET, "")
+        http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthFilter);
+        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean

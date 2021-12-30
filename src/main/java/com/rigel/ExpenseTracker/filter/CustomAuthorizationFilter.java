@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.rigel.ExpenseTracker.exception.ForbiddenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,12 +27,12 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if(request.getServletPath().equals("/api/login") || request.getServletPath().equals("api/token/refresh")){
+        if (request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/refresh/token")) {
             filterChain.doFilter(request, response);
-        } else{
+        } else {
             String authorizationHeader = request.getHeader(AUTHORIZATION);
-            if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
-                try{
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                try {
                     String token = authorizationHeader.substring("Bearer ".length());
                     Algorithm algorithm = Algorithm.HMAC256("secretAlgorithm".getBytes());
 
@@ -45,15 +46,13 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    filterChain.doFilter(request,response);
-                }catch(Exception e){
+                    filterChain.doFilter(request, response);
+                } catch (Exception e) {
                     log.error("Error logging in: {}", e.getMessage());
-
+                    throw new ForbiddenException("Error while logging in: " + e.getMessage());
                 }
-            }
-            else{
-                filterChain.doFilter(request,response);
-
+            } else {
+                filterChain.doFilter(request, response);
             }
         }
     }
