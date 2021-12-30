@@ -13,11 +13,7 @@ public interface ExpenseCategoryRepository  extends JpaRepository<ExpenseCategor
     @Query("SELECT DISTINCT(c.categoryName) FROM ExpenseCategory c")
     Set<ExpenseCategory> findAllCategories();
 
-    ExpenseCategory findByCategoryName(String categoryName);
-
     Optional<ExpenseCategory> findExpenseCategoryByCategoryName(String categoryName);
-
-    Boolean existsByCategoryName(String categoryName);
 
     void deleteExpenseCategoryByUserAndAndCategoryName(User user, String categoryName);
 }

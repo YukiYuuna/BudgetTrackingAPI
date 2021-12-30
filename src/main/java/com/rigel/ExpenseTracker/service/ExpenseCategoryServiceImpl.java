@@ -1,6 +1,5 @@
 package com.rigel.ExpenseTracker.service;
 
-import com.rigel.ExpenseTracker.IAuthenticationFacade;
 import com.rigel.ExpenseTracker.entities.ExpenseCategory;
 import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
 import com.rigel.ExpenseTracker.entities.User;
@@ -9,15 +8,15 @@ import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,12 +29,6 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
     private final UserRepository userRepo;
     private final ExpenseCategoryRepository expenseCategoryRepo;
     private final ExpenseTransactionRepository expenseTransactionRepo;
-    private final IncomeCategoryRepository incomeCategoryRepo;
-    private final IncomeTransactionRepository incomeTransactionRepo;
-
-    @Autowired
-    private IAuthenticationFacade authenticationFacade;
-
 
     @Override
     public void saveExpenseCategoryToDB(ExpenseCategory category) {
@@ -238,7 +231,8 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
     }
 
     public String getUsernameByAuthentication(){
-        return authenticationFacade.getAuthentication().getName();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 
     private Optional<User> userExists(String username){

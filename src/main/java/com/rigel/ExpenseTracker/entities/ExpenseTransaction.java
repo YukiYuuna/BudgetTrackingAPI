@@ -18,12 +18,11 @@ import static javax.persistence.CascadeType.*;
 @Table(name = "expense_transaction")
 @Getter
 @Setter
-@AllArgsConstructor
 public class ExpenseTransaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "expense_transaction_id")
+    @Column(name = "expense_transaction_id", insertable = false, updatable = false)
     private Long expenseTransactionId;
 
     @NotNull
@@ -40,12 +39,12 @@ public class ExpenseTransaction {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY,  cascade = {PERSIST, MERGE, REFRESH, DETACH})
-    @JoinColumn(name = "expense_transaction_id", referencedColumnName = "expense_category_id")
+    @JoinColumn(name = "expense_category_transaction_id", referencedColumnName = "expense_category_id")
     @JsonIgnore
     private ExpenseCategory expenseCategory;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = ALL)
-    @JoinColumn(name = "expense_transaction_id", referencedColumnName = "user_id")
+    @ManyToOne(cascade = ALL)
+    @JoinColumn(name = "user_expense_transaction_id", referencedColumnName = "user_id")
     @JsonIgnore
     private User user;
 

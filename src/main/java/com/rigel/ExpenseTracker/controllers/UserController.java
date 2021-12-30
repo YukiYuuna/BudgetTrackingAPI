@@ -9,6 +9,8 @@ import com.sun.istack.Nullable;
 import io.swagger.annotations.ApiOperation;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,25 +22,26 @@ import java.util.*;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
-@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
+
+    @Autowired
+    public UserController(@Lazy UserService userService){
+        this.userService = userService;
+    }
 
     /**
      * Shows all users of the expense tracker app.
      * @return all users in the app.
      */
-    @GetMapping("/user}")
+    @GetMapping("/user")
     private ResponseEntity<User> getUserInfo(){
         User user = userService.getUser();
         return ResponseEntity.ok().body(user);
     }
 
     @GetMapping("/users")
-    @ApiOperation(value = "Gets all users, registered in the Data Base.",
-    notes = "Provide the username, the current page and how many users you want per page, in order to get a response.",
-    response = ResponseEntity.class)
     private ResponseEntity<Map<String, Object>> getAllUsers(@Nullable Integer currentPage, @Nullable Integer perPage){
 
         Pageable pageable = createPagination(currentPage, perPage, userService.numberOfUsers());

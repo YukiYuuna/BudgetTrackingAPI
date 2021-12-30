@@ -29,12 +29,12 @@ public class IncomeTransaction {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {PERSIST, MERGE, REFRESH, DETACH})
-    @JoinColumn(name = "income_transaction_id", referencedColumnName = "income_category_id")
+    @JoinColumn(name = "income_category_transaction_id", referencedColumnName = "income_category_id")
     @JsonIgnore
     private IncomeCategory incomeCategory;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade=ALL)
-    @JoinColumn(name = "income_transaction_id", referencedColumnName = "user_id")
+    @JoinColumn(name = "user_income_transaction_id", referencedColumnName = "user_id")
     @JsonIgnore
     private User user;
 

@@ -8,14 +8,10 @@ import com.rigel.ExpenseTracker.exception.BadRequestException;
 import com.rigel.ExpenseTracker.exception.NotAllowedException;
 import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.exception.NotValidUrlException;
-import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
-import com.rigel.ExpenseTracker.repositories.ExpenseTransactionRepository;
-import com.rigel.ExpenseTracker.repositories.UserRepository;
 import com.rigel.ExpenseTracker.service.ExpenseCategoryService;
 import com.rigel.ExpenseTracker.service.UserService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Tag;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,22 +19,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.DateTimeException;
-import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static com.rigel.ExpenseTracker.controllers.UserController.createPagination;
 
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
-@RequiredArgsConstructor
 public class ExpenseController {
 
     private final UserService userService;
     private final ExpenseCategoryService expenseCategoryService;
+
+    @Autowired
+    public ExpenseController(@Lazy UserService userService, ExpenseCategoryService expenseCategoryService){
+        this.userService = userService;
+        this.expenseCategoryService = expenseCategoryService;
+    }
 
 //    @ApiOperation(value = "Get all expense transactions.", tags = "getTransactions")
     @GetMapping("/expense/transactions")

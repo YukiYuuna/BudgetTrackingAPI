@@ -1,11 +1,15 @@
 package com.rigel.ExpenseTracker.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
+
+import static javax.persistence.CascadeType.*;
+import static javax.persistence.CascadeType.DETACH;
 
 @Entity
 @Getter
@@ -29,7 +33,8 @@ public class Role {
         this.roleName = roleName;
     }
 
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(mappedBy = "roles",cascade =  {PERSIST, MERGE, REFRESH, DETACH})
+    @JsonIgnore
     private Set<User> users;
 
     @Override

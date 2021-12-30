@@ -33,7 +33,7 @@ public class ExpenseCategory {
     private List<ExpenseTransaction> expenseTransactions;
 
     @ManyToOne(cascade = ALL)
-    @JoinColumn(name = "expense_category_id", referencedColumnName = "user_id")
+    @JoinColumn(name = "user_category_id", referencedColumnName = "user_id")
     @JsonIgnore
     private User user;
 

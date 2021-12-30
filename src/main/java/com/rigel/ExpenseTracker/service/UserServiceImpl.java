@@ -1,8 +1,5 @@
 package com.rigel.ExpenseTracker.service;
 
-import com.rigel.ExpenseTracker.IAuthenticationFacade;
-import com.rigel.ExpenseTracker.entities.ExpenseCategory;
-import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
 import com.rigel.ExpenseTracker.entities.Role;
 import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.exception.BadRequestException;
@@ -10,12 +7,9 @@ import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,13 +17,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
-import java.time.DateTimeException;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @Service
@@ -40,14 +29,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepo;
     private final RoleRepo roleRepo;
-    private final ExpenseCategoryRepository expenseCategoryRepo;
-    private final ExpenseTransactionRepository expenseTransactionRepo;
-    private final IncomeCategoryRepository incomeRepo;
-    private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private IAuthenticationFacade authenticationFacade;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -67,15 +49,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         log.info("User was saved to the database successfully!");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        Set<Role> roles = new HashSet<>();
-
         if(Objects.equals(user.getUsername(), "admin")) {
-            roles.add(new Role(Role.ROLE_ADMIN));
+            addRoleInDB(user, Role.ROLE_ADMIN);
         } else{
-            roles.add(new Role(Role.ROLE_USER));
+            addRoleInDB(user, Role.ROLE_USER);
         }
 
-        user.setRoles(roles);
         return userRepo.save(user);
     }
 
@@ -164,7 +143,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     public String getUsernameByAuthentication(){
-        return authenticationFacade.getAuthentication().getName();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 
     private Optional<User> userExists(String username){
@@ -173,4 +153,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new NotFoundException("User with username: " + username + " doesn't exist.");
         return user;
     }
+
+    private void addRoleInDB(User user, String roleName){
+        Set<Role> roles = new HashSet<>();
+        if(roleRepo.findAll().stream().noneMatch(role -> role.getRoleName().equals(roleName))) {
+            roles.add(new Role(roleName));
+        }
+        else {
+            roles.add(roleRepo.findByRoleName(roleName));
+        }
+        user.setRoles(roles);
+    }
+
 }

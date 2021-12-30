@@ -33,7 +33,7 @@ public class IncomeCategory {
     private List<IncomeTransaction> incomeTransactions;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = ALL)
-    @JoinColumn(name = "income_category_id", referencedColumnName = "user_id")
+    @JoinColumn(name = "user_income_category_id", referencedColumnName = "user_id")
     @JsonIgnore
     private User user;
 

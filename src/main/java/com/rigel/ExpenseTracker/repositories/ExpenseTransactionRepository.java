@@ -17,11 +17,7 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
 
     boolean existsExpenseTransactionByUserAndExpenseTransactionId(User user, Long id);
 
-    ExpenseTransaction findExpenseTransactionById(Long id);
-
-    List<ExpenseTransaction> findAllByDate(LocalDate date);
-
-    List<ExpenseTransaction> findExpenseTransactionByUser(User user);
+    ExpenseTransaction findExpenseTransactionsByExpenseTransactionId(Long id);
 
     void deleteExpenseTransactionsByExpenseCategoryAndAndUser(ExpenseCategory category, User user);
 

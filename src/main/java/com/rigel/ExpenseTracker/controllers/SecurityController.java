@@ -11,8 +11,9 @@ import com.rigel.ExpenseTracker.exception.ForbiddenException;
 import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.service.UserService;
 import com.rigel.ExpenseTracker.entities.User;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,14 +28,18 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
-@RequiredArgsConstructor
 @Slf4j
 public class SecurityController {
 
     private final UserService userService;
 
-    @GetMapping("/refresh/token}")
-    private void getRefreshToken(HttpServletRequest request, HttpServletResponse response){
+    @Autowired
+    public SecurityController(@Lazy UserService userService){
+        this.userService = userService;
+    }
+
+    @GetMapping("/refresh/token")
+    public void getRefreshToken(HttpServletRequest request, HttpServletResponse response){
         String authHeader = request.getHeader(AUTHORIZATION);
         if(authHeader != null && authHeader.startsWith("Bearer ")){
             try{
@@ -71,20 +76,18 @@ public class SecurityController {
     }
 
     @PostMapping("/register")
-    private ResponseEntity<String> registerUser(String username, String password, String firstName, String lastName, String email, Double currentBudget) {
+    public ResponseEntity<String> registerUser(String username, String password, String firstName, String lastName, String email, Double currentBudget) {
         if (username !=  null && password != null && firstName != null && lastName != null && email != null && currentBudget != null) {
-            boolean validUsername = userService.getAllDBUsers().stream().anyMatch(user -> user.getUsername().equals(username));
-            boolean validEmail = userService.getAllDBUsers().stream().anyMatch(user -> user.getEmail().equals(email));
-            if(validUsername && validEmail) {
+            boolean invalidUsername = userService.getAllDBUsers().stream().anyMatch(user -> user.getUsername().equals(username));
+            boolean invalidEmail = userService.getAllDBUsers().stream().anyMatch(user -> user.getEmail().equals(email));
+            if(!invalidUsername && !invalidEmail) {
                 userService.saveUser(new User(username, password, firstName, lastName, email, currentBudget));
                 return ResponseEntity.ok().body(firstName + " " + lastName + " has been added successfully!");
             } else{
-                if(!validUsername){
+                if(invalidUsername){
                     throw new BadRequestException("User with this username already exists.");
                 }
-                else  if (!validEmail){
-                    throw new BadRequestException("User with this username already exists.");
-                }
+                throw new BadRequestException("User with this username already exists.");
             }
         }
         throw new BadRequestException("Make sure you provide all data, including: username, password, first and last name, current budget!");
