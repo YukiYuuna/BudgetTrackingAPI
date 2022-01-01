@@ -28,6 +28,8 @@ public interface UserService {
 
     Page<User> getUsers(Pageable pageable);
 
+    List<User> getAllDBUsers();
+
     boolean usernameExists();
 
     Optional<User> getOptionalUser();

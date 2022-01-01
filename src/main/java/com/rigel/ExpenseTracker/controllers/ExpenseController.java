@@ -37,18 +37,18 @@ public class ExpenseController {
 
 //    @ApiOperation(value = "Get all expense transactions.", tags = "getTransactions")
     @GetMapping("/expense/transactions")
-    public Page<ExpenseTransaction> getAllExpenseTransactions(@Nullable Integer currentPage, @Nullable Integer perPage) {
+    public Page<ExpenseTransaction> fetchAllExpenseTransactions(@Nullable Integer currentPage, @Nullable Integer perPage) {
         Pageable pageable = createPagination(currentPage, perPage, userService.numberOfUsers());
         return expenseCategoryService.getExpenseTransactions(pageable);
     }
 
     @GetMapping("/expense/categories")
-    public Set<ExpenseCategory> getAllUserExpenseCategories() {
+    public Set<ExpenseCategory> fetchAllUserExpenseCategories() {
         return expenseCategoryService.getExpenseCategories();
     }
 
     @GetMapping("/expense/transaction/{id}")
-    private ExpenseTransaction getTransactionById(@PathVariable Long id) {
+    private ExpenseTransaction fetchTransactionById(@PathVariable Long id) {
         Optional<ExpenseTransaction> transaction = expenseCategoryService.getTransactionById(id);
         if(transaction.isEmpty())
             throw new NotFoundException("Transaction with id - " + id + " doesn't exist in the DB.");
@@ -57,14 +57,20 @@ public class ExpenseController {
     }
 
     @GetMapping("/expense/transactions/user")
-    public HashMap<String, Object> getUserTransactions(@RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage) {
+    public HashMap<String, Object> fetchUserTransactions(@RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage) {
         Pageable pageable = createPagination(currentPage, perPage, userService.numberOfUsers());
         return expenseCategoryService.getAllUserTransactions(pageable);
     }
 
-    @GetMapping("expense/transaction/{date}")
-    private HashMap<String, Object> getTransactionsByDate(@PathVariable String date) {
+    @GetMapping("expense/transactions/date")
+    private HashMap<String, Object> fetchTransactionsByDate(String date) {
         return expenseCategoryService.getExpenseTransactionByDate(date);
+    }
+
+    @GetMapping("expense/transactions/category")
+    private Page<ExpenseTransaction> fetchTransactionsByCategory(@RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage, String categoryName) {
+        Pageable pageable = createPagination(currentPage, perPage, expenseCategoryService.numberOfTransactionsByCategory(categoryName));
+        return expenseCategoryService.getTransactionsByCategoryAndUsername(pageable, categoryName);
     }
 
     @PostMapping("/add/expense/category")
@@ -87,8 +93,8 @@ public class ExpenseController {
     public ResponseEntity<?> modifyTransaction(@PathVariable Long transactionId, @RequestBody ExpenseTransaction modifiedTransaction){
         if(!expenseCategoryService.expenseTransactionExists(transactionId))
             throw new NotFoundException("There is no transaction with id: " + transactionId);
-        if(modifiedTransaction.getExpenseTransactionId() != null || !(modifiedTransaction.getExpenseTransactionId() == transactionId))
-            throw new NotAllowedException("Either provide the same id or don't provide id for the transaction at all.");
+        if(modifiedTransaction.getExpenseTransactionId() != null)
+            throw new NotAllowedException("Don't provide an id for the new transaction at all.");
 
         String dbCategoryName = modifiedTransaction.getCategory().toLowerCase();
         Optional<ExpenseCategory> expenseCategory = expenseCategoryService.getOptionalExpenseCategory(dbCategoryName);

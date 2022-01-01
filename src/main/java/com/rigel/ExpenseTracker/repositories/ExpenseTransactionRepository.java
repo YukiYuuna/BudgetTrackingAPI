@@ -22,6 +22,10 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
     void deleteExpenseTransactionsByExpenseCategoryAndAndUser(ExpenseCategory category, User user);
 
     @Query("SELECT e "
+            + "FROM ExpenseTransaction e")
+    Page<ExpenseTransaction> filteredTransactions(Pageable pageable);
+
+    @Query("SELECT e "
             + "FROM ExpenseTransaction e "
             + "WHERE "
             + "lower(e.user.username) "

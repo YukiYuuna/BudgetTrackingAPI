@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -42,10 +43,6 @@ public class ExpenseCategory {
 
     public ExpenseCategory(String categoryName) {
         this.categoryName = categoryName;
-    }
-
-    public void addTransactionToExpenseCategory(ExpenseTransaction expenseTransaction){
-        this.expenseTransactions.add(expenseTransaction);
     }
 
     @Override

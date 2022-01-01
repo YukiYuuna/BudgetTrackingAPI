@@ -103,6 +103,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public List<User> getAllDBUsers() {
+        return userRepo.findAll();
+    }
+
+    @Override
     public Page<User> getUsers(Pageable pageable) {
         return userRepo.filterUsers(pageable);
     }

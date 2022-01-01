@@ -2,15 +2,14 @@ package com.rigel.ExpenseTracker.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rigel.ExpenseTracker.exception.BadRequestException;
+import com.rigel.ExpenseTracker.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static javax.persistence.CascadeType.*;
@@ -87,16 +86,30 @@ public class User {
                 .anyMatch(category -> category.getCategoryName().equals(expenseCategory.getCategoryName())))
             throw new BadRequestException("Category already exists.");
 
-        this.expenseCategories.add(expenseCategory);
+        if(this.expenseCategories != null)
+            this.expenseCategories.add(expenseCategory);
+        else{
+            Set<ExpenseCategory> category = new HashSet<>();
+            category.add(expenseCategory);
+            this.expenseCategories = category;
+        }
+    }
+
+    public int numberOfTransactions(String categoryName){
+        if(this.expenseCategories == null)
+            throw new BadRequestException("User has no assigned categories.");
+
+        Optional<ExpenseCategory> expenseCategory = this.expenseCategories.stream().filter(c -> c.getCategoryName().equals(categoryName)).findFirst();
+        if(expenseCategory.isEmpty())
+            throw new NotFoundException("Category with this name doesn't exist in the DB.");
+        else{
+            if(expenseCategory.get().getExpenseTransactions() == null)
+                return  0;
+            return expenseCategory.get().getExpenseTransactions().size();
+        }
     }
 
     public void addExpenseAmountToUser(ExpenseTransaction expenseTransaction){
         this.currentBudget -= expenseTransaction.getExpenseAmount();
-    }
-
-    public void removeCategoryFromUser(String categoryName){
-        this.expenseCategories = this.getExpenseCategories().stream()
-                .filter(category -> !(category.getCategoryName().equals(categoryName)))
-                .collect(Collectors.toSet());
     }
 }
