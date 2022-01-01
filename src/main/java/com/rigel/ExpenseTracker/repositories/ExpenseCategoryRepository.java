@@ -16,4 +16,5 @@ public interface ExpenseCategoryRepository  extends JpaRepository<ExpenseCategor
     Optional<ExpenseCategory> findExpenseCategoryByCategoryNameAndUser(String categoryName, User user);
 
     void deleteExpenseCategoryByUserAndAndCategoryName(User user, String categoryName);
+
 }

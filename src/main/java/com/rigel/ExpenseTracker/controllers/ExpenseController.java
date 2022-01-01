@@ -116,6 +116,9 @@ public class ExpenseController {
                 }).orElse(ResponseEntity.notFound().build());
     }
 
+    /* Ask the user if he wants to delete the category for sure, before calling this method,
+    * because if he deletes the category all transactions, made with this category will be deleted too.
+    */
     @DeleteMapping("/delete/expense/category")
     public ResponseEntity<String> deleteExpenseCategory(String categoryName) {
         expenseCategoryService.deleteExpenseCategory(categoryName);
@@ -128,6 +131,9 @@ public class ExpenseController {
         return ResponseEntity.ok().body("All transactions have been deleted successfully!");
     }
 
+    /* The difference between this method and the deleteExpenseCategory method is that by calling this one, you will delete all correlated transactions to this category, but
+    * you will not delete the category!
+    */
     @DeleteMapping("/delete/expense/transactions/category")
     public ResponseEntity<String> deleteAllUserExpenseTransactionsByCategory(String categoryName) {
         expenseCategoryService.deleteTransactionsByCategory(categoryName);

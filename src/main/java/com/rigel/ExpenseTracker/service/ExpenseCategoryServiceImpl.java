@@ -237,20 +237,20 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
 
     @Override
     public void deleteExpenseCategory(String categoryName) {
+        deleteTransactionsByCategory(categoryName);
         expenseCategoryRepo.deleteExpenseCategoryByUserAndAndCategoryName(
                 userExists(getUsernameByAuthentication()).get(),
-                categoryName);
+                categoryName.toLowerCase()
+        );
     }
 
     @Override
     public void deleteTransactionsByCategory(String categoryName) {
         Optional<User> user = userExists(getUsernameByAuthentication());
-        Optional<ExpenseCategory> category = user.get().getExpenseCategories()
-                .stream().filter(name -> name.getCategoryName().equals(categoryName)).findFirst();
-        if(category.isEmpty())
-            throw new NotFoundException("Category with this name doesn't exist.");
-
-        expenseTransactionRepo.deleteExpenseTransactionsByExpenseCategoryAndAndUser(category.get(), user.get());
+        expenseTransactionRepo.deleteExpenseTransactionsByExpenseCategoryAndAndUser(
+                expenseCategoryExists(user.get(),categoryName),
+                user.get()
+        );
     }
 
     public String getUsernameByAuthentication(){
@@ -265,5 +265,13 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
         if (user.isEmpty())
             throw new NotFoundException("User with username: " + username + " doesn't exist.");
         return user;
+    }
+
+    ExpenseCategory expenseCategoryExists(User user, String categoryName){
+        Optional<ExpenseCategory> category = user.getExpenseCategories()
+                .stream().filter(name -> name.getCategoryName().equals(categoryName)).findFirst();
+        if(category.isEmpty())
+            throw new NotFoundException("Category with this name doesn't exist.");
+        return category.get();
     }
 }
