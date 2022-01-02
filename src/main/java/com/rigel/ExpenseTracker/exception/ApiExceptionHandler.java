@@ -40,17 +40,12 @@ public class ApiExceptionHandler {
         return notAllowedException(e);
     }
 
-    @ExceptionHandler(value = {FilterException.class})
-    public ResponseEntity<Object> handleNotFilterException(FilterException e) {
-        return new ResponseEntity<>(new FilterException(HttpStatus.FORBIDDEN, "Access Denied", e.getMessage()), HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public FilterException handleAuthenticationException(AuthenticationException ex, HttpServletResponse response){
-        FilterException filterException = new FilterException(HttpStatus.UNAUTHORIZED, ex.getMessage(), ex);
-        response.setStatus(401);
-        return filterException;
-    }
+//    @ExceptionHandler(AuthenticationException.class)
+//    public FilterException handleAuthenticationException(AuthenticationException ex, HttpServletResponse response){
+//        FilterException filterException = new FilterException(HttpStatus.UNAUTHORIZED, ex.getMessage(), ex);
+//        response.setStatus(401);
+//        return filterException;
+//    }
 
     private ResponseEntity<Object> notAllowedException(RuntimeException e){
         HttpStatus notValidUrl = HttpStatus.NOT_ACCEPTABLE;
