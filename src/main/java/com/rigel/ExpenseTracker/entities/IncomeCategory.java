@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static javax.persistence.CascadeType.*;
@@ -32,7 +33,7 @@ public class IncomeCategory {
     @OneToMany(mappedBy = "incomeCategory")
     private List<IncomeTransaction> incomeTransactions;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = ALL)
+    @ManyToOne(cascade = ALL)
     @JoinColumn(name = "user_income_category_id", referencedColumnName = "user_id")
     @JsonIgnore
     private User user;
@@ -42,5 +43,23 @@ public class IncomeCategory {
 
     public IncomeCategory(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public IncomeCategory(String categoryName, User user) {
+        this.categoryName = categoryName;
+        this.user = user;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IncomeCategory that = (IncomeCategory) o;
+        return Objects.equals(incomeCategoryId, that.incomeCategoryId) && Objects.equals(categoryName, that.categoryName) && Objects.equals(incomeTransactions, that.incomeTransactions) && Objects.equals(user, that.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(incomeCategoryId, categoryName, incomeTransactions, user);
     }
 }

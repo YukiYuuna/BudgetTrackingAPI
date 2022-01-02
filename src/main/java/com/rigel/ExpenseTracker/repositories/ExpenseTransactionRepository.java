@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTransaction, Long> {
@@ -19,7 +18,7 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
 
     ExpenseTransaction findExpenseTransactionsByExpenseTransactionId(Long id);
 
-    void deleteExpenseTransactionsByExpenseCategoryAndAndUser(ExpenseCategory category, User user);
+    void deleteExpenseTransactionsByExpenseCategoryAndUser(ExpenseCategory category, User user);
 
     @Query("SELECT e "
             + "FROM ExpenseTransaction e")
@@ -38,9 +37,9 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
             + "lower(e.user.username) "
             + "LIKE :#{#username == null || #username.isEmpty()? '%' : #username + '%'} "
             + "AND "
-            + "lower(e.category) "
-            + "LIKE :#{#category == null || #category.isEmpty()? '%' : #category + '%'} ")
-    Page<ExpenseTransaction> filterTransactionsByUsernameAndCategory(Pageable pageable, String category, String username);
+            + "lower(e.categoryName) "
+            + "LIKE :#{#categoryName == null || #categoryName.isEmpty()? '%' : #categoryName + '%'} ")
+    Page<ExpenseTransaction> filterTransactionsByUsernameAndCategory(Pageable pageable, String username,  String categoryName);
 
     void deleteExpenseTransactionsByUser(User user);
 

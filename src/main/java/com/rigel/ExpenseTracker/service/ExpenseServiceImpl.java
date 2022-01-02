@@ -24,15 +24,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
+public class ExpenseServiceImpl extends Services implements ExpenseService{
 
     private final UserRepository userRepo;
     private final ExpenseCategoryRepository expenseCategoryRepo;
     private final ExpenseTransactionRepository expenseTransactionRepo;
 
     @Override
-    public void saveExpenseCategoryToDB(ExpenseCategory category) {
-        expenseCategoryRepo.save(category);
+    public void saveExpenseCategoryToDB(String categoryName) {
+        String dbName = categoryName.toLowerCase();
+        Optional<ExpenseCategory> expenseCategory = getOptionalExpenseCategory(dbName);
+        if(expenseCategory.isEmpty()){
+            ExpenseCategory newCategory = new ExpenseCategory(dbName);
+            newCategory.setUser(userExists(getUsernameByAuthentication()).get());
+            expenseCategoryRepo.saveAndFlush(newCategory);
+        }
     }
 
     @Override
@@ -51,7 +57,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
 
     @Override
     public ExpenseCategory getExpenseCategory(String categoryName) {
-        Optional<ExpenseCategory> category = getOptionalExpenseCategory(categoryName);
+        Optional<ExpenseCategory> category = getOptionalExpenseCategory(categoryName.toLowerCase());
         if(category.isEmpty())
             throw new BadRequestException("A category with this name doesn't exist!");
 
@@ -61,6 +67,8 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
     @Override
     public Set<ExpenseCategory> getExpenseCategories() {
         Optional<User> user = userExists(getUsernameByAuthentication());
+        if(user.get().getExpenseCategories() == null)
+            throw new NotFoundException("There are no registered expense categories.");
         return user.get().getExpenseCategories();
     }
 
@@ -90,7 +98,6 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
     @Override
     public Page<ExpenseTransaction> getTransactionsByCategoryAndUsername(Pageable pageable, String categoryName) {
         Optional<User> user = userExists(getUsernameByAuthentication());
-
         return expenseTransactionRepo.filterTransactionsByUsernameAndCategory(pageable, categoryName, user.get().getUsername());
     }
 
@@ -122,7 +129,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
                     .collect(Collectors.toList());
 
             if(transactions.size() == 0)
-                throw new NotFoundException("No transactions have been made on this date - " + date);
+                throw new NotFoundException("No expense transactions have been made on this date - " + date);
 
             result.put("username", user.get().getUsername());
             result.put("date", date);
@@ -168,26 +175,24 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
 //            Gets the date of the transaction:
             curDate = LocalDate.parse(date);
 
-//            Creates a new transaction from tha params provided:
-            ExpenseTransaction expenseTransaction = new ExpenseTransaction(curDate, expenseAmount, categoryName, description);
-
-//            Sets the user to the transaction:
-            expenseTransaction.setUser(user.get());
+//            Create an expense transaction:
+            ExpenseTransaction expenseTransaction = new ExpenseTransaction(curDate, expenseAmount, categoryName, description, user.get());
 
 //            Finds if the expense category exists (based on name/user) and does operations with it:
             Optional<ExpenseCategory> category = expenseCategoryRepo.findExpenseCategoryByCategoryNameAndUser(categoryName, user.get());
 
 //            If the category doesn't exist, we create it and persist it to the DB:
             if(category.isEmpty()){
-                ExpenseCategory expenseCategory = new ExpenseCategory(categoryName);
-                expenseCategory.setUser(user.get());
+                ExpenseCategory expenseCategory = new ExpenseCategory(categoryName, user.get());
                 expenseCategoryRepo.save(expenseCategory);
+                expenseTransaction.setExpenseCategory(expenseCategory);
+            } else{
+                expenseTransaction.setExpenseCategory(category.get());
             }
 
-//            Setting the transaction's category:
-            expenseTransaction.setExpenseCategory(category.get());
+//            We calculate the users budget:
+            user.get().addExpenseAmountToUser(expenseTransaction.getExpenseAmount());
 
-            user.get().addExpenseAmountToUser(expenseTransaction);
             expenseTransactionRepo.save(expenseTransaction);
         } catch (DateTimeException dte){
             throw new DateTimeException("Please, provide a correct format for the date of the transaction.(YYYY-MM-DD)");
@@ -247,27 +252,23 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService{
     @Override
     public void deleteTransactionsByCategory(String categoryName) {
         Optional<User> user = userExists(getUsernameByAuthentication());
-        expenseTransactionRepo.deleteExpenseTransactionsByExpenseCategoryAndAndUser(
-                expenseCategoryExists(user.get(),categoryName),
+        expenseTransactionRepo.deleteExpenseTransactionsByExpenseCategoryAndUser(
+                doesCategoryExist(user.get(),categoryName.toLowerCase()),
                 user.get()
         );
     }
 
-    public String getUsernameByAuthentication(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
-    }
-
-
 //    Don't think this check-up is necessary when we included Authentication in the API!
-    private Optional<User> userExists(String username){
+    @Override
+    protected Optional<User> userExists(String username){
         Optional<User> user = userRepo.findUserByUsername(username);
         if (user.isEmpty())
             throw new NotFoundException("User with username: " + username + " doesn't exist.");
         return user;
     }
 
-    ExpenseCategory expenseCategoryExists(User user, String categoryName){
+    @Override
+    ExpenseCategory doesCategoryExist(User user, String categoryName){
         Optional<ExpenseCategory> category = user.getExpenseCategories()
                 .stream().filter(name -> name.getCategoryName().equals(categoryName)).findFirst();
         if(category.isEmpty())

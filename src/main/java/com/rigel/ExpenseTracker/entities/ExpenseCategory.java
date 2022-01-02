@@ -45,6 +45,11 @@ public class ExpenseCategory {
         this.categoryName = categoryName;
     }
 
+    public ExpenseCategory(String categoryName, User user) {
+        this.categoryName = categoryName;
+        this.user = user;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

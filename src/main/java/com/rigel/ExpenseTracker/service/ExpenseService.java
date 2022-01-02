@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface ExpenseCategoryService {
+public interface ExpenseService {
 
-    void saveExpenseCategoryToDB(ExpenseCategory category);
+    void saveExpenseCategoryToDB(String categoryName);
 
     void saveExpenseTransactionToDB(ExpenseTransaction transaction);
 

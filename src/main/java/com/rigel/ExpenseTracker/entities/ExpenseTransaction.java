@@ -13,7 +13,6 @@ import java.util.List;
 
 import static javax.persistence.CascadeType.*;
 
-
 @Entity
 @Table(name = "expense_transaction")
 @Getter
@@ -33,7 +32,7 @@ public class ExpenseTransaction {
     private Double expenseAmount;
 
     @Column(name = "category_name")
-    private String category;
+    private String categoryName;
 
     @Column(name = "description")
     private String description;
@@ -54,7 +53,15 @@ public class ExpenseTransaction {
     public ExpenseTransaction(LocalDate date, Double expenseAmount, String categoryName, String description) {
         this.date = date;
         this.expenseAmount = expenseAmount;
-        this.category = categoryName;
+        this.categoryName = categoryName;
         this.description = description;
+    }
+
+    public ExpenseTransaction(LocalDate date, Double expenseAmount, String categoryName, String description, User user) {
+        this.date = date;
+        this.expenseAmount = expenseAmount;
+        this.categoryName = categoryName;
+        this.description = description;
+        this.user = user;
     }
 }

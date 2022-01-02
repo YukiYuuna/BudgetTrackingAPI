@@ -62,11 +62,11 @@ public class User {
     private List<ExpenseTransaction> expenseTransactions;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user")
     private Set<IncomeCategory> incomeCategories;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user")
     private List<IncomeTransaction> incomeTransactions;
 
     public User() {
@@ -95,21 +95,25 @@ public class User {
         }
     }
 
-    public int numberOfTransactions(String categoryName){
-        if(this.expenseCategories == null)
-            throw new BadRequestException("User has no assigned categories.");
+    public void addIncomeCategoryToUser(IncomeCategory incomeCategory){
+        if(incomeCategories.stream()
+                .anyMatch(category -> category.getCategoryName().equals(incomeCategory.getCategoryName())))
+            throw new BadRequestException("Income category already exists.");
 
-        Optional<ExpenseCategory> expenseCategory = this.expenseCategories.stream().filter(c -> c.getCategoryName().equals(categoryName)).findFirst();
-        if(expenseCategory.isEmpty())
-            throw new NotFoundException("Category with this name doesn't exist in the DB.");
+        if(this.incomeCategories != null)
+            this.incomeCategories.add(incomeCategory);
         else{
-            if(expenseCategory.get().getExpenseTransactions() == null)
-                return  0;
-            return expenseCategory.get().getExpenseTransactions().size();
+            Set<IncomeCategory> category = new HashSet<>();
+            category.add(incomeCategory);
+            this.incomeCategories = category;
         }
     }
 
-    public void addExpenseAmountToUser(ExpenseTransaction expenseTransaction){
-        this.currentBudget -= expenseTransaction.getExpenseAmount();
+    public void addExpenseAmountToUser(Double expenseAmount){
+        this.currentBudget -= expenseAmount;
+    }
+
+    public void addIncomeAmountToUser(Double incomeAmount){
+        this.currentBudget += incomeAmount;
     }
 }
