@@ -59,6 +59,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public void clearSave(User user){
+        userRepo.save(user);
+    }
+
+    @Override
     public Integer numberOfUsers() {
         return userRepo.findAll().size();
     }

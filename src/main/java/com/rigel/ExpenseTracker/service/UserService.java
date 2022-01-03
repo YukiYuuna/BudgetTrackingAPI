@@ -14,6 +14,8 @@ public interface UserService {
 
     User saveUser(User user);
 
+    void clearSave(User user);
+
     Integer numberOfUsers();
 
     Double totalBudgetOfUser();

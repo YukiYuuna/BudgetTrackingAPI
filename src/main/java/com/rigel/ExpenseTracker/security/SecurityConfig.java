@@ -68,7 +68,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/expense/categories", "/api/expense/transactions/date").hasAnyRole(USER);
         http.authorizeRequests().antMatchers(POST,"/api/add/expense/category/**", "/api/add/expense/transaction/**" ).hasAnyRole(USER);
         http.authorizeRequests().antMatchers(PUT,"/api/modify/expense/transaction/**").hasAnyRole(USER);
-        http.authorizeRequests().antMatchers(DELETE,"/api/delete/expense/category/**", "/api/delete/expense/transactions/**", "/api/delete/expense/transaction/**").hasAnyRole(USER);
+        http.authorizeRequests().antMatchers(DELETE,"/api/delete/expense/category/**",
+                "/api/delete/expense/transactions/**", "/api/delete/expense/transaction/**").hasAnyRole(USER);
+
+//        For Income operations:
+        http.authorizeRequests().antMatchers(GET, "/api/income/transactions", "/api/income/transaction/**").hasAnyRole(ADMIN);
+        http.authorizeRequests().antMatchers(GET, "/api/income/transactions/user", "/api/income/transactions/category",
+                "/api/income/categories", "/api/income/transactions/date").hasAnyRole(USER);
+        http.authorizeRequests().antMatchers(POST,"/api/add/income/category/**", "/api/add/income/transaction/**" ).hasAnyRole(USER);
+        http.authorizeRequests().antMatchers(PUT,"/api/modify/income/transaction/**").hasAnyRole(USER);
+        http.authorizeRequests().antMatchers(DELETE,"/api/delete/income/category/**",
+                "/api/delete/income/transactions/**", "/api/delete/income/transaction/**").hasAnyRole(USER);
 
 //        Filtering:
         http.authorizeRequests().anyRequest().authenticated()
