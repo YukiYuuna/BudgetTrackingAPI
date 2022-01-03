@@ -36,13 +36,13 @@ public class ExpenseController {
     }
 
 //    @ApiOperation(value = "Get all expense transactions.", tags = "getTransactions")
-    @GetMapping("/expense/transactions")
+    @GetMapping("/expense/transactions/admin")
     public Page<ExpenseTransaction> fetchAllExpenseTransactions(@Nullable Integer currentPage, @Nullable Integer perPage) {
         Pageable pageable = createPagination(currentPage, perPage, userService.numberOfUsers());
         return expenseService.getExpenseTransactions(pageable);
     }
 
-    @GetMapping("/expense/categories")
+    @GetMapping("/expense/categories/user")
     public Set<ExpenseCategory> fetchAllUserExpenseCategories() {
         return expenseService.getExpenseCategories();
     }
@@ -85,7 +85,7 @@ public class ExpenseController {
 
     @PostMapping("/add/expense/transaction")
     public ResponseEntity<String> addExpenseTransaction(@RequestParam String date, @RequestParam Double expenseAmount, @RequestParam String categoryName, @RequestParam @Nullable String description) {
-        expenseService.addExpenseTransaction(date, expenseAmount, categoryName, description);
+        expenseService.addExpenseTransaction(date, expenseAmount, categoryName.toLowerCase(), description);
         return ResponseEntity.ok().body("Transaction added successfully");
     }
 
@@ -131,7 +131,7 @@ public class ExpenseController {
     /* Ask the user if he wants to delete the category for sure, before calling this method,
     * because if he deletes the category all transactions, made with this category will be deleted too.
     */
-    @DeleteMapping("/delete/expense/category")
+    @DeleteMapping("/delete/expense/category/user")
     public ResponseEntity<String> deleteExpenseCategory(String categoryName) {
         expenseService.deleteExpenseCategory(categoryName.toLowerCase());
         return ResponseEntity.ok().body("The category has been deleted!");

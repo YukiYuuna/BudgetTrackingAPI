@@ -36,13 +36,13 @@ public class IncomeController {
         this.incomeService = incomeService;
     }
 
-    @GetMapping("/income/transactions")
+    @GetMapping("/income/transactions/admin")
     public Page<IncomeTransaction> fetchAllIncomeTransactions(@Nullable Integer currentPage, @Nullable Integer perPage) {
         Pageable pageable = createPagination(currentPage, perPage, userService.numberOfUsers());
         return incomeService.getIncomeTransactions(pageable);
     }
 
-    @GetMapping("/income/categories")
+    @GetMapping("/income/categories/user")
     public Set<IncomeCategory> fetchAllUserIncomeCategories() {
         return incomeService.getIncomeCategories();
     }
@@ -85,7 +85,7 @@ public class IncomeController {
 
     @PostMapping("/add/income/transaction")
     public ResponseEntity<String> addIncomeTransaction(@RequestParam String date, @RequestParam Double incomeAmount, @RequestParam String categoryName, @RequestParam @Nullable String description) {
-        incomeService.addIncomeTransaction(date, incomeAmount, categoryName, description);
+        incomeService.addIncomeTransaction(date, incomeAmount, categoryName.toLowerCase(), description);
         return ResponseEntity.ok().body("Transaction added successfully");
     }
 
@@ -131,7 +131,7 @@ public class IncomeController {
     /* Ask the user if he wants to delete the category for sure, before calling this method,
      * because if he deletes the category all transactions, made with this category will be deleted too.
      */
-    @DeleteMapping("/delete/income/category")
+    @DeleteMapping("/delete/income/category/user")
     public ResponseEntity<String> deleteIncomeCategory(String categoryName) {
         incomeService.deleteIncomeCategory(categoryName.toLowerCase());
         return ResponseEntity.ok().body("The category has been deleted!");

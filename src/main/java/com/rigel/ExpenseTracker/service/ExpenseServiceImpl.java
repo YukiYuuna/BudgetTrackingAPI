@@ -89,6 +89,9 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
     @Override
     public Optional<ExpenseTransaction> getTransactionById(Long transactionId){
         Optional<User> user = userExists(getUsernameByAuthentication());
+        if(user.get().getUsername().equals("admin"))
+            return expenseTransactionRepo.findById(transactionId);
+
         return user.get()
                 .getExpenseTransactions().stream()
                 .filter(transaction -> transaction.getExpenseTransactionId().equals(transactionId))
