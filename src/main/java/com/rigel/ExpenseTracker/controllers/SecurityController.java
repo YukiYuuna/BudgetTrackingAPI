@@ -7,7 +7,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rigel.ExpenseTracker.entities.Role;
 import com.rigel.ExpenseTracker.exception.BadRequestException;
-import com.rigel.ExpenseTracker.exception.ForbiddenException;
 import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.service.UserService;
 import com.rigel.ExpenseTracker.entities.User;

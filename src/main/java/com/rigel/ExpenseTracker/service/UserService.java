@@ -14,6 +14,8 @@ public interface UserService {
 
     User saveUser(User user);
 
+    void clearSave(User user);
+
     Integer numberOfUsers();
 
     Double totalBudgetOfUser();
@@ -27,6 +29,8 @@ public interface UserService {
     User getUserByUsername(String username);
 
     Page<User> getUsers(Pageable pageable);
+
+    List<User> getAllDBUsers();
 
     boolean usernameExists();
 

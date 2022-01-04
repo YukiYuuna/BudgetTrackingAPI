@@ -59,6 +59,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public void clearSave(User user){
+        userRepo.save(user);
+    }
+
+    @Override
     public Integer numberOfUsers() {
         return userRepo.findAll().size();
     }
@@ -100,6 +105,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if(user == null)
             throw new NotFoundException("User " + username + " doesn't exist.");
         return userRepo.findByUsername(username);
+    }
+
+    @Override
+    public List<User> getAllDBUsers() {
+        return userRepo.findAll();
     }
 
     @Override

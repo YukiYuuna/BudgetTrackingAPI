@@ -8,7 +8,7 @@ import com.rigel.ExpenseTracker.exception.BadRequestException;
 import com.rigel.ExpenseTracker.exception.NotAllowedException;
 import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.exception.NotValidUrlException;
-import com.rigel.ExpenseTracker.service.ExpenseCategoryService;
+import com.rigel.ExpenseTracker.service.ExpenseService;
 import com.rigel.ExpenseTracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -27,29 +27,29 @@ import java.util.*;
 public class ExpenseController {
 
     private final UserService userService;
-    private final ExpenseCategoryService expenseCategoryService;
+    private final ExpenseService expenseService;
 
     @Autowired
-    public ExpenseController(@Lazy UserService userService, ExpenseCategoryService expenseCategoryService){
+    public ExpenseController(@Lazy UserService userService, ExpenseService expenseCategoryService){
         this.userService = userService;
-        this.expenseCategoryService = expenseCategoryService;
+        this.expenseService = expenseCategoryService;
     }
 
 //    @ApiOperation(value = "Get all expense transactions.", tags = "getTransactions")
-    @GetMapping("/expense/transactions")
-    public Page<ExpenseTransaction> getAllExpenseTransactions(@Nullable Integer currentPage, @Nullable Integer perPage) {
+    @GetMapping("/expense/transactions/admin")
+    public Page<ExpenseTransaction> fetchAllExpenseTransactions(@Nullable Integer currentPage, @Nullable Integer perPage) {
         Pageable pageable = createPagination(currentPage, perPage, userService.numberOfUsers());
-        return expenseCategoryService.getExpenseTransactions(pageable);
+        return expenseService.getExpenseTransactions(pageable);
     }
 
-    @GetMapping("/expense/categories")
-    public Set<ExpenseCategory> getAllUserExpenseCategories() {
-        return expenseCategoryService.getExpenseCategories();
+    @GetMapping("/expense/categories/user")
+    public Set<ExpenseCategory> fetchAllUserExpenseCategories() {
+        return expenseService.getExpenseCategories();
     }
 
     @GetMapping("/expense/transaction/{id}")
-    private ExpenseTransaction getTransactionById(@PathVariable Long id) {
-        Optional<ExpenseTransaction> transaction = expenseCategoryService.getTransactionById(id);
+    private ExpenseTransaction fetchTransactionById(@PathVariable Long id) {
+        Optional<ExpenseTransaction> transaction = expenseService.getTransactionById(id);
         if(transaction.isEmpty())
             throw new NotFoundException("Transaction with id - " + id + " doesn't exist in the DB.");
 
@@ -57,14 +57,20 @@ public class ExpenseController {
     }
 
     @GetMapping("/expense/transactions/user")
-    public HashMap<String, Object> getUserTransactions(@RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage) {
+    public HashMap<String, Object> fetchUserTransactions(@RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage) {
         Pageable pageable = createPagination(currentPage, perPage, userService.numberOfUsers());
-        return expenseCategoryService.getAllUserTransactions(pageable);
+        return expenseService.getAllUserTransactions(pageable);
     }
 
-    @GetMapping("expense/transaction/{date}")
-    private HashMap<String, Object> getTransactionsByDate(@PathVariable String date) {
-        return expenseCategoryService.getExpenseTransactionByDate(date);
+    @GetMapping("/expense/transactions/date")
+    private HashMap<String, Object> fetchTransactionsByDate(String date) {
+        return expenseService.getExpenseTransactionByDate(date);
+    }
+
+    @GetMapping("/expense/transactions/category")
+    private Page<ExpenseTransaction> fetchTransactionsByCategory(@RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage, String categoryName) {
+        Pageable pageable = createPagination(currentPage, perPage, expenseService.numberOfTransactionsByCategory(categoryName));
+        return expenseService.getTransactionsByCategoryAndUsername(pageable, categoryName);
     }
 
     @PostMapping("/add/expense/category")
@@ -73,64 +79,82 @@ public class ExpenseController {
         if(name.isEmpty())
             throw new NotValidUrlException("The category must have a name. Please provide it by adding a parameter: name");
 
-        expenseCategoryService.addExpenseCategory(name.toLowerCase());
+        expenseService.addExpenseCategory(name.toLowerCase());
         return ResponseEntity.ok("Category has been saved successfully!");
     }
 
     @PostMapping("/add/expense/transaction")
     public ResponseEntity<String> addExpenseTransaction(@RequestParam String date, @RequestParam Double expenseAmount, @RequestParam String categoryName, @RequestParam @Nullable String description) {
-        expenseCategoryService.addExpenseTransaction(date, expenseAmount, categoryName, description);
+        expenseService.addExpenseTransaction(date, expenseAmount, categoryName.toLowerCase(), description);
         return ResponseEntity.ok().body("Transaction added successfully");
     }
 
-    @PutMapping("/modify/expense/transaction/{transactionId}")
-    public ResponseEntity<?> modifyTransaction(@PathVariable Long transactionId, @RequestBody ExpenseTransaction modifiedTransaction){
-        if(!expenseCategoryService.expenseTransactionExists(transactionId))
-            throw new NotFoundException("There is no transaction with id: " + transactionId);
-        if(modifiedTransaction.getExpenseTransactionId() != null || !(modifiedTransaction.getExpenseTransactionId() == transactionId))
-            throw new NotAllowedException("Either provide the same id or don't provide id for the transaction at all.");
+    @PutMapping("/modify/expense/category")
+    public ResponseEntity<?> modifyExpenseCategory(String categoryName, @RequestBody ExpenseCategory modifiedCategory) {
+        String dbCategoryName = categoryName.toLowerCase();
+        if(!expenseService.expenseCategoryExists(dbCategoryName))
+            throw new NotFoundException("Category with this name doesn't exist in the DB.");
 
-        String dbCategoryName = modifiedTransaction.getCategory().toLowerCase();
-        Optional<ExpenseCategory> expenseCategory = expenseCategoryService.getOptionalExpenseCategory(dbCategoryName);
-        if(expenseCategory.isEmpty()){
-            expenseCategoryService.saveExpenseCategoryToDB(new ExpenseCategory(dbCategoryName));
+        return expenseService.getOptionalExpenseCategory(dbCategoryName)
+                .map(category -> {
+                    category.setCategoryName(modifiedCategory.getCategoryName() == null ? category.getCategoryName() : modifiedCategory.getCategoryName().toLowerCase());
+                    return ResponseEntity.ok().body(category);
+                }).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/modify/expense/transaction/{transactionId}")
+    public ResponseEntity<?> modifyExpenseTransaction(@PathVariable Long transactionId, @RequestBody ExpenseTransaction modifiedTransaction){
+        if(!expenseService.expenseTransactionExists(transactionId))
+            throw new NotFoundException("There is no transaction with id: " + transactionId);
+        if(modifiedTransaction.getExpenseTransactionId() != null)
+            throw new NotAllowedException("Don't provide an id for the new transaction, because you cannot modify it.");
+
+        if(modifiedTransaction.getCategoryName() != null) {
+            expenseService.saveExpenseCategoryToDB(modifiedTransaction.getCategoryName());
+            modifiedTransaction.setExpenseCategory(expenseService.getExpenseCategory(modifiedTransaction.getCategoryName()));
         }
 
-        return expenseCategoryService.getTransactionById(transactionId)
+        return expenseService.getTransactionById(transactionId)
                 .map(transaction -> {
-                    transaction.setExpenseCategory(modifiedTransaction.getExpenseCategory() == null ? transaction.getExpenseCategory() : modifiedTransaction.getExpenseCategory());
+                    transaction.setExpenseCategory(modifiedTransaction.getExpenseCategory());
                     transaction.setDate(modifiedTransaction.getDate() == null ? transaction.getDate() : modifiedTransaction.getDate());
                     transaction.setDescription(modifiedTransaction.getDescription() == null ? transaction.getDescription() : modifiedTransaction.getDescription());
-                    transaction.setCategory(modifiedTransaction.getCategory() == null ? transaction.getCategory() : modifiedTransaction.getCategory());
+                    transaction.setCategoryName(modifiedTransaction.getCategoryName() == null ? transaction.getCategoryName().toLowerCase() : modifiedTransaction.getCategoryName().toLowerCase());
 
                     setBudgetOfUser(transaction, modifiedTransaction.getExpenseAmount());
 
-                    expenseCategoryService.saveExpenseTransactionToDB(transaction);
+                    expenseService.saveExpenseTransactionToDB(transaction);
                     return ResponseEntity.ok().body(transaction);
                 }).orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/delete/expense/category")
+    /* Ask the user if he wants to delete the category for sure, before calling this method,
+    * because if he deletes the category all transactions, made with this category will be deleted too.
+    */
+    @DeleteMapping("/delete/expense/category/user")
     public ResponseEntity<String> deleteExpenseCategory(String categoryName) {
-        expenseCategoryService.deleteExpenseCategory(categoryName);
+        expenseService.deleteExpenseCategory(categoryName.toLowerCase());
         return ResponseEntity.ok().body("The category has been deleted!");
     }
 
     @DeleteMapping("/delete/expense/transactions/user")
     public ResponseEntity<String> deleteAllUserExpenseTransactions() {
-        expenseCategoryService.deleteTransactionByUser();
+        expenseService.deleteTransactionByUser();
         return ResponseEntity.ok().body("All transactions have been deleted successfully!");
     }
 
+    /* The difference between this method and the deleteExpenseCategory method is that by calling this one, you will delete all correlated transactions to this category, but
+    * you will not delete the category!
+    */
     @DeleteMapping("/delete/expense/transactions/category")
     public ResponseEntity<String> deleteAllUserExpenseTransactionsByCategory(String categoryName) {
-        expenseCategoryService.deleteTransactionsByCategory(categoryName);
+        expenseService.deleteTransactionsByCategory(categoryName.toLowerCase());
         return ResponseEntity.ok().body("All transactions in category - " + categoryName + " have been deleted successfully!");
     }
 
     @DeleteMapping("/delete/expense/transaction/{id}")
     ResponseEntity<String> deleteExpenseTransactionById(@PathVariable Long id) {
-        expenseCategoryService.deleteTransactionById(id);
+        expenseService.deleteTransactionById(id);
         return ResponseEntity.ok().body("The transaction has been deleted successfully!");
     }
 

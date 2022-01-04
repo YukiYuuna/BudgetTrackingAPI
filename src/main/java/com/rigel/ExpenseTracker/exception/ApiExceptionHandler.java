@@ -2,9 +2,11 @@ package com.rigel.ExpenseTracker.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 
 @ControllerAdvice
@@ -38,12 +40,12 @@ public class ApiExceptionHandler {
         return notAllowedException(e);
     }
 
-    @ExceptionHandler(value = {ForbiddenException.class})
-    public ResponseEntity<Object> handleNotForbiddenException(ForbiddenException e) {
-        HttpStatus badRequest = HttpStatus.FORBIDDEN;
-        RestApiException exception = new RestApiException(badRequest, LocalDateTime.now(), e.getMessage());
-        return new ResponseEntity<>(exception, badRequest);
-    }
+//    @ExceptionHandler(AuthenticationException.class)
+//    public FilterException handleAuthenticationException(AuthenticationException ex, HttpServletResponse response){
+//        FilterException filterException = new FilterException(HttpStatus.UNAUTHORIZED, ex.getMessage(), ex);
+//        response.setStatus(401);
+//        return filterException;
+//    }
 
     private ResponseEntity<Object> notAllowedException(RuntimeException e){
         HttpStatus notValidUrl = HttpStatus.NOT_ACCEPTABLE;

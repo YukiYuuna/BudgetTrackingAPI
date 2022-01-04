@@ -11,11 +11,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface ExpenseCategoryService {
+public interface ExpenseService {
 
-    void saveExpenseCategoryToDB(ExpenseCategory category);
+    void saveExpenseCategoryToDB(String categoryName);
 
     void saveExpenseTransactionToDB(ExpenseTransaction transaction);
+
+    int numberOfTransactionsByCategory(String categoryName);
 
     Optional<ExpenseCategory> getOptionalExpenseCategory(String categoryName);
 
@@ -27,7 +29,7 @@ public interface ExpenseCategoryService {
 
     Optional<ExpenseTransaction> getTransactionById(Long transactionId);
 
-    Page<ExpenseTransaction> getTransactionsByCategoryAndUsername(Pageable pageable, String categoryName, String username);
+    Page<ExpenseTransaction> getTransactionsByCategoryAndUsername(Pageable pageable, String categoryName);
 
     HashMap<String, Object> getExpenseTransactionByDate(String date);
 

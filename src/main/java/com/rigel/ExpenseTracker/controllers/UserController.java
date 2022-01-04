@@ -3,6 +3,7 @@ package com.rigel.ExpenseTracker.controllers;
 import com.rigel.ExpenseTracker.entities.Role;
 import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.exception.BadRequestException;
+import com.rigel.ExpenseTracker.exception.NotAllowedException;
 import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.service.UserService;
 import com.sun.istack.Nullable;
@@ -73,15 +74,15 @@ public class UserController {
 
         return userService.getOptionalUser()
                 .map(user -> {
-//                    TODO:
-                    user.setUsername(updatedUser.getUsername() == null ? user.getUsername() : updatedUser.getUsername());
-                    user.setPassword(user.getPassword());
+                    if(updatedUser.getUsername() != null) {
+                        throw new NotAllowedException("You aren't allowed to change your username!");
+                    }
                     user.setFirstName(updatedUser.getFirstName() == null ? user.getFirstName() : updatedUser.getFirstName());
                     user.setLastName(updatedUser.getLastName() == null ? user.getLastName() : updatedUser.getLastName());
                     user.setEmail(updatedUser.getEmail() == null ? user.getEmail() : updatedUser.getEmail());
                     user.setCurrentBudget(updatedUser.getCurrentBudget() == null ? user.getCurrentBudget() : updatedUser.getCurrentBudget());
                     user.setExpenseCategories(user.getExpenseCategories() == null ? user.getExpenseCategories() : updatedUser.getExpenseCategories());
-                    userService.saveUser(user);
+                    userService.clearSave(user);
                     return user;
                 });
     }

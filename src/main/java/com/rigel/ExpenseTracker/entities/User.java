@@ -2,15 +2,14 @@ package com.rigel.ExpenseTracker.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rigel.ExpenseTracker.exception.BadRequestException;
+import com.rigel.ExpenseTracker.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static javax.persistence.CascadeType.*;
@@ -63,11 +62,11 @@ public class User {
     private List<ExpenseTransaction> expenseTransactions;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user")
     private Set<IncomeCategory> incomeCategories;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user")
     private List<IncomeTransaction> incomeTransactions;
 
     public User() {
@@ -87,16 +86,34 @@ public class User {
                 .anyMatch(category -> category.getCategoryName().equals(expenseCategory.getCategoryName())))
             throw new BadRequestException("Category already exists.");
 
-        this.expenseCategories.add(expenseCategory);
+        if(this.expenseCategories != null)
+            this.expenseCategories.add(expenseCategory);
+        else{
+            Set<ExpenseCategory> category = new HashSet<>();
+            category.add(expenseCategory);
+            this.expenseCategories = category;
+        }
     }
 
-    public void addExpenseAmountToUser(ExpenseTransaction expenseTransaction){
-        this.currentBudget -= expenseTransaction.getExpenseAmount();
+    public void addIncomeCategoryToUser(IncomeCategory incomeCategory){
+        if(incomeCategories.stream()
+                .anyMatch(category -> category.getCategoryName().equals(incomeCategory.getCategoryName())))
+            throw new BadRequestException("Income category already exists.");
+
+        if(this.incomeCategories != null)
+            this.incomeCategories.add(incomeCategory);
+        else{
+            Set<IncomeCategory> category = new HashSet<>();
+            category.add(incomeCategory);
+            this.incomeCategories = category;
+        }
     }
 
-    public void removeCategoryFromUser(String categoryName){
-        this.expenseCategories = this.getExpenseCategories().stream()
-                .filter(category -> !(category.getCategoryName().equals(categoryName)))
-                .collect(Collectors.toSet());
+    public void addExpenseAmountToUser(Double expenseAmount){
+        this.currentBudget -= expenseAmount;
+    }
+
+    public void addIncomeAmountToUser(Double incomeAmount){
+        this.currentBudget += incomeAmount;
     }
 }
