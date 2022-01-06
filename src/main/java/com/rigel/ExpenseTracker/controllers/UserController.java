@@ -2,14 +2,8 @@ package com.rigel.ExpenseTracker.controllers;
 
 import com.rigel.ExpenseTracker.entities.Role;
 import com.rigel.ExpenseTracker.entities.User;
-import com.rigel.ExpenseTracker.exception.BadRequestException;
-import com.rigel.ExpenseTracker.exception.NotAllowedException;
-import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.service.UserService;
 import com.sun.istack.Nullable;
-import io.swagger.annotations.ApiOperation;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -17,8 +11,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
+
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/api")
@@ -69,13 +66,13 @@ public class UserController {
     @PutMapping("/user/modify")
     public Optional<User> modifyUserInfo(@RequestBody User updatedUser) {
         if (!userService.usernameExists()) {
-            throw new NotFoundException("User with this username doesn't exists.");
+            throw new ResponseStatusException(NOT_FOUND, "User with this username doesn't exists.");
         }
 
         return userService.getOptionalUser()
                 .map(user -> {
                     if(updatedUser.getUsername() != null) {
-                        throw new NotAllowedException("You aren't allowed to change your username!");
+                        throw new ResponseStatusException(NOT_ACCEPTABLE, "You aren't allowed to change your username!");
                     }
                     user.setFirstName(updatedUser.getFirstName() == null ? user.getFirstName() : updatedUser.getFirstName());
                     user.setLastName(updatedUser.getLastName() == null ? user.getLastName() : updatedUser.getLastName());
@@ -100,7 +97,7 @@ public class UserController {
         } else if (currentPage == null && perPage == null){
             pageable = PageRequest.of(0, size);
         } else {
-            throw new BadRequestException("The value of currentPage and/or perPage parameters cannot be under or equal to 0.");
+            throw new ResponseStatusException(BAD_REQUEST, "The value of currentPage and/or perPage parameters cannot be under or equal to 0.");
         }
         return pageable;
     }

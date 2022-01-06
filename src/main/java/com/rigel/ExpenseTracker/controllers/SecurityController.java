@@ -6,8 +6,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rigel.ExpenseTracker.entities.Role;
-import com.rigel.ExpenseTracker.exception.BadRequestException;
-import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.service.UserService;
 import com.rigel.ExpenseTracker.entities.User;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +14,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,6 +23,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -76,7 +77,7 @@ public class SecurityController {
             }
         }
         else{
-            throw new NotFoundException("Refresh token is missing!");
+            throw new ResponseStatusException(NOT_ACCEPTABLE, "Refresh token is missing!");
         }
     }
 
@@ -90,12 +91,12 @@ public class SecurityController {
                 return ResponseEntity.ok().body(firstName + " " + lastName + " has been added successfully!");
             } else{
                 if(invalidUsername){
-                    throw new BadRequestException("User with this username already exists.");
+                    throw new ResponseStatusException(BAD_REQUEST, "User with this username already exists.");
                 }
-                throw new BadRequestException("User with this username already exists.");
+                throw new ResponseStatusException(BAD_REQUEST, "User with this email already exists.");
             }
         }
-        throw new BadRequestException("Make sure you provide all data, including: username, password, first and last name, current budget!");
+        throw new ResponseStatusException(BAD_REQUEST, "Make sure you provide all data, including: username, password, first and last name, current budget!");
     }
 
 

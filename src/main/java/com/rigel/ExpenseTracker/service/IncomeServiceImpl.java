@@ -1,20 +1,21 @@
 package com.rigel.ExpenseTracker.service;
 
 import com.rigel.ExpenseTracker.entities.*;
-import com.rigel.ExpenseTracker.exception.BadRequestException;
-import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -46,11 +47,11 @@ public class IncomeServiceImpl extends Services implements IncomeService{
     public int numberOfTransactionsByCategory(String categoryName) {
         Optional<User> user = userExists(getUsernameByAuthentication());
         if(user.get().getIncomeCategories() == null)
-            throw new BadRequestException("User has no assigned categories.");
+            throw new ResponseStatusException(BAD_REQUEST, "User has no assigned categories.");
 
         Optional<IncomeCategory> incomeCategory = user.get().getIncomeCategories().stream().filter(c -> c.getCategoryName().equals(categoryName)).findFirst();
         if(incomeCategory.isEmpty())
-            throw new NotFoundException("Category with this name doesn't exist in the DB.");
+            throw new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist in the DB.");
         else{
             if(incomeCategory.get().getIncomeTransactions() == null)
                 return  0;
@@ -71,7 +72,7 @@ public class IncomeServiceImpl extends Services implements IncomeService{
     public IncomeCategory getIncomeCategory(String categoryName) {
         Optional<IncomeCategory> category = getOptionalIncomeCategory(categoryName.toLowerCase());
         if(category.isEmpty())
-            throw new BadRequestException("A category with this name doesn't exist!");
+            throw new ResponseStatusException(NOT_FOUND, "A category with this name doesn't exist!");
 
         return category.get();
     }
@@ -80,7 +81,7 @@ public class IncomeServiceImpl extends Services implements IncomeService{
     public Set<IncomeCategory> getIncomeCategories() {
         Optional<User> user = userExists(getUsernameByAuthentication());
         if(user.get().getIncomeCategories() == null)
-            throw new NotFoundException("There are no registered income categories.");
+            throw new ResponseStatusException(NOT_FOUND, "There are no registered income categories.");
         return user.get().getIncomeCategories();
     }
 
@@ -125,7 +126,7 @@ public class IncomeServiceImpl extends Services implements IncomeService{
                     .collect(Collectors.toList());
 
             if(transactions.size() == 0)
-                throw new NotFoundException("No income transactions have been made on this date - " + date);
+                throw new ResponseStatusException(NOT_FOUND,"No income transactions have been made on this date - " + date);
 
             result.put("username", user.get().getUsername());
             result.put("date", date);
@@ -136,7 +137,7 @@ public class IncomeServiceImpl extends Services implements IncomeService{
             result.put("transactions", transactions);
             return result;
         } catch (DateTimeException e){
-            throw new DateTimeException("Please, provide a valid date format: YYYY-MM-DD");
+            throw new ResponseStatusException(NOT_ACCEPTABLE, "Please, provide a valid date format: YYYY-MM-DD");
         }
     }
 
@@ -153,7 +154,7 @@ public class IncomeServiceImpl extends Services implements IncomeService{
         if(incomeCategories.size() > 0) {
             boolean categoryExists = incomeCategories.stream().anyMatch(category -> category.getCategoryName().equals(categoryName));
             if (categoryExists)
-                throw new BadRequestException("Category with name: " + categoryName + ", already exists.");
+                throw new ResponseStatusException(BAD_REQUEST, "Category with name: " + categoryName + ", already exists.");
         }
 
         IncomeCategory incomeCategory = new IncomeCategory(categoryName, user.get());
@@ -185,7 +186,7 @@ public class IncomeServiceImpl extends Services implements IncomeService{
 
             incomeTransactionRepo.save(incomeTransaction);
         } catch (DateTimeException dte){
-            throw new DateTimeException("Please, provide a correct format for the date of the transaction.(YYYY-MM-DD)");
+            throw new ResponseStatusException(NOT_ACCEPTABLE, "Please, provide a correct format for the date of the transaction.(YYYY-MM-DD)");
         }
     }
 
@@ -212,7 +213,7 @@ public class IncomeServiceImpl extends Services implements IncomeService{
     public void deleteTransactionByUser() {
         Optional<User> user = userExists(getUsernameByAuthentication());
         if(user.get().getExpenseTransactions().size() == 0)
-            throw new NotFoundException("There are no transactions made by " + user.get().getUsername());
+            throw new ResponseStatusException(NOT_FOUND, "There are no transactions made by " + user.get().getUsername());
 
         incomeTransactionRepo.deleteIncomeTransactionsByUser(user.get());
     }
@@ -225,7 +226,7 @@ public class IncomeServiceImpl extends Services implements IncomeService{
                 .filter(transaction -> transaction.getIncomeTransactionId().equals(transactionId))
                 .findFirst();
         if(incomeTransaction.isEmpty())
-            throw new NotFoundException("Transaction with id: " + transactionId + " doesn't exist!");
+            throw new ResponseStatusException(NOT_FOUND, "Transaction with id: " + transactionId + " doesn't exist!");
 
         incomeTransactionRepo.delete(incomeTransaction.get());
     }
@@ -252,7 +253,7 @@ public class IncomeServiceImpl extends Services implements IncomeService{
     Optional<User> userExists(String username) {
         Optional<User> user = userRepo.findUserByUsername(username);
         if (user.isEmpty())
-            throw new NotFoundException("User with username: " + username + " doesn't exist.");
+            throw new ResponseStatusException(NOT_FOUND, "User with username: " + username + " doesn't exist.");
         return user;
     }
 
@@ -261,7 +262,7 @@ public class IncomeServiceImpl extends Services implements IncomeService{
         Optional<IncomeCategory> category = user.getIncomeCategories()
                 .stream().filter(name -> name.getCategoryName().equals(categoryName)).findFirst();
         if(category.isEmpty())
-            throw new NotFoundException("Category with this name doesn't exist.");
+            throw new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist.");
         return category.get();
     }
 }
