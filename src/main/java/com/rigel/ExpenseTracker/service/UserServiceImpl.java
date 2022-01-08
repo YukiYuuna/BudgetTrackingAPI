@@ -49,11 +49,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         log.info("User was saved to the database successfully!");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        if(Objects.equals(user.getUsername(), "admin")) {
-            addRoleInDB(user, Role.ROLE_ADMIN);
-        } else{
-            addRoleInDB(user, Role.ROLE_USER);
-        }
+        Set<Role> role = new HashSet<>();
+        role.add(roleRepo.findByRoleName(Role.ROLE_USER));
+
+        user.setRoles(role);
 
         return userRepo.save(user);
     }
@@ -157,17 +156,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (user.isEmpty())
             throw new NotFoundException("User with username: " + username + " doesn't exist.");
         return user;
-    }
-
-    private void addRoleInDB(User user, String roleName){
-        Set<Role> roles = new HashSet<>();
-        if(roleRepo.findAll().stream().noneMatch(role -> role.getRoleName().equals(roleName))) {
-            roles.add(new Role(roleName));
-        }
-        else {
-            roles.add(roleRepo.findByRoleName(roleName));
-        }
-        user.setRoles(roles);
     }
 
 }
