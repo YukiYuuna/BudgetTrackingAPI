@@ -3,22 +3,21 @@ package com.rigel.ExpenseTracker.service;
 import com.rigel.ExpenseTracker.entities.ExpenseCategory;
 import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
 import com.rigel.ExpenseTracker.entities.User;
-import com.rigel.ExpenseTracker.exception.BadRequestException;
-import com.rigel.ExpenseTracker.exception.NotFoundException;
 import com.rigel.ExpenseTracker.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +58,7 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
     public ExpenseCategory getExpenseCategory(String categoryName) {
         Optional<ExpenseCategory> category = getOptionalExpenseCategory(categoryName.toLowerCase());
         if(category.isEmpty())
-            throw new BadRequestException("A category with this name doesn't exist!");
+            throw new ResponseStatusException(BAD_REQUEST, "A category with this name doesn't exist!");
 
         return category.get();
     }
@@ -68,7 +67,7 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
     public Set<ExpenseCategory> getExpenseCategories() {
         Optional<User> user = userExists(getUsernameByAuthentication());
         if(user.get().getExpenseCategories() == null)
-            throw new NotFoundException("There are no registered expense categories.");
+            throw new ResponseStatusException(NOT_FOUND, "There are no registered expense categories.");
         return user.get().getExpenseCategories();
     }
 
@@ -108,11 +107,11 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
     public int numberOfTransactionsByCategory(String categoryName) {
         Optional<User> user = userExists(getUsernameByAuthentication());
         if(user.get().getExpenseCategories() == null)
-            throw new BadRequestException("User has no assigned categories.");
+            throw new ResponseStatusException(BAD_REQUEST, "User has no assigned categories.");
 
         Optional<ExpenseCategory> expenseCategory = user.get().getExpenseCategories().stream().filter(c -> c.getCategoryName().equals(categoryName)).findFirst();
         if(expenseCategory.isEmpty())
-            throw new NotFoundException("Category with this name doesn't exist in the DB.");
+            throw new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist in the DB.");
         else{
             if(expenseCategory.get().getExpenseTransactions() == null)
                 return  0;
@@ -132,7 +131,7 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
                     .collect(Collectors.toList());
 
             if(transactions.size() == 0)
-                throw new NotFoundException("No expense transactions have been made on this date - " + date);
+                throw new ResponseStatusException(NOT_FOUND, "No expense transactions have been made on this date - " + date);
 
             result.put("username", user.get().getUsername());
             result.put("date", date);
@@ -143,7 +142,7 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
             result.put("transactions", transactions);
             return result;
         } catch (DateTimeException e){
-            throw new DateTimeException("Please, provide a valid date format: YYYY-MM-DD");
+            throw new ResponseStatusException(NOT_ACCEPTABLE, "Please, provide a valid date format: YYYY-MM-DD");
         }
     }
 
@@ -160,7 +159,7 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
         if(expenseCategories.size() > 0) {
             boolean categoryExists = expenseCategories.stream().anyMatch(category -> category.getCategoryName().equals(categoryName));
             if (categoryExists)
-                throw new BadRequestException("Category with name: " + categoryName + ", already exists.");
+                throw new ResponseStatusException(BAD_REQUEST, "Category with name: " + categoryName + ", already exists.");
         }
 
         ExpenseCategory expenseCategory = new ExpenseCategory(categoryName);
@@ -198,7 +197,7 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
 
             expenseTransactionRepo.save(expenseTransaction);
         } catch (DateTimeException dte){
-            throw new DateTimeException("Please, provide a correct format for the date of the transaction.(YYYY-MM-DD)");
+            throw new ResponseStatusException(NOT_ACCEPTABLE, "Please, provide a correct format for the date of the transaction.(YYYY-MM-DD)");
         }
     }
 
@@ -225,7 +224,7 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
     public void deleteTransactionByUser() {
         Optional<User> user = userExists(getUsernameByAuthentication());
         if(user.get().getExpenseTransactions().size() == 0)
-            throw new NotFoundException("There are no transactions made by " + user.get().getUsername());
+            throw new ResponseStatusException(NOT_FOUND,"There are no transactions made by " + user.get().getUsername());
 
         expenseTransactionRepo.deleteExpenseTransactionsByUser(user.get());
     }
@@ -238,7 +237,7 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
                 .filter(transaction -> transaction.getExpenseTransactionId().equals(transactionId))
                 .findFirst();
         if(expenseTransaction.isEmpty())
-            throw new NotFoundException("Transaction with id: " + transactionId + " doesn't exist!");
+            throw new ResponseStatusException(BAD_REQUEST,"Transaction with id: " + transactionId + " doesn't exist!");
 
         expenseTransactionRepo.delete(expenseTransaction.get());
     }
@@ -266,7 +265,7 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
     protected Optional<User> userExists(String username){
         Optional<User> user = userRepo.findUserByUsername(username);
         if (user.isEmpty())
-            throw new NotFoundException("User with username: " + username + " doesn't exist.");
+            throw new ResponseStatusException(NOT_FOUND,"User with username: " + username + " doesn't exist.");
         return user;
     }
 
@@ -275,7 +274,7 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
         Optional<ExpenseCategory> category = user.getExpenseCategories()
                 .stream().filter(name -> name.getCategoryName().equals(categoryName)).findFirst();
         if(category.isEmpty())
-            throw new NotFoundException("Category with this name doesn't exist.");
+            throw new ResponseStatusException(NOT_FOUND,"Category with this name doesn't exist.");
         return category.get();
     }
 }

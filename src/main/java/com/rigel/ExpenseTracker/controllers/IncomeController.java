@@ -2,10 +2,6 @@ package com.rigel.ExpenseTracker.controllers;
 
 
 import com.rigel.ExpenseTracker.entities.*;
-import com.rigel.ExpenseTracker.exception.BadRequestException;
-import com.rigel.ExpenseTracker.exception.NotAllowedException;
-import com.rigel.ExpenseTracker.exception.NotFoundException;
-import com.rigel.ExpenseTracker.exception.NotValidUrlException;
 import com.rigel.ExpenseTracker.service.IncomeService;
 import com.rigel.ExpenseTracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +12,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/api")
@@ -51,7 +49,7 @@ public class IncomeController {
     private IncomeTransaction fetchTransactionById(@PathVariable Long id) {
         Optional<IncomeTransaction> transaction = incomeService.getTransactionById(id);
         if(transaction.isEmpty())
-            throw new NotFoundException("Transaction with id - " + id + " doesn't exist in the DB.");
+            throw new ResponseStatusException(NOT_FOUND, "Transaction with id - " + id + " doesn't exist in the DB.");
 
         return transaction.get();
     }
@@ -77,7 +75,7 @@ public class IncomeController {
     public ResponseEntity<String> addIncomeCategory(@RequestBody IncomeCategory category) {
         String name = category.getCategoryName();
         if(name.isEmpty())
-            throw new NotValidUrlException("The category must have a name. Please provide it by adding a parameter: name");
+            throw new ResponseStatusException(NOT_ACCEPTABLE, "The category must have a name. Please provide it by adding a parameter: name");
 
         incomeService.addIncomeCategory(name.toLowerCase());
         return ResponseEntity.ok("Category has been saved successfully!");
@@ -93,7 +91,7 @@ public class IncomeController {
     public ResponseEntity<?> modifyIncomeCategory(String categoryName, @RequestBody IncomeCategory modifiedCategory) {
         String dbCategoryName = categoryName.toLowerCase();
         if(!incomeService.incomeCategoryExists(dbCategoryName))
-            throw new NotFoundException("Category with this name doesn't exist in the DB.");
+            throw new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist in the DB.");
 
         return incomeService.getOptionalIncomeCategory(dbCategoryName)
                 .map(category -> {
@@ -105,9 +103,9 @@ public class IncomeController {
     @PutMapping("/modify/income/transaction/{transactionId}")
     public ResponseEntity<?> modifyIncomeTransaction(@PathVariable Long transactionId, @RequestBody IncomeTransaction modifiedTransaction){
         if(!incomeService.incomeTransactionExists(transactionId))
-            throw new NotFoundException("There is no transaction with id: " + transactionId);
+            throw new ResponseStatusException(NOT_FOUND, "There is no transaction with id: " + transactionId);
         if(modifiedTransaction.getIncomeTransactionId() != null)
-            throw new NotAllowedException("Don't provide an id for the new transaction, because you cannot modify it.");
+            throw new ResponseStatusException(NOT_ACCEPTABLE, "Don't provide an id for the new transaction, because you cannot modify it.");
 
         if(modifiedTransaction.getCategoryName() != null) {
             incomeService.saveIncomeCategoryToDB(modifiedTransaction.getCategoryName());
@@ -177,7 +175,7 @@ public class IncomeController {
         } else if (currentPage == null && perPage == null){
             pageable = PageRequest.of(0, size);
         } else {
-            throw new BadRequestException("The value of currentPage and/or perPage parameters cannot be under or equal to 0.");
+            throw new ResponseStatusException(BAD_REQUEST,"The value of currentPage and/or perPage parameters cannot be under or equal to 0.");
         }
         return pageable;
     }

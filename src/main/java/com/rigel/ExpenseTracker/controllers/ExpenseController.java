@@ -4,10 +4,6 @@ package com.rigel.ExpenseTracker.controllers;
 import com.rigel.ExpenseTracker.entities.ExpenseCategory;
 import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
 import com.rigel.ExpenseTracker.entities.User;
-import com.rigel.ExpenseTracker.exception.BadRequestException;
-import com.rigel.ExpenseTracker.exception.NotAllowedException;
-import com.rigel.ExpenseTracker.exception.NotFoundException;
-import com.rigel.ExpenseTracker.exception.NotValidUrlException;
 import com.rigel.ExpenseTracker.service.ExpenseService;
 import com.rigel.ExpenseTracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +14,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
+
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/api")
@@ -35,7 +34,6 @@ public class ExpenseController {
         this.expenseService = expenseCategoryService;
     }
 
-//    @ApiOperation(value = "Get all expense transactions.", tags = "getTransactions")
     @GetMapping("/expense/transactions/admin")
     public Page<ExpenseTransaction> fetchAllExpenseTransactions(@Nullable Integer currentPage, @Nullable Integer perPage) {
         Pageable pageable = createPagination(currentPage, perPage, userService.numberOfUsers());
@@ -51,7 +49,7 @@ public class ExpenseController {
     private ExpenseTransaction fetchTransactionById(@PathVariable Long id) {
         Optional<ExpenseTransaction> transaction = expenseService.getTransactionById(id);
         if(transaction.isEmpty())
-            throw new NotFoundException("Transaction with id - " + id + " doesn't exist in the DB.");
+            throw new ResponseStatusException(NOT_FOUND,"Transaction with id - " + id + " doesn't exist in the DB.");
 
         return transaction.get();
     }
@@ -77,7 +75,7 @@ public class ExpenseController {
     public ResponseEntity<String> addExpenseCategory(@RequestBody ExpenseCategory category) {
         String name = category.getCategoryName();
         if(name.isEmpty())
-            throw new NotValidUrlException("The category must have a name. Please provide it by adding a parameter: name");
+            throw new ResponseStatusException(NOT_ACCEPTABLE, "The category must have a name. Please provide it by adding a parameter: name");
 
         expenseService.addExpenseCategory(name.toLowerCase());
         return ResponseEntity.ok("Category has been saved successfully!");
@@ -93,7 +91,7 @@ public class ExpenseController {
     public ResponseEntity<?> modifyExpenseCategory(String categoryName, @RequestBody ExpenseCategory modifiedCategory) {
         String dbCategoryName = categoryName.toLowerCase();
         if(!expenseService.expenseCategoryExists(dbCategoryName))
-            throw new NotFoundException("Category with this name doesn't exist in the DB.");
+            throw new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist in the DB.");
 
         return expenseService.getOptionalExpenseCategory(dbCategoryName)
                 .map(category -> {
@@ -105,9 +103,9 @@ public class ExpenseController {
     @PutMapping("/modify/expense/transaction/{transactionId}")
     public ResponseEntity<?> modifyExpenseTransaction(@PathVariable Long transactionId, @RequestBody ExpenseTransaction modifiedTransaction){
         if(!expenseService.expenseTransactionExists(transactionId))
-            throw new NotFoundException("There is no transaction with id: " + transactionId);
+            throw new ResponseStatusException(NOT_FOUND,"There is no transaction with id: " + transactionId);
         if(modifiedTransaction.getExpenseTransactionId() != null)
-            throw new NotAllowedException("Don't provide an id for the new transaction, because you cannot modify it.");
+            throw new ResponseStatusException(NOT_ACCEPTABLE, "Don't provide an id for the new transaction, because you cannot modify it.");
 
         if(modifiedTransaction.getCategoryName() != null) {
             expenseService.saveExpenseCategoryToDB(modifiedTransaction.getCategoryName());
@@ -177,7 +175,7 @@ public class ExpenseController {
         } else if (currentPage == null && perPage == null){
             pageable = PageRequest.of(0, size);
         } else {
-            throw new BadRequestException("The value of currentPage and/or perPage parameters cannot be under or equal to 0.");
+            throw new ResponseStatusException(BAD_REQUEST,"The value of currentPage and/or perPage parameters cannot be under or equal to 0.");
         }
         return pageable;
     }

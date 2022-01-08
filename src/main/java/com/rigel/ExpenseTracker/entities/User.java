@@ -1,19 +1,17 @@
 package com.rigel.ExpenseTracker.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.rigel.ExpenseTracker.exception.BadRequestException;
-import com.rigel.ExpenseTracker.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.CascadeType.DETACH;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Entity
 @Table(name="users")
@@ -84,7 +82,7 @@ public class User {
     public void addExpenseCategoryToUser(ExpenseCategory expenseCategory){
         if(expenseCategories.stream()
                 .anyMatch(category -> category.getCategoryName().equals(expenseCategory.getCategoryName())))
-            throw new BadRequestException("Category already exists.");
+            throw new ResponseStatusException(BAD_REQUEST, "Category already exists.");
 
         if(this.expenseCategories != null)
             this.expenseCategories.add(expenseCategory);
@@ -98,7 +96,7 @@ public class User {
     public void addIncomeCategoryToUser(IncomeCategory incomeCategory){
         if(incomeCategories.stream()
                 .anyMatch(category -> category.getCategoryName().equals(incomeCategory.getCategoryName())))
-            throw new BadRequestException("Income category already exists.");
+            throw new ResponseStatusException(BAD_REQUEST, "Income category already exists.");
 
         if(this.incomeCategories != null)
             this.incomeCategories.add(incomeCategory);

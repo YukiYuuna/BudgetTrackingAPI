@@ -3,7 +3,10 @@ package com.rigel.ExpenseTracker.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rigel.ExpenseTracker.exception.CustomAuthenticationEntryPoint;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,26 +28,30 @@ import java.util.stream.Collectors;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
-public class CustomAuthFilter extends UsernamePasswordAuthenticationFilter {
+public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    public CustomAuthFilter(AuthenticationManager authenticationManager){
+    public CustomAuthenticationFilter(CustomAuthenticationEntryPoint customAuthenticationEntryPoint, AuthenticationManager authenticationManager){
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
         this.authenticationManager = authenticationManager;
     }
 
+    @SneakyThrows
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        log.info("Username is: {}", username);
-        log.info("Password is : {}", password);
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-        return authenticationManager.authenticate(authenticationToken);
-    }
-
-    @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-//        TODO: handling unsuccessful login
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+            throws AuthenticationException {
+        try{
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
+            log.info("Username is: {}", username);
+            log.info("Password is : {}", password);
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+            return authenticationManager.authenticate(authenticationToken);
+        } catch (AuthenticationException e){
+            customAuthenticationEntryPoint.commence(request,response,e);
+            throw new AccessDeniedException("Bad credentials. Please provide different username/password.");
+        }
     }
 
     @Override

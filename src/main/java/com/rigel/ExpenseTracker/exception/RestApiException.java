@@ -1,30 +1,26 @@
 package com.rigel.ExpenseTracker.exception;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RestApiException {
 
-    private final HttpStatus httpStatus;
-    private final LocalDateTime timestamp;
-    private final String message;
+    private final LocalDateTime timestamp = LocalDateTime.now();
+    private int httpStatus;
+    private String error;
+    private String message;
+    private String path;
 
-    public RestApiException(HttpStatus httpStatus, LocalDateTime timestamp, String message) {
-        this.httpStatus = httpStatus;
-        this.timestamp = timestamp;
-        this.message = message;
-    }
-
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public String getMessage() {
-        return message;
-    }
+   public static RestResponseBuilder builder(){
+       return new RestResponseBuilder();
+   }
 }

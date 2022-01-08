@@ -1,13 +1,10 @@
 package com.rigel.ExpenseTracker.security;
 
-import com.rigel.ExpenseTracker.exception.ApiExceptionHandler;
 import com.rigel.ExpenseTracker.exception.CustomAccessDeniedHandler;
-import com.rigel.ExpenseTracker.exception.CustomAuthenticationFailureHandler;
-import com.rigel.ExpenseTracker.filter.CustomAuthFilter;
+import com.rigel.ExpenseTracker.exception.CustomAuthenticationEntryPoint;
+import com.rigel.ExpenseTracker.filter.CustomAuthenticationFilter;
 import com.rigel.ExpenseTracker.filter.CustomAuthorizationFilter;
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,18 +12,9 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 import static com.rigel.ExpenseTracker.entities.Role.*;
 import static org.springframework.http.HttpMethod.*;
@@ -46,8 +34,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        CustomAuthFilter customAuthFilter = new CustomAuthFilter(authenticationManagerBean());
-        customAuthFilter.setFilterProcessesUrl("/api/login");
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(
+                customAuthenticationEntryPoint(), authenticationManagerBean());
+        customAuthenticationFilter.setFilterProcessesUrl("/api/login");
 
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
@@ -84,9 +73,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 //        Filtering:
         http.authorizeRequests().anyRequest().authenticated()
-                .and().exceptionHandling().accessDeniedHandler(accessDeniedHandler());
-        http.addFilter(customAuthFilter);
-        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .and().exceptionHandling().accessDeniedHandler(customAccessDeniedHandler());
+        http.addFilter(customAuthenticationFilter);
+        http.addFilterBefore(new CustomAuthorizationFilter(customAccessDeniedHandler()), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
@@ -94,9 +83,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception{
         return super.authenticationManagerBean();
     }
+
     @Bean
-    public AccessDeniedHandler accessDeniedHandler() {
+    public CustomAccessDeniedHandler customAccessDeniedHandler() {
         return new CustomAccessDeniedHandler();
     }
 
+    @Bean
+    public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() {
+        return new CustomAuthenticationEntryPoint();
+    }
 }
