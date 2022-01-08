@@ -72,11 +72,17 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
     }
 
     @Override
-    public HashMap<String, Object> getAllUserTransactions(Pageable pageable) {
+    public HashMap<String, Object> getUserTransactions(Pageable pageable) {
         String username = getUsernameByAuthentication();
-        HashMap<String, Object> result = new LinkedHashMap<>();
-        Page<ExpenseTransaction> transactions = expenseTransactionRepo.filterTransactionsByUsername(pageable, username);
+        Optional<User> user = userExists(username);
+        Page<ExpenseTransaction> transactions;
 
+        if(user.get().getRoles().stream().anyMatch(role -> role.getRoleName().equals("ROLE_USER")))
+            transactions = expenseTransactionRepo.filterTransactionsByUsername(pageable, username);
+        else
+            transactions = expenseTransactionRepo.filteredTransactions(pageable);
+
+        HashMap<String, Object> result = new LinkedHashMap<>();
         result.put("username", username);
         result.put("totalTransactions", transactions.getTotalElements());
         result.put("totalPages", transactions.getTotalPages());
@@ -88,7 +94,7 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
     @Override
     public Optional<ExpenseTransaction> getTransactionById(Long transactionId){
         Optional<User> user = userExists(getUsernameByAuthentication());
-        if(user.get().getUsername().equals("admin"))
+        if(user.get().getRoles().stream().anyMatch(role -> role.getRoleName().equals("ROLE_ADMIN")))
             return expenseTransactionRepo.findById(transactionId);
 
         return user.get()
@@ -144,11 +150,6 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
         } catch (DateTimeException e){
             throw new ResponseStatusException(NOT_ACCEPTABLE, "Please, provide a valid date format: YYYY-MM-DD");
         }
-    }
-
-    @Override
-    public Page<ExpenseTransaction> getExpenseTransactions(Pageable pageable) {
-        return expenseTransactionRepo.filteredTransactions(pageable);
     }
 
     @Override

@@ -25,15 +25,13 @@ public interface ExpenseService {
 
     Set<ExpenseCategory> getExpenseCategories();
 
-    HashMap<String, Object> getAllUserTransactions(Pageable pageable);
+    HashMap<String, Object> getUserTransactions(Pageable pageable);
 
     Optional<ExpenseTransaction> getTransactionById(Long transactionId);
 
     Page<ExpenseTransaction> getTransactionsByCategoryAndUsername(Pageable pageable, String categoryName);
 
     HashMap<String, Object> getExpenseTransactionByDate(String date);
-
-    Page<ExpenseTransaction> getExpenseTransactions(Pageable pageable);
 
     void addExpenseCategory(String categoryName);
 

@@ -12,11 +12,7 @@ import java.util.List;
 
 public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTransaction, Long> {
 
-    List<ExpenseTransaction> findExpenseTransactionByExpenseCategory_CategoryName(String name);
-
     boolean existsExpenseTransactionByUserAndExpenseTransactionId(User user, Long id);
-
-    ExpenseTransaction findExpenseTransactionsByExpenseTransactionId(Long id);
 
     void deleteExpenseTransactionsByExpenseCategoryAndUser(ExpenseCategory category, User user);
 

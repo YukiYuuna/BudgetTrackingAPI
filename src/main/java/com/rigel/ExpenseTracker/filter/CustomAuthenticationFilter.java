@@ -39,19 +39,19 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     @SneakyThrows
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException {
-        try{
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
             String username = request.getParameter("username");
             String password = request.getParameter("password");
             log.info("Username is: {}", username);
             log.info("Password is : {}", password);
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
             return authenticationManager.authenticate(authenticationToken);
-        } catch (AuthenticationException e){
-            customAuthenticationEntryPoint.commence(request,response,e);
-            throw new AccessDeniedException("Bad credentials. Please provide different username/password.");
-        }
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
+        customAuthenticationEntryPoint.commence(request,response,e);
+        throw new AccessDeniedException("Bad credentials. Please provide different username/password.");
     }
 
     @Override
@@ -61,14 +61,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000)) // 10min
+                .withExpiresAt(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // 60min
                 .withIssuer(request.getRequestURL().toString())
                 .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(algo);
 
         String refreshToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000)) // 30min
+                .withExpiresAt(new Date(System.currentTimeMillis() + 120 * 60 * 1000)) // 120min
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algo);
 

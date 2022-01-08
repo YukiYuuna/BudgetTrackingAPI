@@ -44,7 +44,7 @@ public class User {
     @Column(name = "budget")
     private Double currentBudget;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade =  {PERSIST, MERGE, REFRESH, DETACH})
+    @ManyToMany(cascade =  {PERSIST, MERGE, REFRESH, DETACH})
     @JoinTable(name = "user_role",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = { @JoinColumn(name = "role_id")})

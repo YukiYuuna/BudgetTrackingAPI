@@ -76,7 +76,7 @@ public class UserController {
                     }
                     user.setFirstName(updatedUser.getFirstName() == null ? user.getFirstName() : updatedUser.getFirstName());
                     user.setLastName(updatedUser.getLastName() == null ? user.getLastName() : updatedUser.getLastName());
-                    user.setEmail(updatedUser.getEmail() == null ? user.getEmail() : updatedUser.getEmail());
+                    user.setEmail(updatedUser.getEmail() == null ? user.getEmail() : updatedUser.getEmail()); // check if email exists
                     user.setCurrentBudget(updatedUser.getCurrentBudget() == null ? user.getCurrentBudget() : updatedUser.getCurrentBudget());
                     user.setExpenseCategories(user.getExpenseCategories() == null ? user.getExpenseCategories() : updatedUser.getExpenseCategories());
                     userService.clearSave(user);

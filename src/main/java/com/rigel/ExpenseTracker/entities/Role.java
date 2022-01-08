@@ -36,32 +36,4 @@ public class Role {
     @ManyToMany(mappedBy = "roles",cascade =  {PERSIST, MERGE, REFRESH, DETACH})
     private Set<User> users;
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((roleName == null) ? 0 : roleName.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        return Objects.equals(roleName, ((Role) obj).getRoleName());
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("Role [name=").append(roleName).append("]").append("[id=").append(roleId).append("]");
-        return builder.toString();
-    }
 }

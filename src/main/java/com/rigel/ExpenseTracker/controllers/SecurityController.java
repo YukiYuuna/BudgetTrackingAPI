@@ -84,13 +84,13 @@ public class SecurityController {
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(String username, String password, String firstName, String lastName, String email, Double currentBudget) {
         if (username !=  null && password != null && firstName != null && lastName != null && email != null && currentBudget != null) {
-            boolean invalidUsername = userService.getAllDBUsers().stream().anyMatch(user -> user.getUsername().equals(username));
-            boolean invalidEmail = userService.getAllDBUsers().stream().anyMatch(user -> user.getEmail().equals(email));
-            if(!invalidUsername && !invalidEmail) {
+            boolean validUsername = userService.getAllDBUsers().stream().anyMatch(user -> user.getUsername().equals(username));
+            boolean validEmail = userService.getAllDBUsers().stream().anyMatch(user -> user.getEmail().equals(email));
+            if(!validUsername && !validEmail) {
                 userService.saveUser(new User(username, password, firstName, lastName, email, currentBudget));
                 return ResponseEntity.ok().body(firstName + " " + lastName + " has been added successfully!");
             } else{
-                if(invalidUsername){
+                if(validUsername){
                     throw new ResponseStatusException(BAD_REQUEST, "User with this username already exists.");
                 }
                 throw new ResponseStatusException(BAD_REQUEST, "User with this email already exists.");

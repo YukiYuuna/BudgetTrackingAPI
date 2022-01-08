@@ -34,30 +34,15 @@ public class ExpenseController {
         this.expenseService = expenseCategoryService;
     }
 
-    @GetMapping("/expense/transactions/admin")
-    public Page<ExpenseTransaction> fetchAllExpenseTransactions(@Nullable Integer currentPage, @Nullable Integer perPage) {
+    @GetMapping("/expense/transactions")
+    public HashMap<String, Object> fetchUserTransactions(@RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage) {
         Pageable pageable = createPagination(currentPage, perPage, userService.numberOfUsers());
-        return expenseService.getExpenseTransactions(pageable);
+        return expenseService.getUserTransactions(pageable);
     }
 
     @GetMapping("/expense/categories/user")
     public Set<ExpenseCategory> fetchAllUserExpenseCategories() {
         return expenseService.getExpenseCategories();
-    }
-
-    @GetMapping("/expense/transaction/{id}")
-    private ExpenseTransaction fetchTransactionById(@PathVariable Long id) {
-        Optional<ExpenseTransaction> transaction = expenseService.getTransactionById(id);
-        if(transaction.isEmpty())
-            throw new ResponseStatusException(NOT_FOUND,"Transaction with id - " + id + " doesn't exist in the DB.");
-
-        return transaction.get();
-    }
-
-    @GetMapping("/expense/transactions/user")
-    public HashMap<String, Object> fetchUserTransactions(@RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage) {
-        Pageable pageable = createPagination(currentPage, perPage, userService.numberOfUsers());
-        return expenseService.getAllUserTransactions(pageable);
     }
 
     @GetMapping("/expense/transactions/date")
@@ -69,6 +54,15 @@ public class ExpenseController {
     private Page<ExpenseTransaction> fetchTransactionsByCategory(@RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage, String categoryName) {
         Pageable pageable = createPagination(currentPage, perPage, expenseService.numberOfTransactionsByCategory(categoryName));
         return expenseService.getTransactionsByCategoryAndUsername(pageable, categoryName);
+    }
+
+    @GetMapping("/expense/transaction/{id}")
+    private ExpenseTransaction fetchTransactionById(@PathVariable Long id) {
+        Optional<ExpenseTransaction> transaction = expenseService.getTransactionById(id);
+        if(transaction.isEmpty())
+            throw new ResponseStatusException(NOT_FOUND,"Transaction with id - " + id + " doesn't exist in the DB.");
+
+        return transaction.get();
     }
 
     @PostMapping("/add/expense/category")
@@ -85,6 +79,7 @@ public class ExpenseController {
     public ResponseEntity<String> addExpenseTransaction(@RequestParam String date, @RequestParam Double expenseAmount, @RequestParam String categoryName, @RequestParam @Nullable String description) {
         expenseService.addExpenseTransaction(date, expenseAmount, categoryName.toLowerCase(), description);
         return ResponseEntity.ok().body("Transaction added successfully");
+
     }
 
     @PutMapping("/modify/expense/category")
