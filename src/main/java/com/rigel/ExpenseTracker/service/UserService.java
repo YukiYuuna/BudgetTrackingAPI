@@ -22,7 +22,7 @@ public interface UserService {
 
     Role saveRole(Role role);
 
-    void addRoleToUser(String password);
+    void addRoleToUser(String roleName);
 
     User getUser();
 
