@@ -2,13 +2,18 @@ package com.rigel.ExpenseTracker.service;
 
 import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
@@ -16,10 +21,13 @@ import java.util.Set;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
+@Service
+@RequiredArgsConstructor
+@Transactional
+@Slf4j
 public class TransactionServiceImpl implements TransactionService{
 
-    @Autowired
-    UserRepository userRepo;
+    private final UserRepository userRepo;
 
     @Override
     public void saveTransactionCategoryToDB(String categoryName, TransactionService service) {
@@ -55,7 +63,7 @@ public class TransactionServiceImpl implements TransactionService{
     public Set<?> getTransactionCategories(TransactionRepo repo) {
         User user = getUser().get();
 
-        Set<?> result  = (Set<?>)  repo.findAllCategories().stream().filter(c -> c.getUserId().equals(user.getUserId()));
+        Set<?> result = Set.of(repo.findAllCategories().stream().filter(c -> c.getUserId().equals(user.getUserId())));
 
         if(result.isEmpty())
             throw new ResponseStatusException(NOT_FOUND, "There are no registered income categories.");

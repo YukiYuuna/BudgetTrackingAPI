@@ -34,8 +34,7 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
         String dbName = categoryName.toLowerCase();
         Optional<ExpenseCategory> expenseCategory = getOptionalExpenseCategory(dbName);
         if(expenseCategory.isEmpty()){
-            ExpenseCategory newCategory = new ExpenseCategory(dbName);
-            newCategory.setUser(userExists(getUsernameByAuthentication()).get());
+            ExpenseCategory newCategory = new ExpenseCategory(dbName, userExists(getUsernameByAuthentication()).get());
             expenseCategoryRepo.saveAndFlush(newCategory);
         }
     }
@@ -162,8 +161,7 @@ public class ExpenseServiceImpl extends Services implements ExpenseService{
                 throw new ResponseStatusException(BAD_REQUEST, "Category with name: " + categoryName + ", already exists.");
         }
 
-        ExpenseCategory expenseCategory = new ExpenseCategory(categoryName);
-        expenseCategory.setUser(user.get());
+        ExpenseCategory expenseCategory = new ExpenseCategory(categoryName, user.get());
         user.get().addExpenseCategoryToUser(expenseCategory);
         expenseCategoryRepo.save(expenseCategory);
     }

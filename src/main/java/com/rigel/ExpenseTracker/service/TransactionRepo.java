@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface TransactionRepo {
+
     Set<TransactionCategory> findAllCategories();
 
     Optional<?> findExpenseCategoryByCategoryNameAndUser(String categoryName, User user);

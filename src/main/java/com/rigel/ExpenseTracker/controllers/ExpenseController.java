@@ -7,7 +7,6 @@ import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
 import com.rigel.ExpenseTracker.service.ExpenseService;
 import com.rigel.ExpenseTracker.service.TransactionService;
-import com.rigel.ExpenseTracker.service.TransactionServiceImpl;
 import com.rigel.ExpenseTracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -30,21 +29,20 @@ public class ExpenseController {
 
     private final UserService userService;
     private final ExpenseService expenseService;
-
-    TransactionService transactionService;
-
-    @Autowired
-    ExpenseCategoryRepository expenseCategoryRepository;
-
-    @GetMapping("/expense/test")
-    public Page<ExpenseTransaction> test() {
-        return (Page<ExpenseTransaction>) transactionService.getTransactionCategories(expenseCategoryRepository);
-    }
+    private final TransactionService transactionService;
+    private final ExpenseCategoryRepository expenseCategoryRepository;
 
     @Autowired
-    public ExpenseController(@Lazy UserService userService, ExpenseService expenseCategoryService){
+    public ExpenseController(@Lazy UserService userService, ExpenseService expenseCategoryService, TransactionService transactionService, ExpenseCategoryRepository expenseCategoryRepository){
         this.userService = userService;
         this.expenseService = expenseCategoryService;
+        this.transactionService = transactionService;
+        this.expenseCategoryRepository = expenseCategoryRepository;
+    }
+
+    @GetMapping("/expense/test")
+    public Set<?> test() {
+        return transactionService.getTransactionCategories(expenseCategoryRepository);
     }
 
 //    @ApiOperation(value = "Get all expense transactions.", tags = "getTransactions")

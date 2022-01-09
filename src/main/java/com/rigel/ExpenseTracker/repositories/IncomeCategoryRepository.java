@@ -13,7 +13,7 @@ import java.util.Set;
 
 public interface IncomeCategoryRepository extends JpaRepository<IncomeCategory, Long>, TransactionRepo {
 
-    @Query("SELECT DISTINCT(c.categoryName) FROM IncomeCategory c")
+    @Query("SELECT c FROM IncomeCategory c")
     Set<TransactionCategory> findAllCategories();
 
     Optional<IncomeCategory> findIncomeCategoryByCategoryNameAndUser(String categoryName, User user);

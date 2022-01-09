@@ -41,11 +41,6 @@ public class ExpenseCategory extends TransactionCategory{
     public ExpenseCategory() {
     }
 
-    public ExpenseCategory(String categoryName) {
-        this.categoryName = categoryName;
-        setUserId(user.getUserId());
-    }
-
     public ExpenseCategory(String categoryName, User user) {
         this.categoryName = categoryName;
         this.user = user;

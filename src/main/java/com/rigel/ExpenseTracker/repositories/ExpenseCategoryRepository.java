@@ -12,7 +12,7 @@ import java.util.Set;
 
 public interface ExpenseCategoryRepository extends JpaRepository<ExpenseCategory, Long>, TransactionRepo {
 
-    @Query("SELECT DISTINCT(c.categoryName) FROM ExpenseCategory c")
+    @Query("SELECT c FROM ExpenseCategory c")
     Set<TransactionCategory> findAllCategories();
 
     Optional<ExpenseCategory> findExpenseCategoryByCategoryNameAndUser(String categoryName, User user);
