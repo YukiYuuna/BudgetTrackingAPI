@@ -4,7 +4,10 @@ package com.rigel.ExpenseTracker.controllers;
 import com.rigel.ExpenseTracker.entities.ExpenseCategory;
 import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
 import com.rigel.ExpenseTracker.entities.User;
+import com.rigel.ExpenseTracker.repositories.ExpenseCategoryRepository;
 import com.rigel.ExpenseTracker.service.ExpenseService;
+import com.rigel.ExpenseTracker.service.TransactionService;
+import com.rigel.ExpenseTracker.service.TransactionServiceImpl;
 import com.rigel.ExpenseTracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -27,6 +30,16 @@ public class ExpenseController {
 
     private final UserService userService;
     private final ExpenseService expenseService;
+
+    TransactionService transactionService;
+
+    @Autowired
+    ExpenseCategoryRepository expenseCategoryRepository;
+
+    @GetMapping("/expense/test")
+    public Page<ExpenseTransaction> test() {
+        return (Page<ExpenseTransaction>) transactionService.getTransactionCategories(expenseCategoryRepository);
+    }
 
     @Autowired
     public ExpenseController(@Lazy UserService userService, ExpenseService expenseCategoryService){

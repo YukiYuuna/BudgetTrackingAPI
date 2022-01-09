@@ -19,7 +19,7 @@ import static javax.persistence.CascadeType.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ExpenseCategory {
+public class ExpenseCategory extends TransactionCategory{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "expense_category_id")
@@ -43,11 +43,13 @@ public class ExpenseCategory {
 
     public ExpenseCategory(String categoryName) {
         this.categoryName = categoryName;
+        setUserId(user.getUserId());
     }
 
     public ExpenseCategory(String categoryName, User user) {
         this.categoryName = categoryName;
         this.user = user;
+        setUserId(user.getUserId());
     }
 
     @Override
