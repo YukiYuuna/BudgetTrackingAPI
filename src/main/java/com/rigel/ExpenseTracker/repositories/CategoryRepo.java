@@ -1,15 +1,12 @@
-package com.rigel.ExpenseTracker.service;
+package com.rigel.ExpenseTracker.repositories;
 
 import com.rigel.ExpenseTracker.entities.TransactionCategory;
 import com.rigel.ExpenseTracker.entities.User;
 import java.util.Optional;
 import java.util.Set;
 
-public interface TransactionRepo {
-
-    Set<TransactionCategory> findAllCategories();
-
-    Optional<?> findExpenseCategoryByCategoryNameAndUser(String categoryName, User user);
-
-    void deleteExpenseCategoryByUserAndAndCategoryName(User user, String categoryName);
+public interface CategoryRepo {
+    Set<?> findAllCategories();
+//    Set<TransactionCategory> findMappedCategories();
+    Optional<?> findCategoryByNameAndUser(String categoryName, User user);
 }

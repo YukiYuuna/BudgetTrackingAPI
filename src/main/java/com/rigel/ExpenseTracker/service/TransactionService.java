@@ -1,10 +1,10 @@
 package com.rigel.ExpenseTracker.service;
 
 import com.rigel.ExpenseTracker.entities.User;
+import com.rigel.ExpenseTracker.repositories.CategoryRepo;
+import com.rigel.ExpenseTracker.repositories.TransactionRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -12,47 +12,43 @@ import java.util.Set;
 
 public interface TransactionService {
 
-    void saveTransactionCategoryToDB(String categoryName, TransactionService service);
+    void saveCategoryToDB(String categoryName, String type, CategoryRepo repo);
 
-    void saveTransactionTransactionToDB(Optional<?> transaction, TransactionService service);
+    void saveTransactionToDB(TransactionRepo repo);
 
-    int numberOfTransactionsByCategory(String categoryName, TransactionService service);
+    int numberOfTransactionsByCategory(String categoryName, CategoryRepo cRepo, TransactionRepo tRepo);
 
-    Optional<?> getOptionalTransactionCategory(String categoryName);
+    Optional<?> getCategory(CategoryRepo repo, String type, String categoryName);
 
-    Optional<?> getTransactionCategory(String categoryName, TransactionRepo repo);
+    Set<?> getCategories(String type, TransactionRepo repo);
 
-    public Set<?> getTransactionCategories(TransactionRepo repo);
+    HashMap<String, Object> getAllUserTransactions(Pageable pageable, TransactionRepo repo);
 
-    HashMap<String, Object> getAllUserTransactions(Pageable pageable, TransactionService service);
+    Optional<?> getTransactionById(Long transactionId, TransactionRepo repo);
 
-    Optional<?> getTransactionById(Long transactionId, TransactionService service);
+    Page<?> getTransactionsByCategoryAndUsername(Pageable pageable, String categoryName, CategoryRepo cRepo, TransactionRepo tRepo);
 
-    Page<?> getTransactionsByCategoryAndUsername(Pageable pageable, String categoryName, TransactionService service);
+    HashMap<String, Object> getTransactionByDate(String date, TransactionRepo repo);
 
-    HashMap<String, Object> getTransactionTransactionByDate(String date, TransactionService service);
+    Page<?> getTransactions(Pageable pageable, TransactionRepo repo);
 
-    Page<?> getTransactionTransactions(Pageable pageable, TransactionService service);
+    void addCategory(String categoryName, CategoryRepo repo);
 
-    void addTransactionCategory(String categoryName, TransactionService service);
+    void addTransaction(String date, Double TransactionAmount, String categoryName, String description, TransactionRepo tRepo, CategoryRepo cRepo);
 
-    void addTransactionTransaction(String date, Double TransactionAmount, String categoryName, String description, TransactionService service);
+    boolean transactionExists(Long transactionId, TransactionRepo repo);
 
-    boolean TransactionTransactionExists(Long transactionId, TransactionService service);
+    boolean categoryExists(String categoryName, CategoryRepo repo);
 
-    boolean TransactionCategoryExists(String categoryName, TransactionService service);
+    void deleteTransactionByUser(TransactionRepo repo);
 
-    void deleteTransactionByUser(TransactionService service);
+    void deleteTransactionById(Long transactionId, TransactionRepo repo);
 
-    void deleteTransactionById(Long transactionId, TransactionService service);
+    void deleteTransactionsByCategory(String categoryName,CategoryRepo cRepo, TransactionRepo tRepo);
 
-    void deleteTransactionsByCategory(String categoryName, TransactionService service);
-
-    void deleteTransactionCategory(String categoryName, TransactionService service);
+    void deleteCategory(String categoryName, CategoryRepo repo);
 
     String getUsernameByAuthentication();
 
     Optional<User> getUser();
-
-    Object doesCategoryExist(User user, String categoryName);
 }

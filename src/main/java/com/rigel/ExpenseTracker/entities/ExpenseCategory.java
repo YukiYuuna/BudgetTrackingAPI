@@ -2,15 +2,12 @@ package com.rigel.ExpenseTracker.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import static javax.persistence.CascadeType.*;
 
@@ -19,7 +16,7 @@ import static javax.persistence.CascadeType.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ExpenseCategory extends TransactionCategory{
+public class ExpenseCategory extends TransactionCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "expense_category_id")
@@ -45,6 +42,7 @@ public class ExpenseCategory extends TransactionCategory{
         this.categoryName = categoryName;
         this.user = user;
         setUserId(user.getUserId());
+        setCategoryType("expense");
     }
 
     @Override

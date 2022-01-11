@@ -1,7 +1,9 @@
 package com.rigel.ExpenseTracker.service;
 
+import com.rigel.ExpenseTracker.entities.ExpenseCategory;
+import com.rigel.ExpenseTracker.entities.IncomeCategory;
 import com.rigel.ExpenseTracker.entities.User;
-import com.rigel.ExpenseTracker.repositories.UserRepository;
+import com.rigel.ExpenseTracker.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -30,109 +29,144 @@ public class TransactionServiceImpl implements TransactionService{
     private final UserRepository userRepo;
 
     @Override
-    public void saveTransactionCategoryToDB(String categoryName, TransactionService service) {
+    public void saveCategoryToDB(String categoryName, String type, CategoryRepo repo) {
+        String dbName = categoryName.toLowerCase();
 
+        Optional<?> category = getCategory(repo, type, dbName);
+
+        if(category.isEmpty()){
+            if(type.equals("expense")) {
+                ExpenseCategory newCategory = new ExpenseCategory(dbName, getUser().get());
+                ((ExpenseCategoryRepository)repo).saveAndFlush(newCategory);
+            } else{
+                IncomeCategory newCategory = new IncomeCategory(dbName, getUser().get());
+                ((IncomeCategoryRepository)repo).saveAndFlush(newCategory);
+            }
+        }
     }
 
     @Override
-    public void saveTransactionTransactionToDB(Optional<?> transaction, TransactionService service) {
+    public  void saveTransactionToDB(TransactionRepo repo) {
+        String dbName = categoryName.toLowerCase();
 
+        Optional<?> category = getCategory(repo, type, dbName);
+
+        if(category.isEmpty()){
+            if(type.equals("expense")) {
+                ExpenseCategory newCategory = new ExpenseCategory(dbName, getUser().get());
+                ((ExpenseCategoryRepository)repo).saveAndFlush(newCategory);
+            } else{
+                IncomeCategory newCategory = new IncomeCategory(dbName, getUser().get());
+                ((IncomeCategoryRepository)repo).saveAndFlush(newCategory);
+            }
+        }
     }
 
     @Override
-    public int numberOfTransactionsByCategory(String categoryName, TransactionService service) {
+    public int numberOfTransactionsByCategory(String categoryName, CategoryRepo cRepo, TransactionRepo tRepo) {
         return 0;
     }
 
     @Override
-    public Optional<?> getOptionalTransactionCategory(String categoryName) {
-        return Optional.empty();
+    public Optional<?> getCategory(CategoryRepo repo, String type, String categoryName) {
+        Optional<?> category;
+
+        if(type.equals("expense"))
+            category = ((ExpenseCategoryRepository)repo).findAllCategories().stream()
+                .filter(c -> c.getUser().getUserId().equals(getUser().get().getUserId())).findFirst();
+        else
+            category = ((IncomeCategoryRepository)repo).findAllCategories().stream()
+                    .filter(c -> c.getUser().getUserId().equals(getUser().get().getUserId())).findFirst();
+
+        return category;
     }
 
     @Override
-    public Optional<?> getTransactionCategory(String categoryName, TransactionRepo repo) {
-        Optional<?> category = getOptionalTransactionCategory(categoryName.toLowerCase());
+    public Set<?> getCategories(String type, TransactionRepo repo) {
+        Set<?> result;
 
-        if(category.isEmpty())
-            throw new ResponseStatusException(NOT_FOUND, "A category with this name doesn't exist!");
+        if(type.equals("expense"))
+            result = Set.of(((ExpenseCategoryRepository)repo)
+                    .findAllCategories().stream()
+                    .filter(c -> c.getUser().getUserId().equals(getUser().get().getUserId())));
+        else{
+            result = Set.of(((IncomeCategoryRepository)repo)
+                    .findAllCategories().stream()
+                    .filter(c -> c.getUser().getUserId().equals(getUser().get().getUserId())));
+        }
 
-        return (Optional<?>) category.get();
-    }
-
-    @Override
-    public Set<?> getTransactionCategories(TransactionRepo repo) {
-        User user = getUser().get();
-
-        Set<?> result = Set.of(repo.findAllCategories().stream().filter(c -> c.getUserId().equals(user.getUserId())));
-
-        if(result.isEmpty())
+        if(result.size() == 0)
             throw new ResponseStatusException(NOT_FOUND, "There are no registered income categories.");
 
         return result;
     }
 
     @Override
-    public HashMap<String, Object> getAllUserTransactions(Pageable pageable, TransactionService service) {
+    public HashMap<String, Object> getAllUserTransactions(Pageable pageable, TransactionRepo repo) {
         return null;
     }
 
     @Override
-    public Optional<?> getTransactionById(Long transactionId, TransactionService service) {
+    public Optional<?> getTransactionById(Long transactionId, TransactionRepo repo) {
         return Optional.empty();
     }
 
     @Override
-    public Page<?> getTransactionsByCategoryAndUsername(Pageable pageable, String categoryName, TransactionService service) {
+    public Page<?> getTransactionsByCategoryAndUsername(Pageable pageable,
+                                                        String categoryName,
+                                                        CategoryRepo cRepo,
+                                                        TransactionRepo tRepo) {
         return null;
     }
 
     @Override
-    public HashMap<String, Object> getTransactionTransactionByDate(String date, TransactionService service) {
+    public HashMap<String, Object> getTransactionByDate(String date, TransactionRepo repo) {
         return null;
     }
 
     @Override
-    public Page<?> getTransactionTransactions(Pageable pageable, TransactionService service) {
+    public Page<?> getTransactions(Pageable pageable, TransactionRepo repo) {
         return null;
     }
 
     @Override
-    public void addTransactionCategory(String categoryName, TransactionService service) {
+    public void addCategory(String categoryName, CategoryRepo repo) {
 
     }
 
     @Override
-    public void addTransactionTransaction(String date, Double TransactionAmount, String categoryName, String description, TransactionService service) {
+    public void addTransaction(String date, Double TransactionAmount, String categoryName,
+                          String description, TransactionRepo tRepo, CategoryRepo cRepo) {
 
     }
 
     @Override
-    public boolean TransactionTransactionExists(Long transactionId, TransactionService service) {
+    public boolean transactionExists(Long transactionId, TransactionRepo repo) {
         return false;
     }
 
     @Override
-    public boolean TransactionCategoryExists(String categoryName, TransactionService service) {
+    public boolean categoryExists(String categoryName, CategoryRepo repo) {
         return false;
     }
 
     @Override
-    public void deleteTransactionByUser(TransactionService service) {
+    public void deleteTransactionByUser(TransactionRepo repo){
 
     }
 
     @Override
-    public void deleteTransactionById(Long transactionId, TransactionService service) {
+    public void deleteTransactionById(Long transactionId, TransactionRepo repo){
 
     }
 
     @Override
-    public void deleteTransactionsByCategory(String categoryName, TransactionService service) {
+    public  void deleteTransactionsByCategory(String categoryName,CategoryRepo cRepo, TransactionRepo tRepo) {
 
     }
 
     @Override
-    public void deleteTransactionCategory(String categoryName, TransactionService service) {
+    public void deleteCategory(String categoryName, CategoryRepo repo) {
 
     }
 
@@ -152,10 +186,5 @@ public class TransactionServiceImpl implements TransactionService{
         else {
             throw new ResponseStatusException(BAD_REQUEST, "Sorry, something went wrong.");
         }
-    }
-
-    @Override
-    public Object doesCategoryExist(User user, String categoryName) {
-        return null;
     }
 }

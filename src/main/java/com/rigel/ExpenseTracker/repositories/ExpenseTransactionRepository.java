@@ -2,6 +2,7 @@ package com.rigel.ExpenseTracker.repositories;
 
 import com.rigel.ExpenseTracker.entities.ExpenseCategory;
 import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
+import com.rigel.ExpenseTracker.entities.TransactionCategory;
 import com.rigel.ExpenseTracker.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,21 +10,34 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTransaction, Long> {
+public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTransaction, Long>, TransactionRepo {
 
-    List<ExpenseTransaction> findExpenseTransactionByExpenseCategory_CategoryName(String name);
+    @Override
+    @Query("SELECT e "
+            + "FROM ExpenseTransaction e "
+            + "WHERE e.categoryType = 'expense'")
+    List<TransactionCategory> findMappedTransactions();
 
-    boolean existsExpenseTransactionByUserAndExpenseTransactionId(User user, Long id);
+    @Override
+    @Query("SELECT e "
+            + "FROM ExpenseTransaction e "
+            + "WHERE e.categoryName = ?1")
+    List<ExpenseTransaction> findTransactionsByCategoryName(String name);
 
-    ExpenseTransaction findExpenseTransactionsByExpenseTransactionId(Long id);
+    @Override
+    @Query("SELECT e "
+            + "FROM ExpenseTransaction e "
+            + "WHERE e.expenseTransactionId = ?1")
+    Optional<ExpenseTransaction> findTransactionsByTransactionId(Long id);
 
-    void deleteExpenseTransactionsByExpenseCategoryAndUser(ExpenseCategory category, User user);
-
+    @Override
     @Query("SELECT e "
             + "FROM ExpenseTransaction e")
     Page<ExpenseTransaction> filteredTransactions(Pageable pageable);
 
+    @Override
     @Query("SELECT e "
             + "FROM ExpenseTransaction e "
             + "WHERE "
@@ -31,6 +45,7 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
             + "LIKE :#{#username == null || #username.isEmpty()? '%' : #username + '%'} ")
     Page<ExpenseTransaction> filterTransactionsByUsername(Pageable pageable, String username);
 
+    @Override
     @Query("SELECT e "
             + "FROM ExpenseTransaction e "
             + "WHERE "
@@ -40,6 +55,10 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
             + "lower(e.categoryName) "
             + "LIKE :#{#categoryName == null || #categoryName.isEmpty()? '%' : #categoryName + '%'} ")
     Page<ExpenseTransaction> filterTransactionsByUsernameAndCategory(Pageable pageable, String username,  String categoryName);
+
+    boolean existsExpenseTransactionByUserAndExpenseTransactionId(User user, Long id);
+
+    void deleteExpenseTransactionsByExpenseCategoryAndUser(ExpenseCategory category, User user);
 
     void deleteExpenseTransactionsByUser(User user);
 

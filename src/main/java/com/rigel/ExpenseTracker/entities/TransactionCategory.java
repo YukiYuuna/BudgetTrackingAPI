@@ -1,7 +1,6 @@
 package com.rigel.ExpenseTracker.entities;
 
 import lombok.Data;
-import lombok.Getter;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -11,4 +10,7 @@ import javax.persistence.MappedSuperclass;
 public class TransactionCategory {
     @Column(name = "user_id")
     private Long userId;
+
+    @Column(name = "category_type")
+    private String categoryType;
 }
