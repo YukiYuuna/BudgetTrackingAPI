@@ -40,11 +40,6 @@ public class ExpenseController {
         this.expenseCategoryRepository = expenseCategoryRepository;
     }
 
-    @GetMapping("/expense/test")
-    public Set<?> test() {
-        return transactionService.getTransactionCategories(expenseCategoryRepository);
-    }
-
 //    @ApiOperation(value = "Get all expense transactions.", tags = "getTransactions")
     @GetMapping("/expense/transactions/admin")
     public Page<ExpenseTransaction> fetchAllExpenseTransactions(@Nullable Integer currentPage, @Nullable Integer perPage) {

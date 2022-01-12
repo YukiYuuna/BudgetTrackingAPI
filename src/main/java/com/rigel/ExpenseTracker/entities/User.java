@@ -81,10 +81,6 @@ public class User {
     }
 
     public void addExpenseCategoryToUser(ExpenseCategory expenseCategory){
-        if(expenseCategories.stream()
-                .anyMatch(category -> category.getCategoryName().equals(expenseCategory.getCategoryName())))
-            throw new ResponseStatusException(BAD_REQUEST, "Category already exists.");
-
         if(this.expenseCategories != null)
             this.expenseCategories.add(expenseCategory);
         else{

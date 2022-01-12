@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,6 +53,13 @@ public interface IncomeTransactionRepository extends JpaRepository<IncomeTransac
             + "lower(e.categoryName) "
             + "LIKE :#{#categoryName == null || #categoryName.isEmpty()? '%' : #categoryName + '%'} ")
     Page<IncomeTransaction> filterTransactionsByUsernameAndCategory(Pageable pageable, String username,  String categoryName);
+
+    @Override
+    @Query("SELECT e "
+            + "FROM IncomeTransaction e "
+            + "WHERE e.date = ?2 "
+            + "AND e.user.username = ?1")
+    Page<?> filteredTransactionsByDate(Pageable pageable, String username, LocalDate date);
 
     boolean existsIncomeTransactionByUserAndIncomeTransactionId(User user, Long id);
 

@@ -6,35 +6,46 @@ import com.rigel.ExpenseTracker.repositories.TransactionRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
 
 public interface TransactionService {
 
-    void saveCategoryToDB(String categoryName, String type, CategoryRepo repo);
+//    done
+    void saveCategoryToDB(String categoryName, String type);
 
-    void saveTransactionToDB(TransactionRepo repo);
+//    done
+    void saveTransactionToDB(LocalDate date, Double expenseAmount, String categoryName, String description, String categoryType);
 
     int numberOfTransactionsByCategory(String categoryName, CategoryRepo cRepo, TransactionRepo tRepo);
 
-    Optional<?> getCategory(CategoryRepo repo, String type, String categoryName);
+//    done
+    Optional<?> getCategory(String type, String categoryName);
 
-    Set<?> getCategories(String type, TransactionRepo repo);
+//    done
+    Set<?> getCategories(String type);
 
-    HashMap<String, Object> getAllUserTransactions(Pageable pageable, TransactionRepo repo);
-
+//    done
     Optional<?> getTransactionById(Long transactionId, TransactionRepo repo);
 
-    Page<?> getTransactionsByCategoryAndUsername(Pageable pageable, String categoryName, CategoryRepo cRepo, TransactionRepo tRepo);
+//    done
+    Page<?> getTransactionsByCategoryAndUsername(Pageable pageable, String type,
+                                                 String categoryName, CategoryRepo cRepo,
+                                                 TransactionRepo tRepo);
 
-    HashMap<String, Object> getTransactionByDate(String date, TransactionRepo repo);
+//    done
+    Page<?> getTransactionByDate(Pageable pageable, String date, String type);
 
-    Page<?> getTransactions(Pageable pageable, TransactionRepo repo);
+//    done
+    Page<?> getAllUserTransactions(Pageable pageable, String type, TransactionRepo repo);
 
-    void addCategory(String categoryName, CategoryRepo repo);
+//    done
+    void addCategory(String categoryName, String type, CategoryRepo repo);
 
-    void addTransaction(String date, Double TransactionAmount, String categoryName, String description, TransactionRepo tRepo, CategoryRepo cRepo);
+//    done
+    void addTransaction(String categoryType,String date, Double TransactionAmount, String categoryName, String description, TransactionRepo tRepo, CategoryRepo cRepo);
 
     boolean transactionExists(Long transactionId, TransactionRepo repo);
 
