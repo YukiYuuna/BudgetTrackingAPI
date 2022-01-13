@@ -25,13 +25,13 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
     @Query("SELECT e "
             + "FROM ExpenseTransaction e "
             + "WHERE e.categoryName = ?1")
-    List<ExpenseTransaction> findTransactionsByCategoryName(String name);
+    List<ExpenseTransaction> fetchTransactionsByCategory(String categoryName);
 
     @Override
     @Query("SELECT e "
             + "FROM ExpenseTransaction e "
             + "WHERE e.expenseTransactionId = ?1")
-    Optional<ExpenseTransaction> findTransactionsByTransactionId(Long id);
+    Optional<ExpenseTransaction> fetchTransactionsById(Long id);
 
     @Override
     @Query("SELECT e "
@@ -62,7 +62,13 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
             + "FROM ExpenseTransaction e "
             + "WHERE e.date = ?2 "
             + "AND e.user.username = ?1")
-    Page<?> filteredTransactionsByDate(Pageable pageable, String username, LocalDate date);
+    Page<ExpenseTransaction> filteredTransactionsByDate(Pageable pageable, String username, LocalDate date);
+
+    @Override
+    @Query("SELECT e FROM ExpenseTransaction e "
+            + "WHERE e.expenseTransactionId = ?1 "
+            + "AND e.user.userId = ?2")
+    Optional<ExpenseTransaction> filteredTransactionsById(Pageable pageable, Long transactionId, String username);
 
     boolean existsExpenseTransactionByUserAndExpenseTransactionId(User user, Long id);
 

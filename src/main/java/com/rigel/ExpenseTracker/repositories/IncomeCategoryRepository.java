@@ -16,13 +16,11 @@ public interface IncomeCategoryRepository extends JpaRepository<IncomeCategory, 
     @Query("SELECT c FROM IncomeCategory c")
     Set<IncomeCategory> findAllCategories();
 
-//    @Override
-//    @Query("SELECT c FROM IncomeCategory c WHERE c.categoryType = 'income' ")
-//    Set<TransactionCategory> findMappedCategories();
-
     @Override
     @Query("SELECT c FROM IncomeCategory c WHERE c.categoryName = ?1 AND c.user = ?2")
-    Optional<IncomeCategory> findCategoryByNameAndUser(String categoryName, User user);
+    Optional<IncomeCategory> fetchCategoryByCategoryNameAndUser(String categoryName, User user);
 
-    void deleteIncomeCategoryByUserAndAndCategoryName(User user, String categoryName);
+    boolean existsIncomeCategoryByCategoryNameAndUser(String categoryName, User user);
+
+    void deleteIncomeCategoryByUserAndCategoryName(User user, String categoryName);
 }

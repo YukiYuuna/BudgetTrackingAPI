@@ -28,12 +28,10 @@ public interface TransactionService {
     Set<?> getCategories(String type);
 
 //    done
-    Optional<?> getTransactionById(Long transactionId, TransactionRepo repo);
+    Optional<?> getTransactionById(String type, Long transactionId);
 
 //    done
-    Page<?> getTransactionsByCategoryAndUsername(Pageable pageable, String type,
-                                                 String categoryName, CategoryRepo cRepo,
-                                                 TransactionRepo tRepo);
+    Page<?> getTransactionsByCategoryAndUsername(Pageable pageable, String type, String categoryName);
 
 //    done
     Page<?> getTransactionByDate(Pageable pageable, String date, String type);
@@ -47,17 +45,23 @@ public interface TransactionService {
 //    done
     void addTransaction(String categoryType,String date, Double TransactionAmount, String categoryName, String description, TransactionRepo tRepo, CategoryRepo cRepo);
 
-    boolean transactionExists(Long transactionId, TransactionRepo repo);
+//    done
+    boolean transactionExists(String type, Long transactionId);
 
-    boolean categoryExists(String categoryName, CategoryRepo repo);
+//    done
+    boolean categoryExists(String type, String categoryName);
 
-    void deleteTransactionByUser(TransactionRepo repo);
+//    done
+    void deleteAllUserTransactions(String type);
 
-    void deleteTransactionById(Long transactionId, TransactionRepo repo);
+//    done
+    void deleteTransactionById(Pageable pageable, String type, Long transactionId);
 
-    void deleteTransactionsByCategory(String categoryName,CategoryRepo cRepo, TransactionRepo tRepo);
+//    done
+    void deleteTransactionsByCategory(String type, String categoryName);
 
-    void deleteCategory(String categoryName, CategoryRepo repo);
+//    done
+    void deleteCategory(String categoryName, String type);
 
     String getUsernameByAuthentication();
 

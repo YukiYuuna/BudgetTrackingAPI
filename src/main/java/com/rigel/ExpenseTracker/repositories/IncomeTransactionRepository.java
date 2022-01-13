@@ -19,47 +19,53 @@ public interface IncomeTransactionRepository extends JpaRepository<IncomeTransac
     List<TransactionCategory> findMappedTransactions();
 
     @Override
-    @Query("SELECT e "
-            + "FROM IncomeTransaction e "
-            + "WHERE e.categoryName = ?1")
-    List<IncomeTransaction> findTransactionsByCategoryName(String name);
+    @Query("SELECT i "
+            + "FROM IncomeTransaction i "
+            + "WHERE i.categoryName = ?1")
+    List<IncomeTransaction> fetchTransactionsByCategory(String name);
 
     @Override
-    @Query("SELECT e "
-            + "FROM IncomeTransaction e "
-            + "WHERE e.incomeTransactionId = ?1")
-    Optional<IncomeTransaction> findTransactionsByTransactionId(Long id);
+    @Query("SELECT i "
+            + "FROM IncomeTransaction i "
+            + "WHERE i.incomeTransactionId = ?1")
+    Optional<IncomeTransaction> fetchTransactionsById(Long id);
 
     @Override
-    @Query("SELECT e "
-            + "FROM IncomeTransaction e")
+    @Query("SELECT i "
+            + "FROM IncomeTransaction i")
     Page<IncomeTransaction> filteredTransactions(Pageable pageable);
 
     @Override
-    @Query("SELECT e "
-            + "FROM IncomeTransaction e "
+    @Query("SELECT i "
+            + "FROM IncomeTransaction i "
             + "WHERE "
-            + "lower(e.user.username) "
+            + "lower(i.user.username) "
             + "LIKE :#{#username == null || #username.isEmpty()? '%' : #username + '%'} ")
     Page<IncomeTransaction> filterTransactionsByUsername(Pageable pageable, String username);
 
     @Override
-    @Query("SELECT e "
-            + "FROM IncomeTransaction e "
+    @Query("SELECT i "
+            + "FROM IncomeTransaction i "
             + "WHERE "
-            + "lower(e.user.username) "
+            + "lower(i.user.username) "
             + "LIKE :#{#username == null || #username.isEmpty()? '%' : #username + '%'} "
             + "AND "
-            + "lower(e.categoryName) "
+            + "lower(i.categoryName) "
             + "LIKE :#{#categoryName == null || #categoryName.isEmpty()? '%' : #categoryName + '%'} ")
     Page<IncomeTransaction> filterTransactionsByUsernameAndCategory(Pageable pageable, String username,  String categoryName);
 
     @Override
-    @Query("SELECT e "
-            + "FROM IncomeTransaction e "
-            + "WHERE e.date = ?2 "
-            + "AND e.user.username = ?1")
-    Page<?> filteredTransactionsByDate(Pageable pageable, String username, LocalDate date);
+    @Query("SELECT i "
+            + "FROM IncomeTransaction i "
+            + "WHERE i.user.username = ?1 "
+            + "AND i.date = ?2")
+    Page<IncomeTransaction> filteredTransactionsByDate(Pageable pageable, String username, LocalDate date);
+
+    @Override
+    @Query("SELECT i FROM IncomeTransaction i "
+            + "WHERE i.incomeTransactionId = ?1 "
+            + "AND i.user.userId = ?2")
+    Optional<IncomeTransaction> filteredTransactionsById(Pageable pageable, Long transactionId, String username);
 
     boolean existsIncomeTransactionByUserAndIncomeTransactionId(User user, Long id);
 

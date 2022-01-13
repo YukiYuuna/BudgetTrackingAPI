@@ -16,14 +16,11 @@ public interface ExpenseCategoryRepository extends JpaRepository<ExpenseCategory
     @Query("SELECT c FROM ExpenseCategory c WHERE c.categoryType = 'expense'")
     Set<ExpenseCategory> findAllCategories();
 
-//    @Override
-//    @Query("SELECT c FROM ExpenseCategory c WHERE c.categoryType = 'expense' ")
-//    Set<TransactionCategory> findMappedCategories();
-
     @Override
     @Query("SELECT c FROM IncomeCategory c WHERE c.categoryName = ?1 AND c.user = ?2")
-    Optional<ExpenseCategory> findCategoryByNameAndUser(String categoryName, User user);
+    Optional<ExpenseCategory> fetchCategoryByCategoryNameAndUser(String categoryName, User user);
 
-    void deleteExpenseCategoryByUserAndAndCategoryName(User user, String categoryName);
+    boolean existsExpenseCategoryByCategoryNameAndUser(String categoryName, User user);
 
+    void deleteExpenseCategoryByUserAndCategoryName(User user, String categoryName);
 }
