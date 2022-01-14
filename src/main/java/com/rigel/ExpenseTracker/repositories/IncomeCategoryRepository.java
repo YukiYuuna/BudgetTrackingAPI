@@ -1,6 +1,5 @@
 package com.rigel.ExpenseTracker.repositories;
 
-import com.rigel.ExpenseTracker.entities.ExpenseCategory;
 import com.rigel.ExpenseTracker.entities.IncomeCategory;
 import com.rigel.ExpenseTracker.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,10 +10,13 @@ import java.util.Set;
 
 public interface IncomeCategoryRepository extends JpaRepository<IncomeCategory, Long> {
 
-    @Query("SELECT DISTINCT(c.categoryName) FROM IncomeCategory c")
-    Set<IncomeCategory> findAllCategories();
+    @Query("SELECT c FROM IncomeCategory c WHERE c.categoryType = ?1 AND c.user.username = ?2")
+    Set<IncomeCategory> findAllUserCategories(String type, String username);
 
-    Optional<IncomeCategory> findIncomeCategoryByCategoryNameAndUser(String categoryName, User user);
+    @Query("SELECT c FROM IncomeCategory c WHERE c.categoryName = ?1 AND c.user = ?2")
+    Optional<IncomeCategory> fetchCategoryByCategoryNameAndUser(String categoryName, User user);
 
-    void deleteIncomeCategoryByUserAndAndCategoryName(User user, String categoryName);
+    boolean existsIncomeCategoryByCategoryNameAndUser(String categoryName, User user);
+
+    void deleteIncomeCategoryByUserAndCategoryName(User user, String categoryName);
 }

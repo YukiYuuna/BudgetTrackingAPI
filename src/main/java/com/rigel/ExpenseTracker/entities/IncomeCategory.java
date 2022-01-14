@@ -9,10 +9,8 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import static javax.persistence.CascadeType.*;
-import static javax.persistence.CascadeType.DETACH;
 
 @Entity
 @Table(name = "income_category")

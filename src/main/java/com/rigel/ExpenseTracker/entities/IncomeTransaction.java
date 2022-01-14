@@ -16,7 +16,7 @@ import static javax.persistence.CascadeType.DETACH;
 @Table(name = "income_transaction")
 @Getter
 @Setter
-public class IncomeTransaction {
+public class IncomeTransaction{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,13 +47,6 @@ public class IncomeTransaction {
     private User user;
 
     public IncomeTransaction() {
-    }
-
-    public IncomeTransaction(LocalDate date, Double incomeAmount, String categoryName, String description) {
-        this.date = date;
-        this.incomeAmount = incomeAmount;
-        this.categoryName = categoryName;
-        this.description = description;
     }
 
     public IncomeTransaction(LocalDate date, Double incomeAmount, String categoryName, String description, User user) {

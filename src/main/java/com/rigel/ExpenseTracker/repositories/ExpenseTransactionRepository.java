@@ -8,17 +8,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTransaction, Long> {
 
-    List<ExpenseTransaction> findExpenseTransactionByExpenseCategory_CategoryName(String name);
+    @Query("SELECT e "
+            + "FROM ExpenseTransaction e "
+            + "WHERE e.categoryType = 'expense'")
+    List<TransactionCategory> findMappedTransactions();
 
-    boolean existsExpenseTransactionByUserAndExpenseTransactionId(User user, Long id);
-
-    ExpenseTransaction findExpenseTransactionsByExpenseTransactionId(Long id);
-
-    void deleteExpenseTransactionsByExpenseCategoryAndUser(ExpenseCategory category, User user);
+    @Query("SELECT e "
+            + "FROM ExpenseTransaction e "
+            + "WHERE e.categoryName = ?1")
+    List<ExpenseTransaction> fetchTransactionsByCategory(String categoryName);
 
     @Query("SELECT e "
             + "FROM ExpenseTransaction e")
@@ -40,6 +43,16 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
             + "lower(e.categoryName) "
             + "LIKE :#{#categoryName == null || #categoryName.isEmpty()? '%' : #categoryName + '%'} ")
     Page<ExpenseTransaction> filterTransactionsByUsernameAndCategory(Pageable pageable, String username,  String categoryName);
+
+    @Query("SELECT e "
+            + "FROM ExpenseTransaction e "
+            + "WHERE e.date = ?2 "
+            + "AND e.user.username = ?1")
+    Page<ExpenseTransaction> filteredTransactionsByDate(Pageable pageable, String username, LocalDate date);
+
+    boolean existsExpenseTransactionByUserAndExpenseTransactionId(User user, Long id);
+
+    void deleteExpenseTransactionsByExpenseCategoryAndUser(ExpenseCategory category, User user);
 
     void deleteExpenseTransactionsByUser(User user);
 

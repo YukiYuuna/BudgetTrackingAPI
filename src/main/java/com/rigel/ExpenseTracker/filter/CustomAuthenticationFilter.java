@@ -3,13 +3,11 @@ package com.rigel.ExpenseTracker.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rigel.ExpenseTracker.exception.CustomAccessDeniedHandler;
+import com.rigel.ExpenseTracker.exception.CustomAuthenticationEntryPoint;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -44,22 +42,18 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-        try{
-            String username = request.getParameter("username");
-            String password = request.getParameter("password");
-            log.info("Username is: {}", username);
-            log.info("Password is : {}", password);
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-            return authenticationManager.authenticate(authenticationToken);
-        } catch (AuthenticationException e){
-            customAuthenticationEntryPoint.commence(request,response,e);
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Wrong/Empty credentials.");
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        log.info("Username is: {}", username);
+        log.info("Password is : {}", password);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        return authenticationManager.authenticate(authenticationToken);
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-//        TODO: handling unsuccessful login
+        customAuthenticationEntryPoint.commence(request,response,failed);
+        throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Incorrect credentials. Please provide valid username/password.");
     }
 
     @Override

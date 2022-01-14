@@ -1,7 +1,7 @@
 package com.rigel.ExpenseTracker.security;
 
 import com.rigel.ExpenseTracker.exception.CustomAccessDeniedHandler;
-import com.rigel.ExpenseTracker.filter.CustomAuthenticationEntryPoint;
+import com.rigel.ExpenseTracker.exception.CustomAuthenticationEntryPoint;
 import com.rigel.ExpenseTracker.filter.CustomAuthenticationFilter;
 import com.rigel.ExpenseTracker.filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
@@ -45,16 +45,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/api/register/**", "/api/login*", "/api/refresh/token/**").permitAll();
 
 //        For User operations:
-        http.authorizeRequests().antMatchers(GET, "/api/users/**").hasAnyRole(ADMIN);
+        http.authorizeRequests().antMatchers(GET, "/api/users*").hasAnyRole(ADMIN);
+        http.authorizeRequests().antMatchers(GET, "/api/user/id*").hasAnyRole(ADMIN);
         http.authorizeRequests().antMatchers(GET, "/api/user").hasAnyRole(ADMIN, USER);
         http.authorizeRequests().antMatchers(PUT, "/api/user/modify").hasAnyRole(ADMIN, USER);
         http.authorizeRequests().antMatchers(POST, "/api/user/save/role", "/api/user/add/role/**").hasAnyRole(ADMIN);
         http.authorizeRequests() .antMatchers(DELETE, "/api/user/delete").hasAnyRole(USER);
 
 //        For Expenses operations:
-        http.authorizeRequests().antMatchers(GET, "/api/expense/transaction/**").hasAnyRole(ADMIN, USER);
-        http.authorizeRequests().antMatchers(GET, "/api/expense/transactions/admin").hasAnyRole(ADMIN);
-        http.authorizeRequests().antMatchers(GET, "/api/expense/transactions/user", "/api/expense/transactions/category",
+        http.authorizeRequests().antMatchers(GET, "/api/expense/transactions*").hasAnyRole(ADMIN, USER);
+        http.authorizeRequests().antMatchers(GET, "/api/expense*").hasAnyRole(USER);
+        http.authorizeRequests().antMatchers(GET, "/api/expense/transactions/category",
                 "/api/expense/categories/user", "/api/expense/transactions/date").hasAnyRole(USER);
         http.authorizeRequests().antMatchers(POST,"/api/add/expense/category/**", "/api/add/expense/transaction/**" ).hasAnyRole(USER);
         http.authorizeRequests().antMatchers(PUT,"/api/modify/expense/transaction/**").hasAnyRole(USER);
@@ -62,7 +63,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/delete/expense/transactions/**", "/api/delete/expense/transaction/**").hasAnyRole(USER);
 
 //        For Income operations:
-        http.authorizeRequests().antMatchers(GET, "/api/expense/transaction/**").hasAnyRole(ADMIN, USER);
+        http.authorizeRequests().antMatchers(GET, "/api/income/transaction/**").hasAnyRole(ADMIN, USER);
         http.authorizeRequests().antMatchers(GET, "/api/income/transactions/admin").hasAnyRole(ADMIN);
         http.authorizeRequests().antMatchers(GET, "/api/income/transactions/user", "/api/income/transactions/category",
                 "/api/income/categories/user", "/api/income/transactions/date").hasAnyRole(USER);

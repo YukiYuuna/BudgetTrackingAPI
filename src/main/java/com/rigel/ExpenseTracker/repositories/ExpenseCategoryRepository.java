@@ -8,13 +8,15 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 import java.util.Set;
 
-public interface ExpenseCategoryRepository  extends JpaRepository<ExpenseCategory, Long> {
+public interface ExpenseCategoryRepository extends JpaRepository<ExpenseCategory, Long> {
 
-    @Query("SELECT DISTINCT(c.categoryName) FROM ExpenseCategory c")
-    Set<ExpenseCategory> findAllCategories();
+    @Query("SELECT c FROM ExpenseCategory c WHERE c.categoryType = ?1 AND c.user.username = ?2")
+    Set<ExpenseCategory> findAllUserCategories(String type, String username);
 
-    Optional<ExpenseCategory> findExpenseCategoryByCategoryNameAndUser(String categoryName, User user);
+    @Query("SELECT c FROM IncomeCategory c WHERE c.categoryName = ?1 AND c.user = ?2")
+    Optional<ExpenseCategory> fetchCategoryByCategoryNameAndUser(String categoryName, User user);
 
-    void deleteExpenseCategoryByUserAndAndCategoryName(User user, String categoryName);
+    boolean existsExpenseCategoryByCategoryNameAndUser(String categoryName, User user);
 
+    void deleteExpenseCategoryByUserAndCategoryName(User user, String categoryName);
 }

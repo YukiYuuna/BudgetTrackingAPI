@@ -17,7 +17,7 @@ import static javax.persistence.CascadeType.*;
 @Table(name = "expense_transaction")
 @Getter
 @Setter
-public class ExpenseTransaction {
+public class ExpenseTransaction{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,13 +48,6 @@ public class ExpenseTransaction {
     private User user;
 
     public ExpenseTransaction() {
-    }
-
-    public ExpenseTransaction(LocalDate date, Double expenseAmount, String categoryName, String description) {
-        this.date = date;
-        this.expenseAmount = expenseAmount;
-        this.categoryName = categoryName;
-        this.description = description;
     }
 
     public ExpenseTransaction(LocalDate date, Double expenseAmount, String categoryName, String description, User user) {
