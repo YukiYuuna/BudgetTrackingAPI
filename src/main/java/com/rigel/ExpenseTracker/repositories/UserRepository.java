@@ -17,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             + "FROM User u "
             + "WHERE "
             + "u.userId = ?1")
-    User fetchUserById(Long id);
+    Optional<User> fetchUserById(Long id);
 
     User findByUsername(String username);
 
@@ -30,6 +30,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsById(Long id);
 
     boolean existsByUsername(String username);
-
-    void deleteUserByUsername(String username);
 }

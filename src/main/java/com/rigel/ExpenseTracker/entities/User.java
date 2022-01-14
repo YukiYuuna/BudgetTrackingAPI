@@ -91,10 +91,6 @@ public class User {
     }
 
     public void addIncomeCategoryToUser(IncomeCategory incomeCategory){
-        if(incomeCategories.stream()
-                .anyMatch(category -> category.getCategoryName().equals(incomeCategory.getCategoryName())))
-            throw new ResponseStatusException(BAD_REQUEST, "Income category already exists.");
-
         if(this.incomeCategories != null)
             this.incomeCategories.add(incomeCategory);
         else{

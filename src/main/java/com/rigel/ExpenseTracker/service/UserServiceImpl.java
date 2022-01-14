@@ -100,6 +100,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public User getUserById(Long userId) {
+        Optional<User> user = userRepo.fetchUserById(userId);
+        if(user.isEmpty())
+            throw new ResponseStatusException(NOT_FOUND, "No user with id " + userId + " found in the DB!");
+        return user.get();
+    }
+
+    @Override
     public User getUserByUsername(String username) {
         User user = userRepo.findByUsername(username);
         if(user == null)

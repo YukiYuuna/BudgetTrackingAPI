@@ -13,32 +13,22 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTransaction, Long>, TransactionRepo {
+public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTransaction, Long> {
 
-    @Override
     @Query("SELECT e "
             + "FROM ExpenseTransaction e "
             + "WHERE e.categoryType = 'expense'")
     List<TransactionCategory> findMappedTransactions();
 
-    @Override
     @Query("SELECT e "
             + "FROM ExpenseTransaction e "
             + "WHERE e.categoryName = ?1")
     List<ExpenseTransaction> fetchTransactionsByCategory(String categoryName);
 
-    @Override
-    @Query("SELECT e "
-            + "FROM ExpenseTransaction e "
-            + "WHERE e.expenseTransactionId = ?1")
-    Optional<ExpenseTransaction> fetchTransactionsById(Long id);
-
-    @Override
     @Query("SELECT e "
             + "FROM ExpenseTransaction e")
     Page<ExpenseTransaction> filteredTransactions(Pageable pageable);
 
-    @Override
     @Query("SELECT e "
             + "FROM ExpenseTransaction e "
             + "WHERE "
@@ -46,7 +36,6 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
             + "LIKE :#{#username == null || #username.isEmpty()? '%' : #username + '%'} ")
     Page<ExpenseTransaction> filterTransactionsByUsername(Pageable pageable, String username);
 
-    @Override
     @Query("SELECT e "
             + "FROM ExpenseTransaction e "
             + "WHERE "
@@ -57,18 +46,11 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
             + "LIKE :#{#categoryName == null || #categoryName.isEmpty()? '%' : #categoryName + '%'} ")
     Page<ExpenseTransaction> filterTransactionsByUsernameAndCategory(Pageable pageable, String username,  String categoryName);
 
-    @Override
     @Query("SELECT e "
             + "FROM ExpenseTransaction e "
             + "WHERE e.date = ?2 "
             + "AND e.user.username = ?1")
     Page<ExpenseTransaction> filteredTransactionsByDate(Pageable pageable, String username, LocalDate date);
-
-    @Override
-    @Query("SELECT e FROM ExpenseTransaction e "
-            + "WHERE e.expenseTransactionId = ?1 "
-            + "AND e.user.userId = ?2")
-    Optional<ExpenseTransaction> filteredTransactionsById(Pageable pageable, Long transactionId, String username);
 
     boolean existsExpenseTransactionByUserAndExpenseTransactionId(User user, Long id);
 

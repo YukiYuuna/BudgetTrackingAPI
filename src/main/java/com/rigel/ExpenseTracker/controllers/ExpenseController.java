@@ -24,7 +24,7 @@ import static org.springframework.http.HttpStatus.*;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
-public class ExpenseController {
+public class ExpenseController extends ControlHelper {
 
     private final UserService userService;
     private final TransactionService service;
@@ -64,7 +64,7 @@ public class ExpenseController {
     public ResponseEntity<String> addExpenseCategory(@RequestBody ExpenseCategory category) {
         String name = category.getCategoryName().toLowerCase();
         service.addCategory("expense", name);
-        return ResponseEntity.ok("Category has been saved successfully!");
+        return ResponseEntity.ok("Expense category has been saved successfully!");
     }
 
     @PostMapping("/add/expense/transaction")
@@ -77,7 +77,7 @@ public class ExpenseController {
     @PutMapping("/modify/expense/category")
     public ResponseEntity<?> modifyExpenseCategory(String categoryName, @RequestBody ExpenseCategory modifiedCategory) {
         if(!service.categoryExists("expense", categoryName))
-            throw new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist in the DB.");
+            throw new ResponseStatusException(NOT_FOUND, "Expense category with this name doesn't exist in the DB.");
 
         return service.getCategory("expense",categoryName)
                 .map(c -> {
@@ -123,7 +123,7 @@ public class ExpenseController {
     @DeleteMapping("/delete/expense/category")
     public ResponseEntity<String> deleteExpenseCategory(String categoryName) {
         service.deleteCategory(categoryName, "expense");
-        return ResponseEntity.ok().body("The expense category has been deleted successfully!");
+        return ResponseEntity.ok().body("Expense category has been deleted successfully!");
     }
 
     /* The difference between this method and the deleteExpenseCategory method is that by calling this one, you will delete all correlated transactions to this category, but
@@ -158,17 +158,4 @@ public class ExpenseController {
             transaction.setExpenseAmount(transaction.getExpenseAmount());
         }
     }
-
-    static Pageable createPagination(Integer currentPage, Integer perPage, int size) {
-        Pageable pageable = null;
-        if(currentPage != null && perPage != null){
-            pageable = PageRequest.of(currentPage - 1, perPage);
-        } else if (currentPage == null && perPage == null){
-            pageable = PageRequest.of(0, size);
-        } else {
-            throw new ResponseStatusException(BAD_REQUEST,"The value of currentPage and/or perPage parameters cannot be under or equal to 0.");
-        }
-        return pageable;
-    }
-
 }

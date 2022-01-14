@@ -4,6 +4,9 @@ import com.rigel.ExpenseTracker.entities.*;
 import com.rigel.ExpenseTracker.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -15,27 +18,40 @@ import javax.transaction.Transactional;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.*;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 @Slf4j
 public class TransactionServiceImpl implements TransactionService{
 
     private final UserRepository userRepo;
-    private final CategoryRepo categoryRepo;
-    private final TransactionRepo transactionRepo;
+    private final ExpenseCategoryRepository expenseCategoryRepo;
+    private final IncomeCategoryRepository incomeCategoryRepo;
+    private final ExpenseTransactionRepository expenseTransactionRepo;
+    private final IncomeTransactionRepository incomeTransactionRepo;
+
+    @Autowired
+    public TransactionServiceImpl(UserRepository userRepo, ExpenseCategoryRepository expenseCategoryRepo,
+                                  IncomeCategoryRepository incomeCategoryRepo, ExpenseTransactionRepository expenseTransactionRepo,
+                                  IncomeTransactionRepository incomeTransactionRepo) {
+        this.userRepo = userRepo;
+        this.expenseCategoryRepo = expenseCategoryRepo;
+        this.incomeCategoryRepo = incomeCategoryRepo;
+        this.expenseTransactionRepo = expenseTransactionRepo;
+        this.incomeTransactionRepo = incomeTransactionRepo;
+    }
 
     @Override
     public void saveCategoryToDB(String categoryName, String type) {
         String dbName = categoryName.toLowerCase();
         if(type.equals("expense")) {
-            ((ExpenseCategoryRepository)categoryRepo).saveAndFlush(
+            expenseCategoryRepo.saveAndFlush(
                     new ExpenseCategory(dbName, getUser().get()));
         } else{
-            ((IncomeCategoryRepository)categoryRepo).saveAndFlush(
+            incomeCategoryRepo.saveAndFlush(
                     new IncomeCategory(dbName, getUser().get()));
         }
     }
@@ -47,18 +63,27 @@ public class TransactionServiceImpl implements TransactionService{
         categoryName = categoryName.toLowerCase();
 
         if(categoryType.equals("expense")) {
-            ((ExpenseTransactionRepository)categoryRepo).saveAndFlush(
+            expenseTransactionRepo.saveAndFlush(
                     new ExpenseTransaction(date, expenseAmount, categoryName, description, getUser().get()));
 
         } else{
-            ((IncomeTransactionRepository)categoryRepo).saveAndFlush(
+            incomeTransactionRepo.saveAndFlush(
                     new IncomeTransaction(date, expenseAmount, categoryName, description, getUser().get()));
         }
     }
 
     @Override
-    public int numberOfTransactionsByCategory(String categoryName, CategoryRepo cRepo, TransactionRepo tRepo) {
-        return 0;
+    public int numberOfTransactionsByCategory(String type, String categoryName) {
+        User user = getUser().get();
+        int transactions;
+        if(type.equals("expense")){
+            transactions = (int) expenseTransactionRepo.fetchTransactionsByCategory(categoryName.toLowerCase())
+                    .stream().filter(t -> t.getUser().getUserId().equals(user.getUserId())).count();
+        } else{
+            transactions = (int) incomeTransactionRepo.fetchTransactionsByCategory(categoryName.toLowerCase())
+                    .stream().filter(t -> t.getUser().getUserId().equals(user.getUserId())).count();
+        }
+        return transactions;
     }
 
     @Override
@@ -66,38 +91,31 @@ public class TransactionServiceImpl implements TransactionService{
         Optional<?> category;
 
         if(type.equals("expense"))
-            category = ((ExpenseCategoryRepository)categoryRepo).findAllCategories().stream()
-                    .filter(c -> c.getUser().getUserId().equals(getUser().get().getUserId()))
-                    .filter(( c -> c.getCategoryName().equals(categoryName.toLowerCase())))
-                    .findFirst();
+            category = expenseCategoryRepo.fetchCategoryByCategoryNameAndUser(categoryName.toLowerCase(), getUser().get());
         else
-            category = ((IncomeCategoryRepository)categoryRepo).findAllCategories().stream()
-                    .filter(c -> c.getUser().getUserId().equals(getUser().get().getUserId()))
-                    .filter(( c -> c.getCategoryName().equals(categoryName.toLowerCase())))
-                    .findFirst();
+            category = incomeCategoryRepo.fetchCategoryByCategoryNameAndUser(categoryName.toLowerCase(), getUser().get());
 
         if(category.isEmpty())
-            throw  new ResponseStatusException(NOT_FOUND, "Category with this name doens't exist.");
+            throw  new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist.");
 
         return category;
     }
 
     @Override
-    public Set<?> getCategories(String type) {
-        Set<?> result;
+    public HashMap<String, Object> getCategories(String type) {
+        Set<?> categories;
 
         if(type.equals("expense"))
-            result = Set.of(((ExpenseCategoryRepository)categoryRepo)
-                    .findAllCategories().stream()
-                    .filter(c -> c.getUser().getUserId().equals(getUser().get().getUserId())));
-        else{
-            result = Set.of(((IncomeCategoryRepository)categoryRepo)
-                    .findAllCategories().stream()
-                    .filter(c -> c.getUser().getUserId().equals(getUser().get().getUserId())));
-        }
+            categories = expenseCategoryRepo.findAllUserCategories(type, getUsernameByAuthentication());
+        else
+            categories = incomeCategoryRepo.findAllUserCategories(type, getUsernameByAuthentication());
 
-        if(result.size() == 0)
+        if(categories.size() == 0)
             throw new ResponseStatusException(NOT_FOUND, "There are no registered categories.");
+
+        HashMap<String, Object> result = new LinkedHashMap<>();
+        result.put("username", getUsernameByAuthentication());
+        result.put("totalTransactions", categories);
 
         return result;
     }
@@ -106,11 +124,10 @@ public class TransactionServiceImpl implements TransactionService{
     public Optional<?> getTransactionById(String type, Long transactionId) {
         Optional<User> user = getUser();
         if(user.get().getUsername().equals("admin")){
-            if(type.equals("expense")){
-                return ((ExpenseTransactionRepository)transactionRepo).findById(transactionId);
-            }else{
-                return ((IncomeTransactionRepository)transactionRepo).findById(transactionId);
-            }
+            if(type.equals("expense"))
+                return expenseTransactionRepo.findById(transactionId);
+            else
+                return incomeTransactionRepo.findById(transactionId);
         }
         return user.get()
                 .getExpenseTransactions().stream()
@@ -119,66 +136,100 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
     @Override
-    public Page<?> getTransactionsByCategoryAndUsername(Pageable pageable, String type, String categoryName) {
-        Page<?> result;
+    public HashMap<String, Object> getTransactionsByCategoryAndUsername(Pageable pageable, String type, String categoryName) {
         categoryName = categoryName.toLowerCase();
+        String username = getUsernameByAuthentication();
+        Page<?> transactions;
+
         if(type.equals("expense")){
-            result = ((ExpenseTransactionRepository)transactionRepo).filterTransactionsByUsernameAndCategory(pageable,
-                    getUsernameByAuthentication(), categoryName);
+            transactions = expenseTransactionRepo.filterTransactionsByUsernameAndCategory(pageable,
+                    username, categoryName);
         } else{
-            result = ((IncomeTransactionRepository)transactionRepo).filterTransactionsByUsernameAndCategory(pageable,
-                    getUsernameByAuthentication(), categoryName);
+            transactions = incomeTransactionRepo.filterTransactionsByUsernameAndCategory(pageable,
+                    username, categoryName);
         }
-        if(result.isEmpty())
-            throw new ResponseStatusException(NOT_FOUND, "You don't haven't made any transactions in this category!");
+
+        if(transactions.isEmpty())
+            throw new ResponseStatusException(NOT_FOUND, "No transactions found in the DB");
+
+        HashMap<String, Object> result = new LinkedHashMap<>();
+        result.put("username", username);
+        result.put("category", categoryName);
+        result.put("totalTransactions", transactions.getTotalElements());
+        result.put("totalPages", transactions.getTotalPages());
+        result.put("transactions", transactions.getContent());
 
         return result;
     }
 
     @Override
-    public Page<?> getTransactionByDate(Pageable pageable, String date, String type) {
+    public HashMap<String, Object> getTransactionByDate(Pageable pageable, String date, String type) {
         LocalDate dateTime = LocalDate.parse(date);
-        Page<?> result;
+        String username = getUsernameByAuthentication();
+        Page<?> transactions;
 
         if(type.equals("expense")){
-            result = ((ExpenseTransactionRepository)transactionRepo)
-                    .filteredTransactionsByDate(pageable, getUsernameByAuthentication(), dateTime);
+            transactions = expenseTransactionRepo
+                    .filteredTransactionsByDate(pageable, username, dateTime);
         } else{
-            result = ((IncomeTransactionRepository)transactionRepo)
-                    .filteredTransactionsByDate(pageable, getUsernameByAuthentication(), dateTime);
+            transactions = incomeTransactionRepo
+                    .filteredTransactionsByDate(pageable, username, dateTime);
         }
 
-        if(result.isEmpty())
-            throw new ResponseStatusException(NOT_FOUND, "You didn't register any transactions on this date!");
+        if(transactions.isEmpty())
+            throw new ResponseStatusException(NOT_FOUND, "No transactions found on " + date);
+
+        HashMap<String, Object> result = new LinkedHashMap<>();
+        result.put("username", username);
+        result.put("date", date);
+        result.put("totalTransactions", transactions.getTotalElements());
+        result.put("totalPages", transactions.getTotalPages());
+        result.put("transactions", transactions.getContent());
 
         return result;
     }
 
     @Override
-    public Page<?> getAllUserTransactions(Pageable pageable, String type, TransactionRepo repo) {
-        Optional<User> user = getUser();
-        Page<?> result;
-        if(type.equals("expense")){
-            result = ((ExpenseTransactionRepository)transactionRepo).filterTransactionsByUsername(pageable, user.get().getUsername());
-        }else{
-            result = ((IncomeTransactionRepository)transactionRepo).filterTransactionsByUsername(pageable, user.get().getUsername());
+    public HashMap<String, Object> getAllUserTransactions(Pageable pageable, String type) {
+        String username = getUsernameByAuthentication();
+        Page<?> transactions;
+
+        if(getUser().get().getRoles().stream().anyMatch(role -> role.getRoleName().equals("ROLE_ADMIN"))) {
+            if(type.equals("expense")){
+                transactions = expenseTransactionRepo.filteredTransactions(pageable);
+            }else{
+                transactions = incomeTransactionRepo.filteredTransactions(pageable);
+            }
+        }
+        else {
+            if(type.equals("expense")){
+                transactions = expenseTransactionRepo.filterTransactionsByUsername(pageable, username);
+            }else{
+                transactions = incomeTransactionRepo.filterTransactionsByUsername(pageable, username);
+            }
         }
 
-        if(result.isEmpty())
-            throw new ResponseStatusException(NOT_FOUND, "You don't haven't made any transactions!");
+        if(transactions.isEmpty())
+            throw new ResponseStatusException(NOT_FOUND, "No transactions found in the DB.");
+
+        HashMap<String, Object> result = new LinkedHashMap<>();
+        result.put("username", username);
+        result.put("totalTransactions", transactions.getTotalElements());
+        result.put("totalPages", transactions.getTotalPages());
+        result.put("transactions", transactions.getContent());
 
         return result;
     }
 
     @Override
-    public void addCategory(String categoryName, String type, CategoryRepo repo) {
+    public void addCategory(String categoryName, String type) {
         Optional<User> user = getUser();
         String dbName = categoryName.toLowerCase();
         Optional<?> category;
         if(type.equals("expense")){
-            category = ((ExpenseCategoryRepository)repo).fetchCategoryByCategoryNameAndUser(dbName, user.get());
+            category = expenseCategoryRepo.fetchCategoryByCategoryNameAndUser(dbName, user.get());
         }else if(type.equals("income")){
-            category = ((IncomeCategoryRepository)repo).fetchCategoryByCategoryNameAndUser(dbName, user.get());
+            category = incomeCategoryRepo.fetchCategoryByCategoryNameAndUser(dbName, user.get());
         } else{
             throw new ResponseStatusException(BAD_REQUEST, "Please enter a valid category type. Either income/expense.");
         }
@@ -189,27 +240,25 @@ public class TransactionServiceImpl implements TransactionService{
         if(type.equals("expense")) {
             ExpenseCategory expenseCategory = new ExpenseCategory(dbName, user.get());
             user.get().addExpenseCategoryToUser(expenseCategory);
-            ((ExpenseCategoryRepository)repo).save(expenseCategory);
+            expenseCategoryRepo.save(expenseCategory);
         } else{
             IncomeCategory incomeCategory = new IncomeCategory(categoryName, user.get());
             user.get().addIncomeCategoryToUser(incomeCategory);
-            ((IncomeCategoryRepository)repo).save(incomeCategory);
+            incomeCategoryRepo.save(incomeCategory);
         }
     }
 
     @Override
     public void addTransaction(String categoryType, String date,
                                Double transactionAmount, String categoryName,
-                               String description, TransactionRepo tRepo, CategoryRepo cRepo) {
+                               String description) {
         Optional<User> user = getUser();
         LocalDate curDate;
         try{
 //            Gets the date of the transaction:
             curDate = LocalDate.parse(date);
-            categoryName = categoryName.toLowerCase();
 
             if(categoryType.equals("expense")){
-               ExpenseCategoryRepository expenseCategoryRepo = (ExpenseCategoryRepository) cRepo;
 //            Create an expense transaction:
                 ExpenseTransaction expenseTransaction = new ExpenseTransaction(curDate, transactionAmount,
                         categoryName, description, user.get());
@@ -227,28 +276,23 @@ public class TransactionServiceImpl implements TransactionService{
 //            We calculate the users budget:
                 user.get().addExpenseAmountToUser(expenseTransaction.getExpenseAmount());
 //            Saving to repo:
-                ((ExpenseTransactionRepository)tRepo).save(expenseTransaction);
+                expenseTransactionRepo.save(expenseTransaction);
 
-            } else if(categoryType.equals("income")){
-                IncomeCategoryRepository incomeCategoryRepository = (IncomeCategoryRepository) cRepo;
+            } else {
                 IncomeTransaction incomeTransaction = new IncomeTransaction(curDate, transactionAmount,
                         categoryName, description, user.get());
-                Optional<IncomeCategory> category = incomeCategoryRepository.fetchCategoryByCategoryNameAndUser(categoryName, user.get());
+                Optional<IncomeCategory> category = incomeCategoryRepo.fetchCategoryByCategoryNameAndUser(categoryName, user.get());
 
                 if(category.isEmpty()){
                     IncomeCategory newCategory = new IncomeCategory(categoryName, user.get());
-                    incomeCategoryRepository.save(newCategory);
+                    incomeCategoryRepo.save(newCategory);
                     incomeTransaction.setIncomeCategory(newCategory);
                 } else{
                     incomeTransaction.setIncomeCategory(category.get());
                 }
                 user.get().addIncomeAmountToUser(incomeTransaction.getIncomeAmount());
-                ((IncomeTransactionRepository)tRepo).save(incomeTransaction);
-
-            } else{
-                throw new ResponseStatusException(BAD_REQUEST, "Please enter a valid category type. Either income/expense.");
+                incomeTransactionRepo.save(incomeTransaction);
             }
-
         } catch (DateTimeException dte){
             throw new ResponseStatusException(NOT_ACCEPTABLE, "Please, provide a correct format for the date of the transaction.(YYYY-MM-DD)");
         }
@@ -257,23 +301,19 @@ public class TransactionServiceImpl implements TransactionService{
     @Override
     public boolean transactionExists(String type, Long transactionId) {
         User user = getUser().get();
-        if(type.equals("expense")){
-            return ((ExpenseTransactionRepository)transactionRepo)
-                    .existsExpenseTransactionByUserAndExpenseTransactionId(user, transactionId);
-        }
-        return ((IncomeTransactionRepository)transactionRepo)
-                .existsIncomeTransactionByUserAndIncomeTransactionId(user, transactionId);
+        if(type.equals("expense"))
+            return expenseTransactionRepo.existsExpenseTransactionByUserAndExpenseTransactionId(user, transactionId);
+
+        return incomeTransactionRepo.existsIncomeTransactionByUserAndIncomeTransactionId(user, transactionId);
     }
 
     @Override
     public boolean categoryExists(String type, String categoryName) {
         User user = getUser().get();
-        if(type.equals("expense")){
-            return ((ExpenseCategoryRepository)categoryRepo)
-                    .existsExpenseCategoryByCategoryNameAndUser(categoryName, user);
-        }
-        return ((IncomeCategoryRepository)categoryRepo)
-                .existsIncomeCategoryByCategoryNameAndUser(categoryName, user);
+        if(type.equals("expense"))
+            return expenseCategoryRepo.existsExpenseCategoryByCategoryNameAndUser(categoryName.toLowerCase(), user);
+
+        return incomeCategoryRepo.existsIncomeCategoryByCategoryNameAndUser(categoryName.toLowerCase(), user);
     }
 
     @Override
@@ -283,31 +323,30 @@ public class TransactionServiceImpl implements TransactionService{
         if(type.equals("expense")){
             if(user.getExpenseTransactions().size() == 0)
                 throw new ResponseStatusException(NOT_FOUND,"There are no expense transactions made by " + user.getUsername());
-            ((ExpenseTransactionRepository)transactionRepo).deleteExpenseTransactionsByUser(user);
+
+            expenseTransactionRepo.deleteExpenseTransactionsByUser(user);
         }else{
             if(user.getIncomeTransactions().size() == 0)
                 throw new ResponseStatusException(NOT_FOUND,"There are no income transactions made by " + user.getUsername());
-            ((IncomeTransactionRepository)transactionRepo).deleteIncomeTransactionsByUser(user);
+
+            incomeTransactionRepo.deleteIncomeTransactionsByUser(user);
         }
     }
 
     @Override
-    public void deleteTransactionById(Pageable pageable, String type, Long transactionId){
-        User user = getUser().get();
+    public void deleteTransactionById(String type, Long transactionId){
         if(type.equals("expense")){
-            Optional<ExpenseTransaction> transaction = ((ExpenseTransactionRepository)transactionRepo)
-                    .filteredTransactionsById(pageable, transactionId, getUsernameByAuthentication());
+            Optional<ExpenseTransaction> transaction = expenseTransactionRepo.findById(transactionId);
             if(transaction.isEmpty())
                 throw new ResponseStatusException(BAD_REQUEST,"Expense transaction with id: " + transactionId + " doesn't exist!");
 
-            ((ExpenseTransactionRepository)transactionRepo).delete(transaction.get());
+            expenseTransactionRepo.delete(transaction.get());
         }else{
-            Optional<IncomeTransaction> transaction = ((IncomeTransactionRepository)transactionRepo)
-                    .filteredTransactionsById(pageable, transactionId, getUsernameByAuthentication());
+            Optional<IncomeTransaction> transaction = incomeTransactionRepo.findById(transactionId);
             if(transaction.isEmpty())
                 throw new ResponseStatusException(BAD_REQUEST,"Expense transaction with id: " + transactionId + " doesn't exist!");
 
-            ((IncomeTransactionRepository)transactionRepo).delete(transaction.get());
+            incomeTransactionRepo.delete(transaction.get());
         }
 
     }
@@ -316,19 +355,19 @@ public class TransactionServiceImpl implements TransactionService{
     public  void deleteTransactionsByCategory(String type, String categoryName) {
         User user = getUser().get();
         if(type.equals("expense")){
-            Optional<ExpenseCategory> category = ((ExpenseCategoryRepository)categoryRepo).fetchCategoryByCategoryNameAndUser
+            Optional<ExpenseCategory> category = expenseCategoryRepo.fetchCategoryByCategoryNameAndUser
                     (categoryName.toLowerCase(), user);
             if(category.isEmpty())
                 throw new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist.");
-            ((ExpenseTransactionRepository)transactionRepo)
-                    .deleteExpenseTransactionsByExpenseCategoryAndUser(category.get(), user);
+
+            expenseTransactionRepo.deleteExpenseTransactionsByExpenseCategoryAndUser(category.get(), user);
         }else{
-            Optional<IncomeCategory> category = ((IncomeCategoryRepository)categoryRepo).fetchCategoryByCategoryNameAndUser
+            Optional<IncomeCategory> category = incomeCategoryRepo.fetchCategoryByCategoryNameAndUser
                     (categoryName.toLowerCase(), user);
             if(category.isEmpty())
                 throw new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist.");
-            ((IncomeTransactionRepository)transactionRepo)
-                    .deleteIncomeTransactionsByIncomeCategoryAndUser(category.get(), user);
+
+            incomeTransactionRepo.deleteIncomeTransactionsByIncomeCategoryAndUser(category.get(), user);
         }
     }
 
@@ -336,10 +375,10 @@ public class TransactionServiceImpl implements TransactionService{
     public void deleteCategory(String categoryName, String type) {
         User user = getUser().get();
         if(type.equals("expense")){
-            ((ExpenseCategoryRepository)categoryRepo).deleteExpenseCategoryByUserAndCategoryName(
+            expenseCategoryRepo.deleteExpenseCategoryByUserAndCategoryName(
                     user, categoryName.toLowerCase());
         }else{
-            ((IncomeCategoryRepository)categoryRepo).deleteIncomeCategoryByUserAndCategoryName(
+            incomeCategoryRepo.deleteIncomeCategoryByUserAndCategoryName(
                     user, categoryName.toLowerCase());
         }
     }
