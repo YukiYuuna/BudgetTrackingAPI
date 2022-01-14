@@ -17,7 +17,7 @@ import static javax.persistence.CascadeType.*;
 @Table(name = "expense_transaction")
 @Getter
 @Setter
-public class ExpenseTransaction extends TransactionCategory{
+public class ExpenseTransaction{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,7 +56,5 @@ public class ExpenseTransaction extends TransactionCategory{
         this.categoryName = categoryName;
         this.description = description;
         this.user = user;
-        setUserId(user.getUserId());
-        setCategoryType("expense");
     }
 }

@@ -13,7 +13,7 @@ public interface ExpenseCategoryRepository extends JpaRepository<ExpenseCategory
     @Query("SELECT c FROM ExpenseCategory c WHERE c.categoryType = ?1 AND c.user.username = ?2")
     Set<ExpenseCategory> findAllUserCategories(String type, String username);
 
-    @Query("SELECT c FROM IncomeCategory c WHERE c.categoryName = ?1 AND c.user.username = ?2")
+    @Query("SELECT c FROM IncomeCategory c WHERE c.categoryName = ?1 AND c.user = ?2")
     Optional<ExpenseCategory> fetchCategoryByCategoryNameAndUser(String categoryName, User user);
 
     boolean existsExpenseCategoryByCategoryNameAndUser(String categoryName, User user);

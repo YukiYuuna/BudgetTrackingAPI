@@ -63,7 +63,7 @@ public class ExpenseController extends ControlHelper {
     @PostMapping("/add/expense/category")
     public ResponseEntity<String> addExpenseCategory(@RequestBody ExpenseCategory category) {
         String name = category.getCategoryName().toLowerCase();
-        service.addCategory("expense", name);
+        service.addCategory(name, "expense");
         return ResponseEntity.ok("Expense category has been saved successfully!");
     }
 

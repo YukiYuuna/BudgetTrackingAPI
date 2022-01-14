@@ -59,7 +59,7 @@ public class IncomeController extends ControlHelper {
     @PostMapping("/add/income/category")
     public ResponseEntity<String> addIncomeCategory(@RequestBody IncomeCategory category) {
         String name = category.getCategoryName().toLowerCase();
-        service.addCategory("income", name);
+        service.addCategory(name, "income");
         return ResponseEntity.ok("Income category has been saved successfully!");
     }
 
