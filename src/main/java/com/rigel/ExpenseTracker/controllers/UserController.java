@@ -39,6 +39,11 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
+    @GetMapping("/user/id")
+    private User getUserById(Long id){
+        return userService.getUserById(id);
+    }
+
     @GetMapping("/users")
     private ResponseEntity<Map<String, Object>> getAllUsers(@Nullable Integer currentPage, @Nullable Integer perPage){
 

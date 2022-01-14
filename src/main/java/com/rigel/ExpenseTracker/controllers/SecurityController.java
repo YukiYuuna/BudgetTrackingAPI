@@ -82,10 +82,16 @@ public class SecurityController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(String username, String password, String firstName, String lastName, String email, Double currentBudget) {
+    public ResponseEntity<String> registerUser(@RequestBody User user) {
+        String username = user.getUsername();
+        String password = user.getPassword();
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
+        String email = user.getEmail();
+        Double currentBudget = user.getCurrentBudget();
         if (username !=  null && password != null && firstName != null && lastName != null && email != null && currentBudget != null) {
-            boolean invalidUsername = userService.getAllDBUsers().stream().anyMatch(user -> user.getUsername().equals(username));
-            boolean invalidEmail = userService.getAllDBUsers().stream().anyMatch(user -> user.getEmail().equals(email));
+            boolean invalidUsername = userService.getAllDBUsers().stream().anyMatch(u -> u.getUsername().equals(username));
+            boolean invalidEmail = userService.getAllDBUsers().stream().anyMatch(u -> u.getEmail().equals(email));
             if(!invalidUsername && !invalidEmail) {
                 userService.saveUser(new User(username, password, firstName, lastName, email, currentBudget));
                 return ResponseEntity.ok().body(firstName + " " + lastName + " has been added successfully!");
