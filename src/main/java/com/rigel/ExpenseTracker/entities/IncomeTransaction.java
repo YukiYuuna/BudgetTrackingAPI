@@ -16,7 +16,7 @@ import static javax.persistence.CascadeType.DETACH;
 @Table(name = "income_transaction")
 @Getter
 @Setter
-public class IncomeTransaction{
+public class IncomeTransaction extends TransactionCategory{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,5 +55,7 @@ public class IncomeTransaction{
         this.categoryName = categoryName;
         this.description = description;
         this.user = user;
+        setUserId(user.getUserId());
+        setCategoryType("income");
     }
 }

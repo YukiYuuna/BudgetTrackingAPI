@@ -18,7 +18,7 @@ import static javax.persistence.CascadeType.*;
 @Getter
 @Setter
 @AllArgsConstructor
-public class IncomeCategory {
+public class IncomeCategory extends TransactionCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "income_category_id")
@@ -46,6 +46,8 @@ public class IncomeCategory {
     public IncomeCategory(String categoryName, User user) {
         this.categoryName = categoryName;
         this.user = user;
+        setUserId(user.getUserId());
+        setCategoryType("income");
     }
 
     @Override

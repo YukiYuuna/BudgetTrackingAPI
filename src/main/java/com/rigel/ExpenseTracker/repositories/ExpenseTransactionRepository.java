@@ -15,11 +15,6 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
 
     @Query("SELECT e "
             + "FROM ExpenseTransaction e "
-            + "WHERE e.categoryType = 'expense'")
-    List<TransactionCategory> findMappedTransactions();
-
-    @Query("SELECT e "
-            + "FROM ExpenseTransaction e "
             + "WHERE e.categoryName = ?1")
     List<ExpenseTransaction> fetchTransactionsByCategory(String categoryName);
 

@@ -14,11 +14,6 @@ public interface IncomeTransactionRepository extends JpaRepository<IncomeTransac
 
     @Query("SELECT i "
             + "FROM IncomeTransaction i "
-            + "WHERE i.categoryType = 'income'")
-    List<TransactionCategory> findMappedTransactions();
-
-    @Query("SELECT i "
-            + "FROM IncomeTransaction i "
             + "WHERE i.categoryName = ?1")
     List<IncomeTransaction> fetchTransactionsByCategory(String name);
 
