@@ -95,7 +95,7 @@ public class UserController {
         return ResponseEntity.ok("User was deleted successfully!");
     }
 
-    static Pageable createPagination(Integer currentPage, Integer perPage, int size) {
+    private static Pageable createPagination(Integer currentPage, Integer perPage, int size) {
         Pageable pageable;
         if((currentPage != null && perPage != null) && (currentPage > 0 && perPage > 0)){
             pageable = PageRequest.of(currentPage - 1, perPage);
