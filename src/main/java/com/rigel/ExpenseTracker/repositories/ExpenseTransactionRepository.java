@@ -14,11 +14,6 @@ import java.util.List;
 public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTransaction, Long> {
 
     @Query("SELECT e "
-            + "FROM ExpenseTransaction e "
-            + "WHERE e.categoryName = ?1")
-    List<ExpenseTransaction> fetchTransactionsByCategory(String categoryName);
-
-    @Query("SELECT e "
             + "FROM ExpenseTransaction e")
     Page<ExpenseTransaction> filteredTransactions(Pageable pageable);
 
@@ -43,7 +38,9 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
             + "FROM ExpenseTransaction e "
             + "WHERE e.date = ?2 "
             + "AND e.user.username = ?1")
-    Page<ExpenseTransaction> filteredTransactionsByDate(Pageable pageable, String username, LocalDate date);
+    Page<ExpenseTransaction> filterTransactionsByDate(Pageable pageable, String username, LocalDate date);
+
+    List<ExpenseTransaction> findExpenseTransactionByCategoryName(String categoryName);
 
     boolean existsExpenseTransactionByUserAndExpenseTransactionId(User user, Long id);
 

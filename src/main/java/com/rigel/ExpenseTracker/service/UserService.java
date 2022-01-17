@@ -1,14 +1,21 @@
 package com.rigel.ExpenseTracker.service;
 
-import com.rigel.ExpenseTracker.entities.ExpenseCategory;
-import com.rigel.ExpenseTracker.entities.ExpenseTransaction;
 import com.rigel.ExpenseTracker.entities.Role;
 import com.rigel.ExpenseTracker.entities.User;
+import com.rigel.ExpenseTracker.repositories.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 public interface UserService {
 
@@ -16,27 +23,23 @@ public interface UserService {
 
     void clearSave(User user);
 
-    Integer numberOfUsers();
-
-    Double totalBudgetOfUser();
-
     Role saveRole(Role role);
 
     void addRoleToUser(String roleName);
 
     User getUser();
 
-    User getUserById(Long userId);
+    Optional<User> getOptionalUser();
 
-    User getUserByUsername(String username);
+    int numberOfUsers();
+
+    User getUserById(Long userId);
 
     Page<User> getUsers(Pageable pageable);
 
     List<User> getAllDBUsers();
 
     boolean usernameExists();
-
-    Optional<User> getOptionalUser();
 
     void deleteUser();
 

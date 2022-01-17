@@ -1,10 +1,5 @@
 package com.rigel.ExpenseTracker;
 
-import com.rigel.ExpenseTracker.entities.DBSeeder;
-import com.rigel.ExpenseTracker.entities.Role;
-import com.rigel.ExpenseTracker.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;

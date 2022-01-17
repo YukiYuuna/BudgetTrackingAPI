@@ -3,8 +3,8 @@ package com.rigel.ExpenseTracker.service;
 import com.rigel.ExpenseTracker.entities.Role;
 import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.repositories.*;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -23,24 +24,29 @@ import java.util.*;
 import static org.springframework.http.HttpStatus.*;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class UserServiceImpl implements UserService, UserDetailsService {
+@Component
+public class UserServiceImpl  implements UserService, UserDetailsService {
 
     private final UserRepository userRepo;
     private final RoleRepo roleRepo;
     private final PasswordEncoder passwordEncoder;
 
+    @Autowired
+    public UserServiceImpl(UserRepository userRepo, RoleRepo roleRepo, PasswordEncoder passwordEncoder) {
+        this.userRepo = userRepo;
+        this.roleRepo = roleRepo;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepo.findUserByUsername(username);
         if(user.isEmpty() && !username.equals("NONE_PROVIDED")) {
-            log.error("User not found in the database");;
             throw new ResponseStatusException(NOT_FOUND, "User with this username not found in the database!");
         }
 
-        log.info("User found in the database: {}", username);
         return new org.springframework.security.core.userdetails.User(user.get().getUsername(), user.get().getPassword(),
                 buildSimpleGrantedAuthorities(user.get().getRoles()));
     }
@@ -64,16 +70,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Integer numberOfUsers() {
-        return userRepo.findAll().size();
-    }
-
-    @Override
-    public Double totalBudgetOfUser() {
-        return userExists(getUsernameByAuthentication()).get().getCurrentBudget();
-    }
-
-    @Override
     public Role saveRole(Role role) {
         log.info("Role saved to the database successfully!");
         if(roleRepo.existsByRoleName(role.getRoleName()))
@@ -83,36 +79,38 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public void addRoleToUser(String roleName) {
-        String username = getUsernameByAuthentication();
-
-        Optional<User> user = userRepo.findUserByUsername(username);
-        if(user.isEmpty())
-            throw new ResponseStatusException(NOT_FOUND, "User with this username doesn't exist!");
-
         Role role = roleRepo.findByRoleName(roleName);
-        user.get().getRoles().add(role);
+        getUser().getRoles().add(role);
     }
 
     @Override
-    public User getUser() {
-        Optional<User> user = userExists(getUsernameByAuthentication());
-        return user.get();
+    public int numberOfUsers(){
+        return userRepo.findAll().size();
+    }
+
+    @Override
+    public User getUser(){
+        return getOptionalUser().get();
+    }
+
+    @Override
+    public Optional<User> getOptionalUser() {
+        Optional<User> user = userRepo.findUserByUsername(getUsernameByAuthentication());
+
+        if (user.isPresent()) {
+            return user;
+        }
+        else {
+            throw new ResponseStatusException(BAD_REQUEST, "Sorry, something went wrong.");
+        }
     }
 
     @Override
     public User getUserById(Long userId) {
-        Optional<User> user = userRepo.fetchUserById(userId);
+        Optional<User> user = userRepo.findUserByUserId(userId);
         if(user.isEmpty())
             throw new ResponseStatusException(NOT_FOUND, "No user with id " + userId + " found in the DB!");
         return user.get();
-    }
-
-    @Override
-    public User getUserByUsername(String username) {
-        User user = userRepo.findByUsername(username);
-        if(user == null)
-            throw new ResponseStatusException(NOT_FOUND, "User " + username + " doesn't exist.");
-        return userRepo.findByUsername(username);
     }
 
     @Override
@@ -131,15 +129,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Optional<User> getOptionalUser() {
-        return userRepo.findUserByUsername(getUsernameByAuthentication());
-    }
-
-    @Override
     public void deleteUser() {
-        userRepo.delete(
-                userExists(getUsernameByAuthentication())
-                        .get());
+        userRepo.delete(getUser());
     }
 
     @Override
@@ -147,7 +138,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userRepo.saveAndFlush(user);
     }
 
-    private static List<SimpleGrantedAuthority> buildSimpleGrantedAuthorities(final Set<Role> roles) {
+    static List<SimpleGrantedAuthority> buildSimpleGrantedAuthorities(final Set<Role> roles) {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         for (Role role : roles) {
             authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
@@ -155,16 +146,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return authorities;
     }
 
-    public String getUsernameByAuthentication(){
+    String getUsernameByAuthentication(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getName();
     }
-
-    private Optional<User> userExists(String username){
-        Optional<User> user = userRepo.findUserByUsername(username);
-        if (user.isEmpty())
-            throw new ResponseStatusException(NOT_FOUND, "User with username: " + username + " doesn't exist.");
-        return user;
-    }
-
 }

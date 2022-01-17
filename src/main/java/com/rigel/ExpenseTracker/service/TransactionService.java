@@ -59,8 +59,4 @@ public interface TransactionService {
 
 //    done
     void deleteCategory(String categoryName, String type);
-
-    String getUsernameByAuthentication();
-
-    Optional<User> getUser();
 }

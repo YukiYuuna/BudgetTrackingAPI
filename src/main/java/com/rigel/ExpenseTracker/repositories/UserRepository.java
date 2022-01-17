@@ -13,13 +13,7 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT u "
-            + "FROM User u "
-            + "WHERE "
-            + "u.userId = ?1")
-    Optional<User> fetchUserById(Long id);
-
-    User findByUsername(String username);
+    Optional<User> findUserByUserId(Long id);
 
     @Query("SELECT u "
             + "FROM User u")

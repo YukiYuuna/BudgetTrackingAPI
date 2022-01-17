@@ -10,8 +10,8 @@ import java.util.Set;
 
 public interface IncomeCategoryRepository extends JpaRepository<IncomeCategory, Long> {
 
-    @Query("SELECT c FROM IncomeCategory c WHERE c.categoryType = ?1 AND c.user.username = ?2")
-    Set<IncomeCategory> findAllUserCategories(String type, String username);
+    @Query("SELECT c FROM IncomeCategory c WHERE c.user.username = ?2")
+    Set<IncomeCategory> findAllUserCategories(String username);
 
     @Query("SELECT c FROM IncomeCategory c WHERE c.categoryName = ?1 AND c.user = ?2")
     Optional<IncomeCategory> fetchCategoryByCategoryNameAndUser(String categoryName, User user);
