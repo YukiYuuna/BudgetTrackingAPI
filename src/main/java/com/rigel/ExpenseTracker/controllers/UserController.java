@@ -34,18 +34,18 @@ public class UserController {
      * @return all users in the app.
      */
     @GetMapping("/user")
-    private ResponseEntity<User> getUserInfo(){
+    public ResponseEntity<User> getUserInfo(){
         User user = userService.getUser();
         return ResponseEntity.ok().body(user);
     }
 
     @GetMapping("/user/id")
-    private User getUserById(Long id){
+    public User getUserById(Long id){
         return userService.getUserById(id);
     }
 
     @GetMapping("/users")
-    private ResponseEntity<Map<String, Object>> getAllUsers(@Nullable Integer currentPage, @Nullable Integer perPage){
+    public ResponseEntity<Map<String, Object>> getAllUsers(@Nullable Integer currentPage, @Nullable Integer perPage){
 
         Pageable pageable = createPagination(currentPage, perPage, userService.numberOfUsers());
 

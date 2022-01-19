@@ -44,4 +44,5 @@ public interface UserService {
     void deleteUser();
 
     void saveUserDataAndFlush(User user);
+    String getUsernameByAuthentication();
 }

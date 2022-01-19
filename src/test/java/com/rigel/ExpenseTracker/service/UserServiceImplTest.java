@@ -1,43 +1,65 @@
 package com.rigel.ExpenseTracker.service;
 
+import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.repositories.RoleRepo;
 import com.rigel.ExpenseTracker.repositories.UserRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContext;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
 
-import static org.mockito.Mockito.verify;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
-    @Mock private UserRepository userRepo;
-    @Mock private RoleRepo roleRepo;
-    @Mock private PasswordEncoder passwordEncoder;
-//    private AutoCloseable autoCloseable;
-    private UserService underTest;
+    @Mock private UserRepository mockUserRepo;
+    @Mock private RoleRepo mockRoleRepo;
+    @Mock private PasswordEncoder mockPasswordEncoder;
+    @Mock private UserService mockUserService;
 
-//    runs before each test
+    @BeforeAll
+    public static void beforeAll() {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(SecurityContextHolder.getContext().getAuthentication().getDetails()).thenReturn(
+                new User("admin", "admin", "Koko", "Borimechkov", "koko@gmail.com", 9000.0));
+        when(SecurityContextHolder.getContext().getAuthentication().getName()).thenReturn("admin");
+    }
+
+    @BeforeEach
+    void init() {
+        User user1 = new User("ivan", "ivan", "Ivan", "Duhov", "ivanDuhov@gmail.com", 100000.0);
+        User user2 = new User("ivo", "ivo", "Ivo", "Petkov", "ipetkov@gmail.com", 800.0);
+        mockUserRepo.save(user1);
+        mockUserRepo.save(user2);
+    }
+
+    //    runs before each test
     @BeforeEach
     void setUp() {
 //        autoCloseable = MockitoAnnotations.openMocks(this);
-        underTest = new UserServiceImpl(userRepo, roleRepo, passwordEncoder);
+        mockUserService = new UserServiceImpl(mockUserRepo, mockRoleRepo, mockPasswordEncoder);
     }
 
-//    @AfterEach
-//    void tearDown() throws Exception {
-//        close the resource after the tests have finished:
-//        autoCloseable.close();
-//    }
-
-    @Test
-    @Disabled
-    void loadUserByUsername() {
+    @AfterEach
+    void tearDown(){
+        mockUserRepo.deleteAll();
     }
 
     @Test
@@ -65,32 +87,35 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getOptionalUser() {
+    void getOptionalUserTest() {
     }
 
     @Test
-    void getUserById() {
+    void getUserByIdTest() {
     }
 
     @Test
-    void canGetAllDBUsers() {
+    void getAllDBUsersTest() {
 //        when
-        underTest.getAllDBUsers();
+        mockUserService.getAllDBUsers();
 
 //        then
         /*
          *       basically we want to say that the userRepo mock was invoked using the method findAll(),
          *       when using the getAllDBUsers in the serviceImpl
          */
-        verify(userRepo).findAll();
+        verify(mockUserRepo).findAll();
     }
 
     @Test
-    void getUsers() {
+    void getUsersTest() {
+
     }
 
     @Test
-    void usernameExists() {
+    void usernameExistsTest() {
+        when(mockUserRepo.existsByUsername("admin")).thenReturn(true);
+        assertTrue(mockUserService.usernameExists());
     }
 
     @Test

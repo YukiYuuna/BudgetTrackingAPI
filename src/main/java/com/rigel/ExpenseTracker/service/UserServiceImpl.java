@@ -95,7 +95,8 @@ public class UserServiceImpl  implements UserService, UserDetailsService {
 
     @Override
     public Optional<User> getOptionalUser() {
-        Optional<User> user = userRepo.findUserByUsername(getUsernameByAuthentication());
+        String username = getUsernameByAuthentication();
+        Optional<User> user = userRepo.findUserByUsername(username);
 
         if (user.isPresent()) {
             return user;
@@ -125,7 +126,8 @@ public class UserServiceImpl  implements UserService, UserDetailsService {
 
     @Override
     public boolean usernameExists() {
-        return userRepo.existsByUsername(getUsernameByAuthentication());
+        String username = getUsernameByAuthentication();
+        return userRepo.existsByUsername(username);
     }
 
     @Override
@@ -146,7 +148,8 @@ public class UserServiceImpl  implements UserService, UserDetailsService {
         return authorities;
     }
 
-    String getUsernameByAuthentication(){
+    @Override
+    public String getUsernameByAuthentication(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getName();
     }
