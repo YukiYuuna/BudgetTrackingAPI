@@ -1,9 +1,7 @@
 package com.rigel.ExpenseTracker.controllers;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Optional;
+import com.rigel.ExpenseTracker.AbstractTest;
 import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.repositories.RoleRepo;
 import com.rigel.ExpenseTracker.repositories.UserRepository;
@@ -17,51 +15,36 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserControllerTest {
+class UserControllerTest extends AbstractTest {
 
-    private MockMvc mockMvc;
-    @Autowired
-    WebApplicationContext webApplicationContext;
     @Mock private UserRepository mockUserRepo;
     @Mock private RoleRepo mockRoleRepo;
     @Mock private PasswordEncoder mockPasswordEncoder;
     @Mock private UserService userServiceTest;
+    @Mock private UserController userController;
 
-    protected void setMockMvc() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-    }
-
-    protected String mapToJson(Object obj) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(obj);
-    }
-
-    protected <T> T mapFromJson(String json, Class<T> clazz)
-            throws JsonParseException, JsonMappingException, IOException {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(json, clazz);
-    }
+    @Autowired WebApplicationContext webApplicationContext;
 
     @BeforeEach
     void setUp() {
 //        autoCloseable = MockitoAnnotations.openMocks(this);
         userServiceTest = new UserServiceImpl(mockUserRepo, mockRoleRepo, mockPasswordEncoder);
+        mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
     @BeforeAll
@@ -75,15 +58,15 @@ class UserControllerTest {
         when(SecurityContextHolder.getContext().getAuthentication().getName()).thenReturn("admin");
     }
 
-    @BeforeEach
-    void init() {
-        User admin = new User("admin", "admin", "Koko", "Borimechkov", "koko@gmail.com", 9000.0);
-        User user1 = new User("ivan", "ivan", "Ivan", "Duhov", "ivanDuhov@gmail.com", 100000.0);
-        User user2 = new User("ivo", "ivo", "Ivo", "Petkov", "ipetkov@gmail.com", 800.0);
-        mockUserRepo.save(admin);
-        mockUserRepo.save(user1);
-        mockUserRepo.save(user2);
-    }
+//    @BeforeEach
+//    void init() {
+//        User admin = new User("admin", "admin", "Koko", "Borimechkov", "koko@gmail.com", 9000.0);
+//        User user1 = new User("ivan", "ivan", "Ivan", "Duhov", "ivanDuhov@gmail.com", 100000.0);
+//        User user2 = new User("ivo", "ivo", "Ivo", "Petkov", "ipetkov@gmail.com", 800.0);
+//        mockUserRepo.save(admin);
+//        mockUserRepo.save(user1);
+//        mockUserRepo.save(user2);
+//    }
 
     @AfterEach
     void tearDown() {
@@ -91,10 +74,8 @@ class UserControllerTest {
     }
 
     @Test
-    void getUserInfo() {
-        verify(userServiceTest).getUser();
-
-    }
+    void getUserInfoTest() throws Exception
+    {}
 
     @Test
     void getUserById() {

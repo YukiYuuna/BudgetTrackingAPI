@@ -53,7 +53,6 @@ public class UserServiceImpl  implements UserService, UserDetailsService {
 
     @Override
     public User saveUser(User user) {
-        log.info("User was saved to the database successfully!");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         Set<Role> role = new HashSet<>();
@@ -61,6 +60,7 @@ public class UserServiceImpl  implements UserService, UserDetailsService {
 
         user.setRoles(role);
 
+        log.info("User was saved to the database successfully!");
         return userRepo.save(user);
     }
 
@@ -150,7 +150,6 @@ public class UserServiceImpl  implements UserService, UserDetailsService {
 
     @Override
     public String getUsernameByAuthentication(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }
