@@ -38,6 +38,12 @@ public class ExpenseCategory {
     public ExpenseCategory() {
     }
 
+    public ExpenseCategory(Long expenseCategoryId, String categoryName, User user) {
+        this.expenseCategoryId = expenseCategoryId;
+        this.categoryName = categoryName;
+        this.user = user;
+    }
+
     public ExpenseCategory(String categoryName, User user) {
         this.categoryName = categoryName;
         this.user = user;

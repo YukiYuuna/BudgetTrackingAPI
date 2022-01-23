@@ -85,9 +85,9 @@ public class TransactionServiceImpl implements TransactionService{
         Optional<?> category;
 
         if(type.equals("expense"))
-            category = expenseCategoryRepo.fetchCategoryByCategoryNameAndUser(categoryName.toLowerCase(), getUser());
+            category = expenseCategoryRepo.findExpenseCategoryByCategoryNameAndUser(categoryName.toLowerCase(), getUser());
         else
-            category = incomeCategoryRepo.fetchCategoryByCategoryNameAndUser(categoryName.toLowerCase(), getUser());
+            category = incomeCategoryRepo.findIncomeCategoryByCategoryNameAndUser(categoryName.toLowerCase(), getUser());
 
         if(category.isEmpty())
             throw  new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist.");
@@ -96,21 +96,21 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
     @Override
-    public HashMap<String, Object> getCategories(String type) {
+    public HashMap<String, Object> getCategories(String type) throws ResponseStatusException{
         Set<?> categories;
-        String username = getUsernameByAuthentication();
+        User user = getUser();
 
         if(type.equals("expense"))
-            categories = expenseCategoryRepo.findAllUserCategories(username);
+            categories = expenseCategoryRepo.findExpenseCategoriesByUser(user);
         else
-            categories = incomeCategoryRepo.findAllUserCategories(username);
+            categories = incomeCategoryRepo.findIncomeCategoriesByUser(user);
 
         if(categories.size() == 0)
             throw new ResponseStatusException(NOT_FOUND, "There are no registered categories.");
 
         HashMap<String, Object> result = new LinkedHashMap<>();
         result.put("username", getUsernameByAuthentication());
-        result.put("totalTransactions", categories);
+        result.put("totalCategories", categories);
 
         return result;
     }
@@ -220,9 +220,9 @@ public class TransactionServiceImpl implements TransactionService{
         User user = getUser();
         Optional<?> category;
         if(type.equals("expense")){
-            category = expenseCategoryRepo.fetchCategoryByCategoryNameAndUser(dbName, getUser());
+            category = expenseCategoryRepo.findExpenseCategoryByCategoryNameAndUser(dbName, getUser());
         }else if(type.equals("income")){
-            category = incomeCategoryRepo.fetchCategoryByCategoryNameAndUser(dbName, getUser());
+            category = incomeCategoryRepo.findIncomeCategoryByCategoryNameAndUser(dbName, getUser());
         } else{
             throw new ResponseStatusException(BAD_REQUEST, "Please enter a valid category type. Either income/expense.");
         }
@@ -255,7 +255,8 @@ public class TransactionServiceImpl implements TransactionService{
                 ExpenseTransaction expenseTransaction = new ExpenseTransaction(curDate, transactionAmount,
                         categoryName, description, user);
 //            Finds if the expense category exists (based on name/user) and does operations with it:
-                Optional<ExpenseCategory> category = expenseCategoryRepo.fetchCategoryByCategoryNameAndUser(categoryName, user);
+                Optional<ExpenseCategory> category = expenseCategoryRepo
+                        .findExpenseCategoryByCategoryNameAndUser(categoryName, user);
 
 //            If the category doesn't exist, we create it and persist it to the DB:
                 if(category.isEmpty()){
@@ -273,7 +274,8 @@ public class TransactionServiceImpl implements TransactionService{
             } else {
                 IncomeTransaction incomeTransaction = new IncomeTransaction(curDate, transactionAmount,
                         categoryName, description, user);
-                Optional<IncomeCategory> category = incomeCategoryRepo.fetchCategoryByCategoryNameAndUser(categoryName, user);
+                Optional<IncomeCategory> category = incomeCategoryRepo
+                        .findIncomeCategoryByCategoryNameAndUser(categoryName, user);
 
                 if(category.isEmpty()){
                     IncomeCategory newCategory = new IncomeCategory(categoryName, user);
@@ -344,15 +346,15 @@ public class TransactionServiceImpl implements TransactionService{
     public  void deleteTransactionsByCategory(String type, String categoryName) {
         User user = getUser();
         if(type.equals("expense")){
-            Optional<ExpenseCategory> category = expenseCategoryRepo.fetchCategoryByCategoryNameAndUser
-                    (categoryName.toLowerCase(), user);
+            Optional<ExpenseCategory> category = expenseCategoryRepo
+                    .findExpenseCategoryByCategoryNameAndUser(categoryName.toLowerCase(), user);
             if(category.isEmpty())
                 throw new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist.");
 
             expenseTransactionRepo.deleteExpenseTransactionsByExpenseCategoryAndUser(category.get(), user);
         }else{
-            Optional<IncomeCategory> category = incomeCategoryRepo.fetchCategoryByCategoryNameAndUser
-                    (categoryName.toLowerCase(), user);
+            Optional<IncomeCategory> category = incomeCategoryRepo
+                    .findIncomeCategoryByCategoryNameAndUser(categoryName.toLowerCase(), user);
             if(category.isEmpty())
                 throw new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist.");
 
