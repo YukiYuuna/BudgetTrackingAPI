@@ -80,6 +80,16 @@ public class User {
         this.currentBudget = currentBudget;
     }
 
+    public void addRoleToUser(Role role){
+        if(this.roles != null)
+            this.roles.add(role);
+        else{
+            Set<Role> newRoles = new HashSet<>();
+            newRoles.add(role);
+            this.roles = newRoles;
+        }
+    }
+
     public void addExpenseCategoryToUser(ExpenseCategory expenseCategory){
         if(this.expenseCategories != null)
             this.expenseCategories.add(expenseCategory);

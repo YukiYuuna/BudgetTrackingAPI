@@ -1,10 +1,13 @@
 package com.rigel.ExpenseTracker.service;
 
+import com.rigel.ExpenseTracker.entities.Role;
 import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.repositories.RoleRepo;
 import com.rigel.ExpenseTracker.repositories.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -17,8 +20,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -28,6 +33,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
@@ -54,23 +60,69 @@ class UserServiceImplTest {
     }
 
     @Test
-    void saveUser() {
+    void saveUserTest() {
+//        given
+        User user = new User("koko", "koko", "Koko", "Bor", "kbor@gmail.com", 4643.0);
+        when(mockPasswordEncoder.encode(user.getPassword())).thenReturn("encoded");
+        Role role = new Role(Role.ROLE_USER);
+        when(mockRoleRepo.findByRoleName(role.getRoleName())).thenReturn(role);
+//        when
+        mockUserService.saveUser(user);
+
+//        then
+        ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+        verify(mockUserRepo).save(userArgumentCaptor.capture());
+        User capturedUser = userArgumentCaptor.getValue();
+
+        assertThat(capturedUser).isEqualTo(user);
     }
 
     @Test
-    void clearSave() {
+    void saveRoleTest() {
+//        given
+        Role role = new Role(Role.ROLE_ADMIN);
+        role.setRoleId(1);
+        when((mockRoleRepo.existsByRoleName(role.getRoleName()))).thenReturn(false);
+
+//        when
+        mockUserService.saveRole(role);
+
+//        then
+        ArgumentCaptor<Role> roleArgumentCaptor = ArgumentCaptor.forClass(Role.class);
+        verify(mockRoleRepo).save(roleArgumentCaptor.capture());
+        Role capturedRole = roleArgumentCaptor.getValue();
+
+        assertThat(capturedRole).isEqualTo(role);
     }
 
     @Test
-    void saveRole() {
+    void dontSaveRoleTest() {
+        Role role = new Role(Role.ROLE_ADMIN);
+        role.setRoleId(1);
+        when(mockRoleRepo.existsByRoleName(role.getRoleName())).thenReturn(true);
+
+//        when
+        assertThatThrownBy(() -> mockUserService.saveRole(role)).isInstanceOf(ResponseStatusException.class)
+                .hasMessage("400 BAD_REQUEST \"This role already exists in the DB!\"");
     }
 
     @Test
-    void addRoleToUser() {
+    void addRoleToUserTest() {
+//        given
+        User user = getOneUser();
+        Role role = new Role("ROLE_SUPER_USER");
+        when(mockRoleRepo.findByRoleName(role.getRoleName())).thenReturn(role);
+        when(SecurityContextHolder.getContext().getAuthentication().getName()).thenReturn(user.getUsername());
+        when(mockUserRepo.findUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
+//        when
+        mockUserService.addRoleToUser(role.getRoleName());
+
+//        then
+        assertThat(mockUserService.getUser().getRoles()).isEqualTo(Set.of(user.getRoles()));
     }
 
     @Test
-    void numberOfUsers() {
+    void numberOfUsersTest() {
         when(mockUserRepo.findAll()).thenReturn(setOfUsers());
         assertThat(mockUserService.numberOfUsers()).isEqualTo(4);
     }
@@ -78,15 +130,31 @@ class UserServiceImplTest {
     @Test
     void getOptionalUserTest() {
 //        given
-        User user1 = new User("ivan", "ivan", "Ivan", "Duhov", "ivanDuhov@gmail.com", 100000.0);
-        user1.setUserId(1L);
-        String username = String.valueOf(when(SecurityContextHolder.getContext().getAuthentication().getName()).thenReturn("ivan"));
-        lenient().when(mockUserRepo.findUserByUsername(username)).thenReturn(Optional.of(user1));
+        User user = getOneUser();
+        when(SecurityContextHolder.getContext().getAuthentication().getName()).thenReturn(user.getUsername());
+        lenient().when(mockUserRepo.findUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
+
+//        when
+        mockUserService.getOptionalUser();
+
+//        then
+        assertThat(mockUserService.getOptionalUser()).isEqualTo(Optional.of(user));
+    }
+
+    @Test
+    void noOptionalUserTest() {
+//        given
+        when(SecurityContextHolder.getContext().getAuthentication().getName()).thenReturn("ivan");
+
+//        when
+//        then
+        assertThatThrownBy(() -> mockUserService.getOptionalUser()).isInstanceOf(ResponseStatusException.class)
+                .hasMessage("400 BAD_REQUEST \"Sorry, something went wrong.\"");
     }
 
     @Test
     void getUserByIdTest() {
-        User user1 = new User("ivan", "ivan", "Ivan", "Duhov", "ivanDuhov@gmail.com", 100000.0);
+        User user1 =getOneUser();
         when(mockUserRepo.findUserByUserId(1L)).thenReturn(Optional.of(user1));
 
         assertThat(mockUserService.getUserById(1L)).isEqualTo(user1);
@@ -131,19 +199,18 @@ class UserServiceImplTest {
         verify(mockUserRepo).existsByUsername("ivan");
     }
 
-    @Test
-    void deleteUser() {
-    }
-
-    @Test
-    void saveUserDataAndFlush() {
-    }
-
     private static List<User> setOfUsers(){
         User user1 = new User("ivan", "ivan", "Ivan", "Duhov", "ivanDuhov@gmail.com", 100000.0);
         User user2 = new User("deni", "deni", "Deni", "Duhova", "deniduhova@gmail.com", 9794.0);
         User user3 = new User("koko", "koko", "Koko", "Bor", "kbor@gmail.com", 4643.0);
         User user4 = new User("desi", "desi", "Desi", "Popova", "desippv@gmail.com", 8151125.0);
         return List.of(user1,user2,user3, user4);
+    }
+
+    private User getOneUser(){
+        User user = new User("koko", "koko", "Koko", "Bor", "kbor@gmail.com", 4643.0);
+        user.setRoles(Set.of(new Role(Role.ROLE_USER)));
+        mockUserRepo.save(user);
+        return user;
     }
 }

@@ -52,7 +52,7 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
     @Override
-    public  void saveTransactionToDB(LocalDate date, Double expenseAmount,
+    public void saveTransactionToDB(LocalDate date, Double expenseAmount,
                                      String categoryName, String description,
                                      String categoryType) {
         categoryName = categoryName.toLowerCase();
@@ -373,8 +373,7 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
     private String getUsernameByAuthentication(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
     private Optional<User> getOptionalUser() {

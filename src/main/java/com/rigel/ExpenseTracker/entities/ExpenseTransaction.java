@@ -10,6 +10,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.CascadeType.*;
 
@@ -56,5 +57,18 @@ public class ExpenseTransaction {
         this.categoryName = categoryName;
         this.description = description;
         this.user = user;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ExpenseTransaction that = (ExpenseTransaction) o;
+        return Objects.equals(expenseTransactionId, that.expenseTransactionId) && Objects.equals(date, that.date) && Objects.equals(expenseAmount, that.expenseAmount) && Objects.equals(categoryName, that.categoryName) && Objects.equals(description, that.description) && Objects.equals(expenseCategory, that.expenseCategory) && Objects.equals(user, that.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(expenseTransactionId, date, expenseAmount, categoryName, description, expenseCategory, user);
     }
 }
