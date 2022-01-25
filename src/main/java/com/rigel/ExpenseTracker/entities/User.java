@@ -71,6 +71,16 @@ public class User {
     public User() {
     }
 
+    public User(Long userId, String username, String password, String firstName, String lastName, String email, Double currentBudget) {
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.currentBudget = currentBudget;
+    }
+
     public User(String username, String password, String firstName, String lastName, String email, Double currentBudget) {
         this.username = username;
         this.password = password;

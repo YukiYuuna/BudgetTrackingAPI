@@ -6,6 +6,7 @@ import com.rigel.ExpenseTracker.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
@@ -40,11 +41,15 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
             + "AND e.user.username = ?1")
     Page<ExpenseTransaction> filterTransactionsByDate(Pageable pageable, String username, LocalDate date);
 
-    List<ExpenseTransaction> findExpenseTransactionByCategoryName(String categoryName);
+    List<ExpenseTransaction> findExpenseTransactionsByCategoryName(String categoryName);
+
+    List<ExpenseTransaction> findExpenseTransactionsByCategoryNameAndUser(String categoryName, User user);
+
+    boolean existsExpenseTransactionsByCategoryNameAndUser(String categoryName, User user);
 
     boolean existsExpenseTransactionByUserAndExpenseTransactionId(User user, Long id);
 
-    void deleteExpenseTransactionsByExpenseCategoryAndUser(ExpenseCategory category, User user);
+    void deleteExpenseTransactionsByCategoryNameAndUser(String category, User user);
 
     void deleteExpenseTransactionsByUser(User user);
 

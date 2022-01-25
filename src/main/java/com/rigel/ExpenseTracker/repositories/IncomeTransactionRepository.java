@@ -44,9 +44,13 @@ public interface IncomeTransactionRepository extends JpaRepository<IncomeTransac
             + "AND i.date = ?2")
     Page<IncomeTransaction> filteredTransactionsByDate(Pageable pageable, String username, LocalDate date);
 
+    List<IncomeTransaction> findIncomeTransactionsByCategoryName(String categoryName);
+
+    boolean existsIncomeTransactionByCategoryNameAndUser(String categoryName, User user);
+
     boolean existsIncomeTransactionByUserAndIncomeTransactionId(User user, Long id);
 
-    void deleteIncomeTransactionsByIncomeCategoryAndUser(IncomeCategory category, User user);
+    void deleteIncomeTransactionsByCategoryNameAndUser(String category, User user);
 
     void deleteIncomeTransactionsByUser(User user);
 

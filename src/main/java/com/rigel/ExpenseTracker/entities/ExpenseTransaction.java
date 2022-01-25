@@ -51,13 +51,16 @@ public class ExpenseTransaction {
     public ExpenseTransaction() {
     }
 
-    public ExpenseTransaction(Long expenseTransactionId, LocalDate date, Double expenseAmount, String categoryName, String description,User user) {
+    public ExpenseTransaction(Long expenseTransactionId, LocalDate date,
+                              Double expenseAmount, String categoryName,
+                              String description, User user, ExpenseCategory expenseCategory) {
         this.expenseTransactionId = expenseTransactionId;
         this.date = date;
         this.expenseAmount = expenseAmount;
         this.categoryName = categoryName;
         this.description = description;
         this.user = user;
+        this.expenseCategory = expenseCategory;
     }
 
     public ExpenseTransaction(LocalDate date, Double expenseAmount, String categoryName, String description, User user) {

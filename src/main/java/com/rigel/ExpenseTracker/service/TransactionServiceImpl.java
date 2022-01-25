@@ -71,10 +71,10 @@ public class TransactionServiceImpl implements TransactionService{
     public int numberOfTransactionsByCategory(String type, String categoryName) {
         int transactions;
         if(type.equals("expense")){
-            transactions = (int) expenseTransactionRepo.findExpenseTransactionByCategoryName(categoryName.toLowerCase())
+            transactions = (int) expenseTransactionRepo.findExpenseTransactionsByCategoryName(categoryName.toLowerCase())
                     .stream().filter(t -> t.getUser().getUserId().equals(getUser().getUserId())).count();
         } else{
-            transactions = (int) incomeTransactionRepo.fetchTransactionsByCategory(categoryName.toLowerCase())
+            transactions = (int) incomeTransactionRepo.findIncomeTransactionsByCategoryName(categoryName.toLowerCase())
                     .stream().filter(t -> t.getUser().getUserId().equals(getUser().getUserId())).count();
         }
         return transactions;
@@ -351,14 +351,14 @@ public class TransactionServiceImpl implements TransactionService{
             if(category.isEmpty())
                 throw new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist.");
 
-            expenseTransactionRepo.deleteExpenseTransactionsByExpenseCategoryAndUser(category.get(), user);
+            expenseTransactionRepo.deleteExpenseTransactionsByCategoryNameAndUser(categoryName, user);
         }else{
             Optional<IncomeCategory> category = incomeCategoryRepo
                     .findIncomeCategoryByCategoryNameAndUser(categoryName.toLowerCase(), user);
             if(category.isEmpty())
                 throw new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist.");
 
-            incomeTransactionRepo.deleteIncomeTransactionsByIncomeCategoryAndUser(category.get(), user);
+            incomeTransactionRepo.deleteIncomeTransactionsByCategoryNameAndUser(categoryName, user);
         }
     }
 
