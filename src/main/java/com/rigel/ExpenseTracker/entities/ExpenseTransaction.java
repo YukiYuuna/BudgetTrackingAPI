@@ -43,7 +43,7 @@ public class ExpenseTransaction {
     @JsonIgnore
     private ExpenseCategory expenseCategory;
 
-    @ManyToOne(cascade = ALL)
+    @ManyToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH})
     @JoinColumn(name = "user_expense_transaction_id", referencedColumnName = "user_id")
     @JsonIgnore
     private User user;

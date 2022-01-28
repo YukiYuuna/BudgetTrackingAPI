@@ -91,33 +91,39 @@ public class User {
     }
 
     public void addRoleToUser(Role role){
-        if(this.roles != null)
-            this.roles.add(role);
-        else{
-            Set<Role> newRoles = new HashSet<>();
+        Set<Role> newRoles = new HashSet<>();
+        if(this.roles != null) {
             newRoles.add(role);
-            this.roles = newRoles;
+            newRoles.addAll(this.roles);
         }
+        else
+            newRoles.add(role);
+
+        setRoles(newRoles);
     }
 
     public void addExpenseCategoryToUser(ExpenseCategory expenseCategory){
-        if(this.expenseCategories != null)
-            this.expenseCategories.add(expenseCategory);
-        else{
-            Set<ExpenseCategory> category = new HashSet<>();
-            category.add(expenseCategory);
-            this.expenseCategories = category;
-        }
+        Set<ExpenseCategory> newCategories = new HashSet<>();
+        if(this.expenseCategories != null){
+            newCategories.add(expenseCategory);
+            newCategories.addAll(this.expenseCategories);
+            }
+        else
+            newCategories.add(expenseCategory);
+
+        setExpenseCategories(newCategories);
     }
 
     public void addIncomeCategoryToUser(IncomeCategory incomeCategory){
-        if(this.incomeCategories != null)
-            this.incomeCategories.add(incomeCategory);
-        else{
-            Set<IncomeCategory> category = new HashSet<>();
-            category.add(incomeCategory);
-            this.incomeCategories = category;
+        Set<IncomeCategory> newCategories = new HashSet<>();
+        if(this.incomeCategories != null){
+            newCategories.add(incomeCategory);
+            newCategories.addAll(this.incomeCategories);
         }
+        else
+            newCategories.add(incomeCategory);
+
+        setIncomeCategories(newCategories);
     }
 
     public void addExpenseAmountToUser(Double expenseAmount){

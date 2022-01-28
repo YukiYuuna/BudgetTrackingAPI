@@ -6,14 +6,15 @@ import com.rigel.ExpenseTracker.entities.Role;
 import com.rigel.ExpenseTracker.entities.User;
 import com.rigel.ExpenseTracker.repositories.*;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.platform.engine.support.hierarchical.ThrowableCollector;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,21 +31,22 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 @Slf4j
+@RunWith(MockitoJUnitRunner.class)
 @ExtendWith(MockitoExtension.class)
 class TransactionServiceImplTest {
 
     @Mock private UserRepository mockUserRepo;
     @Mock private ExpenseCategoryRepository mockExpenseCategoryRepo;
-    @Mock private IncomeCategoryRepository mockIncomeCategoryRepo;
     @Mock private ExpenseTransactionRepository mockExpenseTransactionRepo;
-    @Mock private IncomeTransactionRepository mockIncomeTransactionRepo;
-    @Mock private TransactionService mockTransactionService;
+    @InjectMocks private TransactionServiceImpl service;
+
+    final String categoryName = "food";
 
     @BeforeAll
     public static void beforeAll() {
@@ -53,14 +55,12 @@ class TransactionServiceImplTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
         when(SecurityContextHolder.getContext().getAuthentication().getDetails()).thenReturn(
-                new User("koko", "koko", "Koko", "Borimechkov", "koko@gmail.com", 9000.0));
+                new User(1L, "koko", "koko", "Koko", "Borimechkov", "koko@gmail.com", 9000.0));
     }
 
     @BeforeEach
     void setUp() {
 //        autoCloseable = MockitoAnnotations.openMocks(this);
-        mockTransactionService = new TransactionServiceImpl(mockUserRepo, mockExpenseCategoryRepo,
-                mockIncomeCategoryRepo, mockExpenseTransactionRepo,mockIncomeTransactionRepo);
         when(SecurityContextHolder.getContext().getAuthentication().getName()).thenReturn("koko");
     }
 //
@@ -76,15 +76,16 @@ class TransactionServiceImplTest {
     @Test
     void saveCategoryToDBTest() {
         User user = getOneNormalUser();
-        ExpenseCategory expenseCategory =getOneCategory(user, "food");
+        ExpenseCategory expenseCategory = getOneCategory(user, categoryName);
         when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
 
-        mockTransactionService.saveCategoryToDB("FOOD", "expense");
+        service.saveCategoryToDB("FOOD", "expense");
 
         ArgumentCaptor<ExpenseCategory> categoryArgumentCaptor
                 = ArgumentCaptor.forClass(ExpenseCategory.class);
         verify(mockExpenseCategoryRepo).saveAndFlush(categoryArgumentCaptor.capture());
         ExpenseCategory capturedCategory = categoryArgumentCaptor.getValue();
+        capturedCategory.setExpenseCategoryId(1L);
 
         assertThat(capturedCategory).isEqualTo(expenseCategory);
     }
@@ -92,10 +93,11 @@ class TransactionServiceImplTest {
     @Test
     void saveTransactionToDBTest() {
         User user = getOneNormalUser();
-        ExpenseTransaction transaction = getOneTransaction(user);
+        ExpenseTransaction transaction = new ExpenseTransaction(LocalDate.parse("2021-12-31"), 90.0, categoryName,
+                "Bought some groceries", user);
         when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
 
-        mockTransactionService.saveTransactionToDB(LocalDate.parse("2021-12-31"), 90.0, "food",
+        service.saveTransactionToDB(LocalDate.parse("2021-12-31"), 90.0, "food",
                 "Bought some groceries", "expense");
 
         ArgumentCaptor<ExpenseTransaction> transactionArgumentCaptor
@@ -111,12 +113,12 @@ class TransactionServiceImplTest {
         User user = getSecondNormalUser();
         List<ExpenseTransaction> transactions = setOfTransactions(getOneNormalUser(), getSecondNormalUser()).stream()
                 .filter(t -> t.getUser().getUsername().equals("dani"))
-                .filter(t -> t.getCategoryName().equals("food")).collect(Collectors.toList());
+                .filter(t -> t.getCategoryName().equals(categoryName)).collect(Collectors.toList());
         when(SecurityContextHolder.getContext().getAuthentication().getName()).thenReturn("dani");
         lenient().when(mockUserRepo.findUserByUsername("dani")).thenReturn(Optional.of(user));
-        when(mockExpenseTransactionRepo.findExpenseTransactionsByCategoryName("food")).thenReturn(transactions);
+        when(mockExpenseTransactionRepo.findExpenseTransactionsByCategoryName(categoryName)).thenReturn(transactions);
 
-        int wanted = mockTransactionService
+        int wanted = service
                 .numberOfTransactionsByCategory("expense", "food");
 
         assertThat(wanted).isEqualTo(transactions.size());
@@ -131,7 +133,7 @@ class TransactionServiceImplTest {
                 .thenReturn(Optional.of(expenseCategory));
         when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
 
-        Optional<?> result = mockTransactionService.getCategory("expense", "food");
+        Optional<?> result = service.getCategory("expense", "food");
 
         assertThat(result.get()).isEqualTo(expenseCategory);
 
@@ -142,7 +144,7 @@ class TransactionServiceImplTest {
         User user = getOneNormalUser();
         when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
 
-        assertThatThrownBy(() -> mockTransactionService.getCategory("expense", "travel"))
+        assertThatThrownBy(() -> service.getCategory("expense", "travel"))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessage("404 NOT_FOUND \"Category with this name doesn't exist.\"");
 
@@ -155,7 +157,7 @@ class TransactionServiceImplTest {
         when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
         when(mockExpenseCategoryRepo.findExpenseCategoriesByUser(user)).thenReturn(categories);
 
-        HashMap<String, Object> result = mockTransactionService.getCategories("expense");
+        HashMap<String, Object> result = service.getCategories("expense");
 
         assertThat(result.get("totalCategories")).isEqualTo(categories);
     }
@@ -169,7 +171,7 @@ class TransactionServiceImplTest {
                 .stream().filter(t -> t.getExpenseTransactionId().equals(id))
                 .findFirst();
 
-        Optional<?> result = mockTransactionService.getTransactionById("expense", 2L);
+        Optional<?> result = service.getTransactionById("expense", 2L);
 
         assertThat(result).isEqualTo(transaction);
     }
@@ -184,7 +186,7 @@ class TransactionServiceImplTest {
         when(mockExpenseTransactionRepo.filterTransactionsByUsernameAndCategory(pageable, "dani", "food"))
                 .thenReturn(new PageImpl<>(transactions));
 
-        HashMap<String, Object> result = mockTransactionService.getTransactionsByCategoryAndUsername(pageable, "expense", "food");
+        HashMap<String, Object> result = service.getTransactionsByCategoryAndUsername(pageable, "expense", "food");
 
         assertThat(result.get("transactions")).isEqualTo(transactions);
     }
@@ -199,8 +201,9 @@ class TransactionServiceImplTest {
         when(mockExpenseTransactionRepo.filterTransactionsByDate(pageable, "koko", LocalDate.parse("2021-12-31")))
                 .thenReturn(new PageImpl<>(transactions));
 
-        HashMap<String, Object> result = mockTransactionService.getTransactionByDate(pageable, "2021-12-31", "expense");
+        HashMap<String, Object> result = service.getTransactionByDate(pageable, "2021-12-31", "expense");
 
+        assertThat(result).isNotNull();
         assertThat(result.get("transactions")).isEqualTo(transactions);
     }
 
@@ -214,64 +217,225 @@ class TransactionServiceImplTest {
         when(mockExpenseTransactionRepo.filterTransactionsByDate(pageable, "dani", LocalDate.parse("2021-12-31")))
                 .thenReturn(new PageImpl<>(transactions));
 
-        HashMap<String, Object> result = mockTransactionService.getTransactionByDate(pageable, "2021-12-31", "expense");
+        HashMap<String, Object> result = service.getTransactionByDate(pageable, "2021-12-31", "expense");
 
         assertThat(result.get("transactions")).isEqualTo(transactions);
     }
 
     @Test
     void addCategory() {
+//        given
+        User user = getOneNormalUser();
+        when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
+        ArgumentCaptor<ExpenseCategory> categoryArgumentCaptor
+                = ArgumentCaptor.forClass(ExpenseCategory.class);
+
+//        when
+        service.addCategory("housing", "expense");
+
+//        then
+        verify(mockExpenseCategoryRepo, times(1)).save(categoryArgumentCaptor.capture());
+        ExpenseCategory savedCategory = categoryArgumentCaptor.getValue();
+        assertThat(savedCategory.getCategoryName()).isEqualTo("housing");
+        assertThat(savedCategory.getUser()).isEqualTo(user);
+    }
+    @Test
+    void failAddingCategory() {
+//        given
+        User user = getOneNormalUser();
+        ExpenseCategory category = getOneCategory(user, "housing");
+        when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
+        given(mockExpenseCategoryRepo.findExpenseCategoryByCategoryNameAndUser("housing", user))
+                .willReturn(Optional.of(category));
+
+//        when
+        assertThatThrownBy(() -> service.addCategory("housing", "expense"))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessage("400 BAD_REQUEST \"Category with name: " + category.getCategoryName()+ ", already exists.\"");
     }
 
     @Test
-    void addTransaction() {
+    void addingTransactionWithExistingCategory() {
+//        given
+        User user = getOneNormalUser();
+        when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
+        ExpenseCategory category = getOneCategory(user, "party");
+        category.setExpenseCategoryId(1L);
+        given(mockExpenseCategoryRepo.findExpenseCategoryByCategoryNameAndUser("party", user))
+                .willReturn(Optional.of(category));
+        ExpenseTransaction transaction = getOneTransaction(user, "party");
+        ArgumentCaptor<ExpenseTransaction> transactionCaptor
+                = ArgumentCaptor.forClass(ExpenseTransaction.class);
+
+//        when
+        service.addTransaction("expense", "2021-12-31", 300.0, "party", "New Years Eve Party.");
+
+//        then
+        verify(mockExpenseTransactionRepo, atMost(1)).save(transactionCaptor.capture());
+
+        ExpenseTransaction savedTransaction = transactionCaptor.getValue();
+
+//        It doesn't matter what description the user puts:
+        savedTransaction.setDescription(transaction.getDescription());
+
+//        making assertions:
+        assertThat(savedTransaction).isNotNull();
+        assertThat(savedTransaction).isEqualTo(transaction);
+    }
+
+    @Test
+    void addingTransactionWithoutExistingCategory() {
+//        given
+        User user = getOneNormalUser();
+        when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
+        given(mockExpenseCategoryRepo.findExpenseCategoryByCategoryNameAndUser("party", user))
+                .willReturn(Optional.empty());
+
+        ArgumentCaptor<ExpenseCategory> categoryArgumentCaptor
+                = ArgumentCaptor.forClass(ExpenseCategory.class);
+        ArgumentCaptor<ExpenseTransaction> transactionCaptor
+                = ArgumentCaptor.forClass(ExpenseTransaction.class);
+
+//        when
+        service.addTransaction("expense", "2021-12-31", 300.0, "party", "New Years Eve Party.");
+
+//        then
+        verify(mockExpenseTransactionRepo, atMost(1)).save(transactionCaptor.capture());
+        verify(mockExpenseCategoryRepo, atMost(1)).save(categoryArgumentCaptor.capture());
+
+        ExpenseCategory savedCategory = categoryArgumentCaptor.getValue();
+        ExpenseTransaction savedTransaction = transactionCaptor.getValue();
+        savedTransaction.getExpenseCategory().setExpenseCategoryId(1L);
+
+//        making assertions:
+        assertThat(savedTransaction).isNotNull();
+        assertThat(savedTransaction.getCategoryName()).isEqualTo("party");
+        assertThat(savedTransaction.getExpenseAmount()).isEqualTo(300.0);
+        assertThat(savedTransaction.getDate()).isEqualTo(LocalDate.parse("2021-12-31"));
+//        Checking if category was saved correctly, when it already existed in the DB:
+        assertThat(savedCategory.getCategoryName()).isEqualTo("party");
+        assertThat(savedCategory.getUser()).isEqualTo(user);
+    }
+
+    @Test
+    void checkIfAddingTransactionModifiesBudget(){
+//        given
+        User user = getOneNormalUser();
+        when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
+        given(mockExpenseCategoryRepo.findExpenseCategoryByCategoryNameAndUser("party", user))
+                .willReturn(Optional.empty());
+        ArgumentCaptor<ExpenseTransaction> transactionCaptor
+                = ArgumentCaptor.forClass(ExpenseTransaction.class);
+
+//        when
+        service.addTransaction("expense", "2021-12-31", 300.0, "party", "New Years Eve Party.");
+
+//        then
+        verify(mockExpenseTransactionRepo, atMost(1)).save(transactionCaptor.capture());
+        ExpenseTransaction savedTransaction = transactionCaptor.getValue();
+        assertThat(savedTransaction.getUser().getCurrentBudget().equals(10000.0))
+                .isFalse();
     }
 
     @Test
     void transactionExists() {
+        User user = getOneNormalUser();
+        when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
+
+        //when
+        boolean exists = service.transactionExists("expense", 1L);
+
+        //then
+        then(mockExpenseTransactionRepo).should().existsExpenseTransactionByUserAndExpenseTransactionId(user, 1L);
+        assertThat(exists).isNotNull();
     }
 
     @Test
-    void categoryExists() {
+    void categoryExistsTest() {
+        //given
+        User user = getOneNormalUser();
+        when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
+
+        //when
+        boolean exists = service.categoryExists("expense", "party");
+
+        //then
+        then(mockExpenseCategoryRepo).should().existsExpenseCategoryByCategoryNameAndUser("party", user);
+        assertThat(exists).isNotNull();
     }
 
     @Test
     void deleteAllUserTransactions() {
+        User user = getOneNormalUser();
+        ExpenseCategory food = new ExpenseCategory(1L, "food", user);
+        ExpenseTransaction transaction = new ExpenseTransaction(1L, LocalDate.parse("2021-12-31"), 90.0, "food",
+                "Bought some groceries", user, food);
+        user.setExpenseTransactions(List.of(transaction));
+//        setOfTransactions(user, getSecondNormalUser());
+        when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
+
+        service.deleteAllUserTransactions("expense");
+
+        verify(mockExpenseTransactionRepo,times(1)).deleteExpenseTransactionsByUser(user);
     }
 
     @Test
-    void deleteTransactionById() {
+    void deleteTransactionByIdTest() {
+//        given
+        ExpenseTransaction transaction = getOneTransaction(getOneNormalUser(), "food");
+        transaction.setExpenseTransactionId(1L);
+        when(mockExpenseTransactionRepo.findById(transaction.getExpenseTransactionId()))
+                .thenReturn(Optional.of(transaction));
+
+//        when
+        service.deleteTransactionById("expense", 1L);
+
+//        then
+        then(mockExpenseTransactionRepo).should(atMost(1)).delete(transaction);
+    }
+
+    @Test
+    void unableToDeleteTransactionById() {
+        when(mockExpenseTransactionRepo.findById(1L))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.deleteTransactionById("expense", 1L))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessage("400 BAD_REQUEST \"Expense transaction with id: 1 doesn't exist!\"");
+
+        verify(mockExpenseTransactionRepo, never()).delete(any());
     }
 
     @Test
     void deleteTransactionsByCategoryTest() {
+//        given
         User user = getOneNormalUser();
         ExpenseCategory category = getOneCategory(user, "food");
         List<ExpenseTransaction> transactions = setOfTransactions(user, getSecondNormalUser());
-        category.setExpenseTransactions(transactions.stream()
-                .filter(t -> t.getUser().getUsername().equals(user.getUsername()))
-                .filter(t -> t.getCategoryName().equals("food"))
-                .collect(Collectors.toList()));
+
         when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
         when(mockExpenseCategoryRepo.findExpenseCategoryByCategoryNameAndUser("food", user))
                 .thenReturn(Optional.of(category));
 
-        mockTransactionService.deleteTransactionsByCategory("expense","food");
+//        when
+        service.deleteTransactionsByCategory("expense","food");
 
-        // TODO
+//        then
+        then(mockExpenseTransactionRepo).should(atMost(1)).deleteExpenseTransactionsByCategoryNameAndUser("food", user);
     }
 
     @Test
     void deleteCategoryTest() {
+//        given
+
         User user = getOneNormalUser();
-        Set<ExpenseCategory> categories = setOfCategories(user)
-                .stream().filter(c -> !c.getCategoryName().equals("food")).collect(Collectors.toSet());
         when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
 
-        mockTransactionService.deleteCategory("food", "expense");
+//        when
+        service.deleteCategory("food", "expense");
 
-        assertThat(categories.stream().anyMatch(c -> c.getCategoryName().equals("food")))
-                .isEqualTo(false);
+//        then
+        then(mockExpenseCategoryRepo).should(atMost(1)).deleteExpenseCategoryByUserAndCategoryName(user, "food");
     }
 
     private List<User> setOfUsers(){
@@ -287,7 +451,7 @@ class TransactionServiceImplTest {
     }
 
     private User getOneNormalUser(){
-        User user = new User(999L, "koko", "koko", "Koko", "Bor", "kbor@gmail.com", 4643.0);
+        User user = new User(999L, "koko", "koko", "Koko", "Bor", "kbor@gmail.com", 10000.0);
         user.setRoles(Set.of(new Role(Role.ROLE_USER)));
         mockUserRepo.save(user);
         return user;
@@ -298,18 +462,11 @@ class TransactionServiceImplTest {
         mockUserRepo.save(secondUser);
         return secondUser;
     }
-    private User getOneAdminUser(){
-        User user = new User(1L, "admin", "admin", "Admin", "Admin", "admin@gmail.com", 10000.0);
-        user.setRoles(Set.of(new Role(Role.ROLE_ADMIN)));
-        mockUserRepo.save(user);
-        return user;
-    }
 
     private ExpenseCategory getOneCategory(User user, String categoryName){
         ExpenseCategory expenseCategory = new ExpenseCategory(categoryName, user);
         expenseCategory.setExpenseCategoryId(1L);
         user.setExpenseCategories(Set.of(expenseCategory));
-        mockExpenseCategoryRepo.save(expenseCategory);
         return expenseCategory;
     }
     private Set<ExpenseCategory> setOfCategories(User user){
@@ -324,10 +481,12 @@ class TransactionServiceImplTest {
         return result;
     }
 
-    private ExpenseTransaction getOneTransaction(User user){
-        ExpenseTransaction transaction = new ExpenseTransaction(LocalDate.parse("2021-12-31"), 90.0, "food",
-            "Bought some groceries", user);
-        mockExpenseTransactionRepo.save(transaction);
+    private ExpenseTransaction getOneTransaction(User user, String categoryName){
+        ExpenseCategory category = new ExpenseCategory(1L,categoryName,user);
+        ExpenseTransaction transaction = new ExpenseTransaction(LocalDate.parse("2021-12-31"),
+                300.0, categoryName, "New Years Eve party.", user);
+        transaction.setExpenseCategory(category);
+        user.setExpenseTransactions(List.of(transaction));
         return transaction;
     }
     private List<ExpenseTransaction> setOfTransactions(User user, User secondUser){

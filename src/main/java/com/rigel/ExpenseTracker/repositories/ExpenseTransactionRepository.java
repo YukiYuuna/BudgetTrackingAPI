@@ -50,6 +50,7 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
     boolean existsExpenseTransactionByUserAndExpenseTransactionId(User user, Long id);
 
     void deleteExpenseTransactionsByCategoryNameAndUser(String category, User user);
+    void deleteExpenseTransactionsByCategoryNameAndUser_UserId(String category, Long id);
 
     void deleteExpenseTransactionsByUser(User user);
 
