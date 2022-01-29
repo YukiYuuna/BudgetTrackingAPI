@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +21,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -30,6 +30,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 
@@ -40,7 +41,9 @@ class UserServiceImplTest {
     @Mock private UserRepository mockUserRepo;
     @Mock private RoleRepo mockRoleRepo;
     @Mock private PasswordEncoder mockPasswordEncoder;
-    @Mock private UserService mockUserService;
+    @InjectMocks private UserServiceImpl userService;
+
+    final Long id = 1L;
 
     @BeforeAll
     public static void beforeAll() {
@@ -52,150 +55,174 @@ class UserServiceImplTest {
                 new User("admin", "admin", "Koko", "Borimechkov", "koko@gmail.com", 9000.0));
     }
 
-    //    runs before each test
-    @BeforeEach
-    void setUp() {
-//        autoCloseable = MockitoAnnotations.openMocks(this);
-        mockUserService = new UserServiceImpl(mockUserRepo, mockRoleRepo, mockPasswordEncoder);
-    }
-
     @Test
-    void saveUserTest() {
+    void savingUserToDB() {
 //        given
-        User user = new User("koko", "koko", "Koko", "Bor", "kbor@gmail.com", 4643.0);
+        User user = getOneUser();
         when(mockPasswordEncoder.encode(user.getPassword())).thenReturn("encoded");
         Role role = new Role(Role.ROLE_USER);
         when(mockRoleRepo.findByRoleName(role.getRoleName())).thenReturn(role);
+        ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+
 //        when
-        mockUserService.saveUser(user);
+        userService.saveUser(user);
 
 //        then
-        ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
-        verify(mockUserRepo).save(userArgumentCaptor.capture());
+        then(mockUserRepo).should(atMost(2)).save(userArgumentCaptor.capture());
+        assertThat(userArgumentCaptor).isNotNull();
         User capturedUser = userArgumentCaptor.getValue();
-
         assertThat(capturedUser).isEqualTo(user);
     }
 
     @Test
-    void saveRoleTest() {
+    void savingRoleToDB() {
 //        given
         Role role = new Role(Role.ROLE_ADMIN);
         role.setRoleId(1);
         when((mockRoleRepo.existsByRoleName(role.getRoleName()))).thenReturn(false);
+        ArgumentCaptor<Role> roleArgumentCaptor = ArgumentCaptor.forClass(Role.class);
 
 //        when
-        mockUserService.saveRole(role);
+        userService.saveRole(role);
 
 //        then
-        ArgumentCaptor<Role> roleArgumentCaptor = ArgumentCaptor.forClass(Role.class);
-        verify(mockRoleRepo).save(roleArgumentCaptor.capture());
+        then(mockRoleRepo).should(atMost(2)).save(roleArgumentCaptor.capture());
+        assertThat(roleArgumentCaptor).isNotNull();
         Role capturedRole = roleArgumentCaptor.getValue();
-
         assertThat(capturedRole).isEqualTo(role);
     }
 
     @Test
-    void dontSaveRoleTest() {
+    void notAbleToSaveRoleToDB() {
+//        given
         Role role = new Role(Role.ROLE_ADMIN);
         role.setRoleId(1);
         when(mockRoleRepo.existsByRoleName(role.getRoleName())).thenReturn(true);
 
 //        when
-        assertThatThrownBy(() -> mockUserService.saveRole(role)).isInstanceOf(ResponseStatusException.class)
+//        then
+        assertThatThrownBy(() -> userService.saveRole(role)).isInstanceOf(ResponseStatusException.class)
                 .hasMessage("400 BAD_REQUEST \"This role already exists in the DB!\"");
+
+        verify(mockUserRepo, never()).save(any());
     }
 
     @Test
-    void addRoleToUserTest() {
+    void addingRoleToUser() {
 //        given
         User user = getOneUser();
         Role role = new Role("ROLE_SUPER_USER");
         when(mockRoleRepo.findByRoleName(role.getRoleName())).thenReturn(role);
         when(SecurityContextHolder.getContext().getAuthentication().getName()).thenReturn(user.getUsername());
         when(mockUserRepo.findUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
+
 //        when
-        mockUserService.addRoleToUser(role.getRoleName());
+        userService.addRoleToUser(role.getRoleName());
 
 //        then
-        assertThat(mockUserService.getUser().getRoles()).isEqualTo(Set.of(user.getRoles()));
+        assertThat(userService.getUser().getRoles()).isEqualTo(user.getRoles());
+        verify(mockRoleRepo, atMost(1)).save(role);
     }
 
     @Test
-    void numberOfUsersTest() {
+    void checkingNumberOfUsersInDB() {
+//        given
+//        when
+//        then
         when(mockUserRepo.findAll()).thenReturn(setOfUsers());
-        assertThat(mockUserService.numberOfUsers()).isEqualTo(4);
+        assertThat(userService.numberOfUsers()).isEqualTo(4);
     }
 
     @Test
-    void getOptionalUserTest() {
+    void gettingUserAsOptional() {
 //        given
         User user = getOneUser();
         when(SecurityContextHolder.getContext().getAuthentication().getName()).thenReturn(user.getUsername());
         lenient().when(mockUserRepo.findUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
 //        when
-        mockUserService.getOptionalUser();
+        Optional<User> userOptional = userService.getOptionalUser();
 
 //        then
-        assertThat(mockUserService.getOptionalUser()).isEqualTo(Optional.of(user));
+        assertThat(userOptional).isNotNull();
+        assertThat(userOptional).isEqualTo(Optional.of(user));
     }
 
     @Test
-    void noOptionalUserTest() {
+    void notAbleToGetUserAsOptional() {
 //        given
         when(SecurityContextHolder.getContext().getAuthentication().getName()).thenReturn("ivan");
 
 //        when
 //        then
-        assertThatThrownBy(() -> mockUserService.getOptionalUser()).isInstanceOf(ResponseStatusException.class)
+        assertThatThrownBy(() -> userService.getOptionalUser()).isInstanceOf(ResponseStatusException.class)
                 .hasMessage("400 BAD_REQUEST \"Sorry, something went wrong.\"");
     }
 
     @Test
-    void getUserByIdTest() {
+    void gettingUserById() {
+//        given
         User user1 =getOneUser();
-        when(mockUserRepo.findUserByUserId(1L)).thenReturn(Optional.of(user1));
+        user1.setUserId(id);
+        when(mockUserRepo.findUserByUserId(id)).thenReturn(Optional.of(user1));
 
-        assertThat(mockUserService.getUserById(1L)).isEqualTo(user1);
-    }
-
-    @Test
-    void notUserByIdTest() {
-        given(mockUserRepo.findUserByUserId(1L)).willReturn(Optional.empty());
-
-        assertThatThrownBy(() -> mockUserService.getUserById(1L)).isInstanceOf(ResponseStatusException.class)
-                .hasMessage("404 NOT_FOUND \"No user with id 1 found in the DB!\"");
-    }
-
-
-    @Test
-    void getAllDBUsersTest() {
 //        when
-        mockUserService.getAllDBUsers();
+        User userResult = userService.getUserById(id);
+
+//        then
+        then(mockUserRepo).should(atMost(1)).getById(id);
+        assertThat(userResult).isNotNull();
+        assertThat(userResult).isEqualTo(user1);
+    }
+
+    @Test
+    void notAbleToGetUserById() {
+//        given
+        given(mockUserRepo.findUserByUserId(id)).willReturn(Optional.empty());
+
+//        when
+//        then
+        assertThatThrownBy(() -> userService.getUserById(1L)).isInstanceOf(ResponseStatusException.class)
+                .hasMessage("404 NOT_FOUND \"No user with id 1 found in the DB!\"");
+        verify(mockUserRepo, never()).getById(any());
+    }
+
+
+    @Test
+    void gettingAllDBUsers() {
+//        when
+        userService.getAllDBUsers();
 
 //        then
         /*
          *       basically we want to say that the userRepo mock was invoked using the method findAll(),
          *       when using the getAllDBUsers in the serviceImpl
          */
-        verify(mockUserRepo).findAll();
+        then(mockUserRepo).should(atMost(1)).findAll();
     }
 
     @Test
-    void getUsersTest() {
+    void gettingAllUsersAsPage() {
+//        given
         Pageable pageable = PageRequest.of(1, 2);
         List<User> users = setOfUsers();
         Page<User> page = new PageImpl<>(users, pageable, users.size());
         when(mockUserRepo.filterUsers(pageable)).thenReturn(page);
 
-        assertThat(mockUserService.getUsers(pageable)).isEqualTo(page);
+//        when
+//        then
+        assertThat(userService.getUsers(pageable)).isEqualTo(page);
     }
 
     @Test
-    void usernameExistsTest() {
+    void checkingIfUsernameExistsInDB() {
+//        given
         when(SecurityContextHolder.getContext().getAuthentication().getName()).thenReturn("ivan");
-        mockUserService.usernameExists();
+
+//        when
+        userService.usernameExists();
+
+//        then
         verify(mockUserRepo).existsByUsername("ivan");
     }
 
@@ -208,7 +235,7 @@ class UserServiceImplTest {
     }
 
     private User getOneUser(){
-        User user = new User("koko", "koko", "Koko", "Bor", "kbor@gmail.com", 4643.0);
+        User user = new User(999L, "koko", "koko", "Koko", "Bor", "kbor@gmail.com", 10000.0);
         user.setRoles(Set.of(new Role(Role.ROLE_USER)));
         mockUserRepo.save(user);
         return user;
