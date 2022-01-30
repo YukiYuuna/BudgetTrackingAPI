@@ -63,6 +63,14 @@ public class ExpenseTransaction {
         this.expenseCategory = expenseCategory;
     }
 
+    public ExpenseTransaction(Double expenseAmount, String categoryName,
+                              String description, User user) {
+        this.expenseAmount = expenseAmount;
+        this.categoryName = categoryName;
+        this.description = description;
+        this.user = user;
+    }
+
     public ExpenseTransaction(LocalDate date, Double expenseAmount, String categoryName, String description, User user) {
         this.date = date;
         this.expenseAmount = expenseAmount;

@@ -42,17 +42,17 @@ public class ExpenseController extends ControlHelper {
     }
 
     @GetMapping("/expense/transaction/{id}")
-    private Optional<?> fetchTransactionById(@PathVariable Long id) {
+    public Optional<?> fetchTransactionById(@PathVariable Long id) {
         return service.getTransactionById("expense", id);
     }
 
     @GetMapping("/expense/transactions/date")
-    private HashMap<String, Object> fetchTransactionsByDate(String date, @Nullable Integer currentPage, @Nullable Integer perPage) {
+    public HashMap<String, Object> fetchTransactionsByDate(String date, @Nullable Integer currentPage, @Nullable Integer perPage) {
         return service.getTransactionByDate(createPagination(currentPage, perPage, userService.numberOfUsers()), date, "expense");
     }
 
     @GetMapping("/expense/transactions/category")
-    private HashMap<String, Object> fetchTransactionsByCategory(@Nullable Integer currentPage, @Nullable Integer perPage, String categoryName) {
+    public HashMap<String, Object> fetchTransactionsByCategory(String categoryName, @Nullable Integer currentPage, @Nullable Integer perPage) {
         return service.getTransactionsByCategoryAndUsername(createPagination(currentPage, perPage, userService.numberOfUsers()),"expense", categoryName);
     }
 
@@ -64,10 +64,10 @@ public class ExpenseController extends ControlHelper {
     }
 
     @PostMapping("/add/expense/transaction")
-    public ResponseEntity<String> addExpenseTransaction(@RequestParam String date, @RequestParam Double expenseAmount,
-                                                        @RequestParam String categoryName, @RequestParam @Nullable String description) {
+    public ResponseEntity<String> addExpenseTransaction(String date, Double expenseAmount,
+                                                        String categoryName, @Nullable String description) {
         service.addTransaction("expense",date, expenseAmount, categoryName.toLowerCase(), description);
-        return ResponseEntity.ok().body("Transaction added successfully");
+        return ResponseEntity.ok().body("Transaction added successfully!");
     }
 
     @PutMapping("/modify/expense/category")
@@ -97,18 +97,15 @@ public class ExpenseController extends ControlHelper {
             modifiedTransaction.setExpenseCategory((ExpenseCategory)service.getCategory("expense",modifiedTransaction.getCategoryName()).get());
         }
 
-        return service.getTransactionById("expense", transactionId)
-                .map(t -> {
-                    ((ExpenseTransaction) t).setExpenseCategory(modifiedTransaction.getExpenseCategory());
-                    ((ExpenseTransaction) t).setDate(modifiedTransaction.getDate() == null ? ((ExpenseTransaction) t).getDate() : modifiedTransaction.getDate());
-                    ((ExpenseTransaction) t).setDescription(modifiedTransaction.getDescription() == null ? ((ExpenseTransaction) t).getDescription() : modifiedTransaction.getDescription());
-                    ((ExpenseTransaction) t).setCategoryName(modifiedTransaction.getCategoryName() == null ? ((ExpenseTransaction) t).getCategoryName().toLowerCase() : modifiedTransaction.getCategoryName().toLowerCase());
+        return ((Optional<ExpenseTransaction>)service.getTransactionById("expense", transactionId)).map(t -> {
+                    t.setExpenseCategory(modifiedTransaction.getExpenseCategory());
+                    t.setDate(modifiedTransaction.getDate() == null ? t.getDate() : modifiedTransaction.getDate());
+                    t.setDescription(modifiedTransaction.getDescription() == null ? t.getDescription() : modifiedTransaction.getDescription());
+                    t.setCategoryName(modifiedTransaction.getCategoryName() == null ? t.getCategoryName().toLowerCase() : modifiedTransaction.getCategoryName().toLowerCase());
 
-                    setBudgetOfUser(((ExpenseTransaction) t), modifiedTransaction.getExpenseAmount());
+                    setBudgetOfUser(t,modifiedTransaction.getExpenseAmount());
 
-                    service.saveTransactionToDB( ((ExpenseTransaction) t).getDate(),
-                            ((ExpenseTransaction) t).getExpenseAmount(), ((ExpenseTransaction) t).getCategoryName(),
-                            ((ExpenseTransaction) t).getDescription(),"expense");
+                    service.saveTransactionToDB(t.getDate(), t.getExpenseAmount(), t.getCategoryName(), t.getDescription(),"expense");
                     return ResponseEntity.ok().body(t);
                 }).orElse(ResponseEntity.notFound().build());
     }
