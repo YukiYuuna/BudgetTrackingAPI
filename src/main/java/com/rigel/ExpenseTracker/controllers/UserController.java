@@ -76,7 +76,7 @@ public class UserController {
 
         return userService.getOptionalUser()
                 .map(user -> {
-                    if(updatedUser.getUsername() != null) {
+                    if(updatedUser.getUsername() != null && !Objects.equals(updatedUser.getUsername(), user.getUsername())) {
                         throw new ResponseStatusException(NOT_ACCEPTABLE, "You aren't allowed to change your username!");
                     }
                     user.setFirstName(updatedUser.getFirstName() == null ? user.getFirstName() : updatedUser.getFirstName());

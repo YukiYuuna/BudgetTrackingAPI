@@ -2,8 +2,6 @@ package com.rigel.ExpenseTracker.security;
 
 import com.rigel.ExpenseTracker.exception.CustomAccessDeniedHandler;
 import com.rigel.ExpenseTracker.exception.CustomAuthenticationEntryPoint;
-import com.rigel.ExpenseTracker.filter.CustomAuthenticationFilter;
-import com.rigel.ExpenseTracker.filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +28,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
+        auth.inMemoryAuthentication()
+                .passwordEncoder(bCryptPasswordEncoder)
+                .withUser("koko")
+                .password("koko")
+                .roles(USER)
+                .authorities(ROLE_USER);
     }
 
     @Override

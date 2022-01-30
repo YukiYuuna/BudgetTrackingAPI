@@ -1,4 +1,4 @@
-package com.rigel.ExpenseTracker.filter;
+package com.rigel.ExpenseTracker.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -38,9 +38,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } else {
             String authorizationHeader = request.getHeader(AUTHORIZATION);
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            if (authorizationHeader != null && authorizationHeader.startsWith("Basic ")) {
                 try {
-                    String token = authorizationHeader.substring("Bearer ".length());
+                    String token = authorizationHeader.substring("Basic ".length());
                     Algorithm algorithm = Algorithm.HMAC256("secretAlgorithm".getBytes());
 
                     JWTVerifier verifier = JWT.require(algorithm).build();
