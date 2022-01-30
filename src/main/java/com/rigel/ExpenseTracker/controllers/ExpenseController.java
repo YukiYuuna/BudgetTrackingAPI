@@ -75,9 +75,13 @@ public class ExpenseController extends ControlHelper {
         if(!service.categoryExists("expense", categoryName))
             throw new ResponseStatusException(NOT_FOUND, "Expense category with this name doesn't exist in the DB.");
 
-        return service.getCategory("expense",categoryName)
+        return ((Optional<ExpenseCategory>)service.getCategory("expense",categoryName))
                 .map(c -> {
-                    ((ExpenseCategory)c).setCategoryName(modifiedCategory.getCategoryName() == null ? ((ExpenseCategory) c).getCategoryName() : modifiedCategory.getCategoryName().toLowerCase());
+                    if(modifiedCategory.getExpenseCategoryId() != null)
+                        throw new ResponseStatusException(NOT_ACCEPTABLE, "Don't provide an id for the new category, because you cannot modify it.");
+
+                    c.setCategoryName(modifiedCategory.getCategoryName() == null ? c.getCategoryName() : modifiedCategory.getCategoryName().toLowerCase());
+                    service.saveCategoryToDB(c.getCategoryName(), "expense");
                     return ResponseEntity.ok().body(c);
                 }).orElse(ResponseEntity.notFound().build());
     }
@@ -92,7 +96,7 @@ public class ExpenseController extends ControlHelper {
 
         if(modifiedTransaction.getCategoryName() != null) {
             if(!service.categoryExists("expense", modifiedTransaction.getCategoryName())) {
-                service.saveCategoryToDB("expense", modifiedTransaction.getCategoryName());
+                service.saveCategoryToDB(modifiedTransaction.getCategoryName(), "expense");
             }
             modifiedTransaction.setExpenseCategory((ExpenseCategory)service.getCategory("expense",modifiedTransaction.getCategoryName()).get());
         }
