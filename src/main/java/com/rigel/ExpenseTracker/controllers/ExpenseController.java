@@ -72,45 +72,68 @@ public class ExpenseController extends ControlHelper {
 
     @PutMapping("/modify/expense/category")
     public ResponseEntity<?> modifyExpenseCategory(String categoryName, @RequestBody ExpenseCategory modifiedCategory) {
-        if(!service.categoryExists("expense", categoryName))
+        if(!service.categoryExists("expense", categoryName)) {
             throw new ResponseStatusException(NOT_FOUND, "Expense category with this name doesn't exist in the DB.");
+        }
 
-        return ((Optional<ExpenseCategory>)service.getCategory("expense",categoryName))
-                .map(c -> {
-                    if(modifiedCategory.getExpenseCategoryId() != null)
-                        throw new ResponseStatusException(NOT_ACCEPTABLE, "Don't provide an id for the new category, because you cannot modify it.");
+        if(modifiedCategory.getExpenseCategoryId() != null) {
+            throw new ResponseStatusException(NOT_ACCEPTABLE, "Don't provide an id for the new category, because you cannot modify it.");
+        }
 
-                    c.setCategoryName(modifiedCategory.getCategoryName() == null ? c.getCategoryName() : modifiedCategory.getCategoryName().toLowerCase());
-                    service.saveCategoryToDB(c.getCategoryName(), "expense");
-                    return ResponseEntity.ok().body(c);
+        Optional<ExpenseCategory> category = ((Optional<ExpenseCategory>)service.getCategory("expense",categoryName));
+
+//        Provide the user with button which, he/she can use to delete all transaction correlated with this category!
+        if(category.get().getExpenseTransactions().size() > 0){
+            throw new ResponseStatusException(NOT_ACCEPTABLE, "There are attached transactions to category - " + categoryName
+                    + ", please either delete those transactions or ADD the category as a new one!");
+        }
+
+        return category.map(c -> {
+                    modifiedCategory.setCategoryName(modifiedCategory.getCategoryName() == null ? c.getCategoryName() : modifiedCategory.getCategoryName().toLowerCase());
+                    modifiedCategory.setUser(c.getUser());
+
+                    service.deleteCategory(categoryName, "expense");
+                    service.saveCategoryToDB(Optional.of(modifiedCategory), "expense");
+
+//                    new category changes its ID automatically. Old ID frees up.
+                    return ResponseEntity.ok().body(modifiedCategory);
                 }).orElse(ResponseEntity.notFound().build());
     }
 
 //    Can be cleaner.
     @PutMapping("/modify/expense/transaction/{transactionId}")
     public ResponseEntity<?> modifyExpenseTransaction(@PathVariable Long transactionId, @RequestBody ExpenseTransaction modifiedTransaction){
-        if(!service.transactionExists("expense",transactionId))
+        Optional<ExpenseTransaction> transaction = ((Optional<ExpenseTransaction>)service.getTransactionById("expense", transactionId));
+
+        if(transaction.isEmpty())
             throw new ResponseStatusException(NOT_FOUND,"There is no transaction with id: " + transactionId);
+
         if(modifiedTransaction.getExpenseTransactionId() != null)
             throw new ResponseStatusException(NOT_ACCEPTABLE, "Don't provide an id for the new transaction, because you cannot modify it.");
 
-        if(modifiedTransaction.getCategoryName() != null) {
-            if(!service.categoryExists("expense", modifiedTransaction.getCategoryName())) {
-                service.saveCategoryToDB(modifiedTransaction.getCategoryName(), "expense");
+        if (modifiedTransaction.getCategoryName() != null) {
+            if (service.categoryExists("expense", modifiedTransaction.getCategoryName())) {
+                modifiedTransaction.setExpenseCategory((ExpenseCategory) service
+                        .getCategory("expense", modifiedTransaction.getCategoryName()).get());
+            } else {
+                Optional<ExpenseCategory> newCategory = Optional.of(
+                        new ExpenseCategory(modifiedTransaction.getCategoryName(), userService.getUser()));
+                service.saveCategoryToDB(newCategory, "expense");
+                modifiedTransaction.setExpenseCategory(newCategory.get());
             }
-            modifiedTransaction.setExpenseCategory((ExpenseCategory)service.getCategory("expense",modifiedTransaction.getCategoryName()).get());
         }
 
-        return ((Optional<ExpenseTransaction>)service.getTransactionById("expense", transactionId)).map(t -> {
-                    t.setExpenseCategory(modifiedTransaction.getExpenseCategory());
-                    t.setDate(modifiedTransaction.getDate() == null ? t.getDate() : modifiedTransaction.getDate());
-                    t.setDescription(modifiedTransaction.getDescription() == null ? t.getDescription() : modifiedTransaction.getDescription());
-                    t.setCategoryName(modifiedTransaction.getCategoryName() == null ? t.getCategoryName().toLowerCase() : modifiedTransaction.getCategoryName().toLowerCase());
+        return transaction.map(t -> {
+                    modifiedTransaction.setCategoryName(modifiedTransaction.getCategoryName() == null ? t.getCategoryName().toLowerCase() : modifiedTransaction.getCategoryName().toLowerCase());
+                    modifiedTransaction.setDate(modifiedTransaction.getDate() == null ? t.getDate() : modifiedTransaction.getDate());
+                    modifiedTransaction.setDescription(modifiedTransaction.getDescription() == null ? t.getDescription() : modifiedTransaction.getDescription());
+                    modifiedTransaction.setUser(t.getUser());
 
-                    setBudgetOfUser(t,modifiedTransaction.getExpenseAmount());
+                    setBudgetOfUser(t,modifiedTransaction);
 
-                    service.saveTransactionToDB(t.getDate(), t.getExpenseAmount(), t.getCategoryName(), t.getDescription(),"expense");
-                    return ResponseEntity.ok().body(t);
+                    service.deleteTransactionById("expense", transactionId);
+                    service.saveTransactionToDB(Optional.of(modifiedTransaction),"expense");
+                    return ResponseEntity.ok().body(modifiedTransaction);
                 }).orElse(ResponseEntity.notFound().build());
     }
 
@@ -144,15 +167,13 @@ public class ExpenseController extends ControlHelper {
         return ResponseEntity.ok().body("The transaction has been deleted successfully!");
     }
 
-    private void setBudgetOfUser(ExpenseTransaction transaction, Double modBudget){
-        if(modBudget != null) {
-            Double change = modBudget - transaction.getExpenseAmount();
+    private void setBudgetOfUser(ExpenseTransaction transaction, ExpenseTransaction modTransaction){
+        if(modTransaction.getExpenseAmount() != null) {
+            Double change = modTransaction.getExpenseAmount() - transaction.getExpenseAmount();
             User user = transaction.getUser();
-            transaction.setExpenseAmount(modBudget);
             user.setCurrentBudget(user.getCurrentBudget() - change);
-            userService.saveUserDataAndFlush(user);
         } else{
-            transaction.setExpenseAmount(transaction.getExpenseAmount());
+            modTransaction.setExpenseAmount(transaction.getExpenseAmount());
         }
     }
 }

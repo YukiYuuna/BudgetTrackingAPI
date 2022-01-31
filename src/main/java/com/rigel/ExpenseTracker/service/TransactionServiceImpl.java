@@ -42,29 +42,19 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
     @Override
-    public void saveCategoryToDB(String categoryName, String type) {
-        String dbName = categoryName.toLowerCase();
-        if(type.equals("expense")) {
-            expenseCategoryRepo.saveAndFlush(new ExpenseCategory(dbName, getUser()));
-        } else{
-            incomeCategoryRepo.saveAndFlush(new IncomeCategory(dbName, getUser()));
-        }
+    public void saveCategoryToDB(Optional<?> category, String type) {
+        if(type.equals("expense"))
+            expenseCategoryRepo.save((ExpenseCategory) category.get());
+        else
+            incomeCategoryRepo.save((IncomeCategory) category.get());
     }
 
     @Override
-    public void saveTransactionToDB(LocalDate date, Double expenseAmount,
-                                     String categoryName, String description,
-                                     String categoryType) {
-        categoryName = categoryName.toLowerCase();
-
-        if(categoryType.equals("expense")) {
-            expenseTransactionRepo.saveAndFlush(
-                    new ExpenseTransaction(date, expenseAmount, categoryName, description,getUser()));
-
-        } else{
-            incomeTransactionRepo.saveAndFlush(
-                    new IncomeTransaction(date, expenseAmount, categoryName, description, getUser()));
-        }
+    public void saveTransactionToDB(Optional<?> transaction, String categoryType) {
+        if(categoryType.equals("expense"))
+            expenseTransactionRepo.save((ExpenseTransaction) transaction.get());
+        else
+            incomeTransactionRepo.save((IncomeTransaction) transaction.get());
     }
 
     @Override
@@ -268,7 +258,7 @@ public class TransactionServiceImpl implements TransactionService{
                 }
 //            We calculate the users budget:
                 user.addExpenseAmountToUser(expenseTransaction.getExpenseAmount());
-//            Saving to repo:
+//            Saving to DB:
                 expenseTransactionRepo.save(expenseTransaction);
 
             } else {

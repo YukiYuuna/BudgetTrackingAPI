@@ -247,7 +247,7 @@ class ExpenseControllerTest extends AbstractTest {
                 .andExpect(status().isOk())
                 .andReturn();
 //        then
-        then(transactionService).should(atMost(1)).saveCategoryToDB("travel", "expense");
+        then(transactionService).should(atMost(1)).saveCategoryToDB(any(Optional.class), any(String.class));
         ExpenseCategory providedCategory = mapFromJson(result.getResponse().getContentAsString(),ExpenseCategory.class);
         assertThat(providedCategory).isNotNull();
         assertThat(providedCategory.getCategoryName()).isEqualTo(modCategory.getCategoryName());
@@ -293,8 +293,7 @@ class ExpenseControllerTest extends AbstractTest {
                 .andExpect(status().isOk())
                 .andReturn();
 //        then
-        then(transactionService).should(atMost(1)).saveTransactionToDB(LocalDate.parse(date),
-                300.0, categoryName, "Grocery bill", categoryType);
+        then(transactionService).should(atMost(1)).saveTransactionToDB(any(Optional.class), any(String.class));
         ExpenseTransaction providedTransaction = mapFromJson(result.getResponse().getContentAsString(),ExpenseTransaction.class);
         assertThat(providedTransaction).isNotNull();
         assertThat(providedTransaction.getExpenseAmount()).isEqualTo(modTransaction.getExpenseAmount());
@@ -317,7 +316,7 @@ class ExpenseControllerTest extends AbstractTest {
                 .andReturn();
 
 //        then
-        then(transactionService).should(never()).saveTransactionToDB(any(), any(), any(), any(), any());
+        then(transactionService).should(never()).saveTransactionToDB(any(Optional.class), any(String.class));
         String providedException = mapFromJson(result.getResponse().getContentAsString(), LinkedHashMap.class).get("message").toString();
         assertThat(providedException).isEqualTo("Don't provide an id for the new transaction, because you cannot modify it.");
     }

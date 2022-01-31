@@ -69,15 +69,14 @@ class TransactionServiceImplTest {
 //        given
         User user = getOneNormalUser();
         ExpenseCategory expenseCategory = getOneCategory(user, categoryName);
-        when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
         ArgumentCaptor<ExpenseCategory> categoryArgumentCaptor
                 = ArgumentCaptor.forClass(ExpenseCategory.class);
 
 //        when
-        service.saveCategoryToDB("FOOD", "expense");
+        service.saveCategoryToDB(Optional.of(expenseCategory), "expense");
 
 //        then
-        then(mockExpenseCategoryRepo).should(atMost(1)).saveAndFlush(categoryArgumentCaptor.capture());
+        then(mockExpenseCategoryRepo).should(atMost(1)).save(categoryArgumentCaptor.capture());
         ExpenseCategory capturedCategory = categoryArgumentCaptor.getValue();
         assertThat(capturedCategory).isNotNull();
         capturedCategory.setExpenseCategoryId(1L);
@@ -90,16 +89,14 @@ class TransactionServiceImplTest {
         User user = getOneNormalUser();
         ExpenseTransaction transaction = new ExpenseTransaction(LocalDate.parse("2021-12-31"), 90.0, categoryName,
                 "Bought some groceries", user);
-        when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
         ArgumentCaptor<ExpenseTransaction> transactionArgumentCaptor
                 = ArgumentCaptor.forClass(ExpenseTransaction.class);
 
 //        when
-        service.saveTransactionToDB(LocalDate.parse("2021-12-31"), 90.0, "food",
-                "Bought some groceries", "expense");
+        service.saveTransactionToDB(Optional.of(transaction), "expense");
 
 //        then
-        then(mockExpenseTransactionRepo).should(atMost(1)).saveAndFlush(transactionArgumentCaptor.capture());
+        then(mockExpenseTransactionRepo).should(atMost(1)).save(transactionArgumentCaptor.capture());
         ExpenseTransaction capturedTransaction = transactionArgumentCaptor.getValue();
         assertThat(capturedTransaction).isNotNull();
         assertThat(capturedTransaction).isEqualTo(transaction);

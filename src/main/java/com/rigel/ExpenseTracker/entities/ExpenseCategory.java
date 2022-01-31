@@ -30,7 +30,7 @@ public class ExpenseCategory {
     @OneToMany(mappedBy = "expenseCategory")
     private List<ExpenseTransaction> expenseTransactions;
 
-    @ManyToOne(cascade = ALL)
+    @ManyToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH})
     @JoinColumn(name = "user_category_id", referencedColumnName = "user_id")
     @JsonIgnore
     private User user;

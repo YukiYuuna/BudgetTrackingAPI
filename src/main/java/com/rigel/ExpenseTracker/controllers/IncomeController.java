@@ -91,7 +91,8 @@ public class IncomeController extends ControlHelper {
 
         if(modifiedTransaction.getCategoryName() != null) {
             if(!service.categoryExists("income", modifiedTransaction.getCategoryName())) {
-                service.saveCategoryToDB("income", modifiedTransaction.getCategoryName());
+                service.saveCategoryToDB(Optional.of(new IncomeCategory(modifiedTransaction.getCategoryName(),
+                        userService.getUser())), "income");
             }
             modifiedTransaction.setIncomeCategory((IncomeCategory) service.getCategory("income",modifiedTransaction.getCategoryName()).get());
         }
@@ -105,9 +106,7 @@ public class IncomeController extends ControlHelper {
 
                     setBudgetOfUser(((IncomeTransaction) t), modifiedTransaction.getIncomeAmount());
 
-                    service.saveTransactionToDB( ((IncomeTransaction) t).getDate(),
-                            ((IncomeTransaction) t).getIncomeAmount(), ((IncomeTransaction) t).getCategoryName(),
-                            ((IncomeTransaction) t).getDescription(),"expense");
+                    service.saveTransactionToDB(Optional.of(modifiedTransaction),"expense");
                     return ResponseEntity.ok().body(t);
                 }).orElse(ResponseEntity.notFound().build());
     }

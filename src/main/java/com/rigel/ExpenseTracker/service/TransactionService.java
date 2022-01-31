@@ -10,10 +10,10 @@ import java.util.Optional;
 public interface TransactionService {
 
 //    done
-    void saveCategoryToDB(String categoryName, String type);
+    void saveCategoryToDB(Optional<?> category, String type);
 
 //    done
-    void saveTransactionToDB(LocalDate date, Double expenseAmount, String categoryName, String description, String categoryType);
+    void saveTransactionToDB(Optional<?> transaction, String categoryType);
 
 //    done
     int numberOfTransactionsByCategory(String type, String categoryName);
