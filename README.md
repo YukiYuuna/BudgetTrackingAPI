@@ -1,32 +1,43 @@
-Welcome to ReadMe! :owlbert:
+Hello and welcome to my first self-made API! ✌
 
-You're on your way to building an awesome Developer Hub! Here's some of the things you'll want to check out.
+First of all, I would love to tell you a little bit about the idea and why I invested so much time into this project. As I am a CS university student, each semester we have the task to create a project based on the things we learn throughout  those 3-5 months. Well, this semester our assignment as to build an API. I saw this as a great opportunity to improve my skills in Java, as well as learn how to work with Spring! With that being said, as well as the fact that I am kind of obsessed with tracking my expenses, the idea of a Budget Tracking API appeared!
 
-# 📝 Customize your docs
+# 📝 What I've learned and improved:
+✔ I have considerably improved my skills in working with an array 😉 of Data Structures.
+✔ Object-Relational Mapping and general workflow with databases (mainly PostgreSQL🐘)
+✔ Working with Spring 🍃 and lots of its features, including Spring Security🔐 , Spring Boot and many more.
+✔  How to work with JWT tokens (more spec. OAuth tokens).
+✔ The concepts of Authorization & Authentication as well as implementing them.
+✔ Learned and implemented as much as possible the RESTful principles.
+✔ Bettered my understanding on the concept of abstraction.
+✔ Learned how to write complex JUnit Tests📝, using a BDD approach and utilizing tools like Mockito and MockMvc.
+✔ Improved my skills with Version Control (Git).
 
-What you're looking at right now is what we call our **Guides**. Basically, a free-form place to write to your heart's content! And the best part is... you aren't alone! Your users can contribute (with your approval, of course!) using the **[Suggested Edits](https://docs.readme.com/docs/suggested-edits)** feature on every page. It's like GitHub Pull Requests, but for text!
+## Enough rambling😅, lets talk about the API⬇
 
-Want to ease your users into it with some fancy marketing pages? You can enable a **[Landing Page](https://docs.readme.com/docs/landing-page)**, and write as much HTML as you want to make it look just like your brand.
+# Technologies and Versions I've used
+* Java SDK - version: 17
+* Spring Boot Framework, Spring Security - version: 2.6.0
+* PostgreSQL - version: 42.3.1
+* JWT (Auth0) - version: 3.18.2
+* Lombok - version: 1.18.22
 
-# 🚦 Interactive API Docs
+# 💻 Setting up and running the API on your local machine:
+1. First, make sure you have your java and maven versions configured correctly on your machine.
+2. Run:
+& git clone <copy & paste the HTTP URL from GitHub>
+.. in a place on your computer, where you find comfortable.
+3. Setup the  'application.properties' based on your PostgreSQL and localhost details.
+4. At this point, you should be able to run the 'ExpenseTrackerApplication.main' and with that start the API. 🥳
 
-If you don't have an API, then no worries! ReadMe is great for any sort of documentation. But if you have an API, we make it really easy to get started.
+# Acknowledgements
+- Thank you, Ivan Duhov (https://github.com/IvanDuhov) , for the contribution to the project and the motivation to improve my coding skills each day little by little! ❤
+- Also, big thanks to uncle Google! ❤ Couldn't live without you.
 
-  * **Upload your OpenAPI file:** First step is to describe your API to us! If you already have an OpenAPI file, there's lots of ways to upload it in the *API Reference* section. Our favorite is the GitHub Action, but you can use our CLI or just upload it directly to the UI!
-  * **Add API Keys:** Don't make your users hunt around for API keys. It's easy to show their API key [right in the docs](https://docs.readme.com/docs/custom-login-with-readme), so they can play around with your API right inside ReadMe.
-  * **Add Logs:** The coolest thing about ReadMe is you can add [real-time API Logs](https://docs.readme.com/docs/api-metrics-in-readme) right to your docs, so you and your users can both see what's going on with their API. Trust us, it's magical!
-
-# 📈 Know your users
-
-One of the best ways to know if you're nailing the dev experience is checking out how your users are interacting with both your docs and API.
-
-  * **Documentation Metrics** let you see who's using your docs, what your best and worst pages are, what people are searching for and more!
-  * **API Metrics** are a bit harder to set up (I promise we do our best to make it painless!), but once you set this up you'll know *everything* that's going on with your users!
-
-# 💬 We're here to help!
-
-ReadMe has a *ton* of ways to make your docs the envy of any <<glossary:parliament>> (like that mouseover!). If you get stuck, [shoot us an email](mailto:support@readme.io) or use the Intercom widget on the bottom right of any page.
-
-We're excited you're here! :blue-heart:
-
-![This won't be fun to clean up...](https://owlbert.io/images/popper.gif)
+# 💬 Contributions & Suggestions
+I would love for you to check the API and if you have any suggestions or tips on its improvement, send me a message on LinkedIn:
+ [[params.social]]
+    icon = "linkedin"
+    icon_pack = "fa"
+    link = "https://www.linkedin.com/in/kbor/ "
+And if you want to contribute to this project, feel free to add a branch, develop and request your changes!
