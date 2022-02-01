@@ -47,6 +47,7 @@ public class TransactionServiceImpl implements TransactionService{
             expenseCategoryRepo.save((ExpenseCategory) category.get());
         else
             incomeCategoryRepo.save((IncomeCategory) category.get());
+        log.info("Category has been saved successfully!");
     }
 
     @Override
@@ -55,6 +56,7 @@ public class TransactionServiceImpl implements TransactionService{
             expenseTransactionRepo.save((ExpenseTransaction) transaction.get());
         else
             incomeTransactionRepo.save((IncomeTransaction) transaction.get());
+        log.info("Transaction has been saved successfully!");
     }
 
     @Override
@@ -67,6 +69,7 @@ public class TransactionServiceImpl implements TransactionService{
             transactions = (int) incomeTransactionRepo.findIncomeTransactionsByCategoryName(categoryName.toLowerCase())
                     .stream().filter(t -> t.getUser().getUserId().equals(getUser().getUserId())).count();
         }
+        log.info("There are a total of: " + transactions + "for the currently logged-in user.");
         return transactions;
     }
 
@@ -79,9 +82,10 @@ public class TransactionServiceImpl implements TransactionService{
         else
             category = incomeCategoryRepo.findIncomeCategoryByCategoryNameAndUser(categoryName.toLowerCase(), getUser());
 
-        if(category.isEmpty())
-            throw  new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist.");
-
+        if(category.isEmpty()) {
+            log.error("Category with name: " + categoryName + " doesn't exist in the DB!");
+            throw new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist.");
+        }
         return category;
     }
 
@@ -95,8 +99,10 @@ public class TransactionServiceImpl implements TransactionService{
         else
             categories = incomeCategoryRepo.findIncomeCategoriesByUser(user);
 
-        if(categories.size() == 0)
+        if(categories.size() == 0) {
+            log.error("There are no registered categories.");
             throw new ResponseStatusException(NOT_FOUND, "There are no registered categories.");
+        }
 
         HashMap<String, Object> result = new LinkedHashMap<>();
         result.put("username", getUsernameByAuthentication());
@@ -113,6 +119,7 @@ public class TransactionServiceImpl implements TransactionService{
             else
                 return incomeTransactionRepo.findById(transactionId);
         }
+
         return getUser().getExpenseTransactions().stream()
                 .filter(transaction -> transaction.getExpenseTransactionId().equals(transactionId))
                 .findFirst();
@@ -132,8 +139,10 @@ public class TransactionServiceImpl implements TransactionService{
                     username, categoryName);
         }
 
-        if(transactions.isEmpty())
+        if(transactions.isEmpty()) {
+            log.error("There are no registered transactions in the DB for the currently logged-in user.");
             throw new ResponseStatusException(NOT_FOUND, "No transactions found in the DB");
+        }
 
         HashMap<String, Object> result = new LinkedHashMap<>();
         result.put("username", username);
@@ -159,8 +168,10 @@ public class TransactionServiceImpl implements TransactionService{
                     .filteredTransactionsByDate(pageable, username, dateTime);
         }
 
-        if(transactions.isEmpty())
+        if(transactions.isEmpty()) {
+            log.error("There are no registered transactions on this date for the currently logged-in user.");
             throw new ResponseStatusException(NOT_FOUND, "No transactions found on " + date);
+        }
 
         HashMap<String, Object> result = new LinkedHashMap<>();
         result.put("username", username);
@@ -229,6 +240,7 @@ public class TransactionServiceImpl implements TransactionService{
             user.addIncomeCategoryToUser(incomeCategory);
             incomeCategoryRepo.save(incomeCategory);
         }
+        log.info("Category has been added to the user successfully!");
     }
 
     @Override
@@ -277,7 +289,9 @@ public class TransactionServiceImpl implements TransactionService{
                 user.addIncomeAmountToUser(incomeTransaction.getIncomeAmount());
                 incomeTransactionRepo.save(incomeTransaction);
             }
+            log.info("Transaction has been added to the currently logged-in user successfully!");
         } catch (DateTimeException dte){
+            log.error("The date is in incorrect format. PLease provide it in the following one: YYYY-MM-DD");
             throw new ResponseStatusException(NOT_ACCEPTABLE, "Please, provide a correct format for the date of the transaction.(YYYY-MM-DD)");
         }
     }
@@ -302,16 +316,19 @@ public class TransactionServiceImpl implements TransactionService{
     public void deleteAllUserTransactions(String type){
         User user = getUser();
         if(type.equals("expense")){
-            if(user.getExpenseTransactions().size() == 0)
-                throw new ResponseStatusException(NOT_FOUND,"There are no expense transactions made by " + user.getUsername());
-
+            if(user.getExpenseTransactions().size() == 0) {
+                log.error("There are no expense transactions made by " + user.getUsername());
+                throw new ResponseStatusException(NOT_FOUND, "There are no expense transactions made by " + user.getUsername());
+            }
             expenseTransactionRepo.deleteExpenseTransactionsByUser(user);
         }else{
-            if(user.getIncomeTransactions().size() == 0)
-                throw new ResponseStatusException(NOT_FOUND,"There are no income transactions made by " + user.getUsername());
-
+            if(user.getIncomeTransactions().size() == 0) {
+                log.error("There are no expense transactions made by " + user.getUsername());
+                throw new ResponseStatusException(NOT_FOUND, "There are no income transactions made by " + user.getUsername());
+            }
             incomeTransactionRepo.deleteIncomeTransactionsByUser(user);
         }
+        log.info("Transactions have been deleted successfully!");
     }
 
     @Override
@@ -329,7 +346,7 @@ public class TransactionServiceImpl implements TransactionService{
 
             incomeTransactionRepo.delete(transaction.get());
         }
-
+        log.info("Transaction with id : " + transactionId + ", has been deleted successfully!");
     }
 
     @Override
@@ -350,6 +367,7 @@ public class TransactionServiceImpl implements TransactionService{
 
             incomeTransactionRepo.deleteIncomeTransactionsByCategoryNameAndUser(categoryName, user);
         }
+        log.info("Transaction with category : " + categoryName + ", has been deleted successfully!");
     }
 
     @Override
@@ -362,6 +380,7 @@ public class TransactionServiceImpl implements TransactionService{
             incomeCategoryRepo.deleteIncomeCategoryByUserAndCategoryName(
                     user, categoryName.toLowerCase());
         }
+        log.info("Category has been deleted successfully!");
     }
 
     private String getUsernameByAuthentication(){
@@ -372,9 +391,11 @@ public class TransactionServiceImpl implements TransactionService{
         Optional<User> user = userRepo.findUserByUsername(getUsernameByAuthentication());
 
         if (user.isPresent()) {
+            log.info("User with username: " + user.get().getUsername() + " exists in the DB!");
             return user;
         }
         else {
+            log.error("User doesn't exist in the DB!");
             throw new ResponseStatusException(BAD_REQUEST, "Sorry, something went wrong.");
         }
     }

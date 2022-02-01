@@ -73,6 +73,8 @@ public class UserServiceImpl  implements UserService, UserDetailsService {
         log.info("Role saved to the database successfully!");
         if(roleRepo.existsByRoleName(role.getRoleName()))
             throw new ResponseStatusException(BAD_REQUEST, "This role already exists in the DB!");
+
+        log.info("Role was saved to the database successfully!");
         return roleRepo.save(role);
     }
 
@@ -81,6 +83,7 @@ public class UserServiceImpl  implements UserService, UserDetailsService {
         Role role = roleRepo.findByRoleName(roleName);
         User user = getUser();
         user.addRoleToUser(role);
+        log.info("Role has been added to user: " + user.getUsername() + " successfully!");
     }
 
     @Override
@@ -99,9 +102,11 @@ public class UserServiceImpl  implements UserService, UserDetailsService {
         Optional<User> user = userRepo.findUserByUsername(username);
 
         if (user.isPresent()) {
+            log.info("User with username: " + user.get().getUsername() + " exists in the DB!");
             return user;
         }
         else {
+            log.error("User doesn't exist in the DB!");
             throw new ResponseStatusException(BAD_REQUEST, "Sorry, something went wrong.");
         }
     }
@@ -109,8 +114,10 @@ public class UserServiceImpl  implements UserService, UserDetailsService {
     @Override
     public User getUserById(Long userId) {
         Optional<User> user = userRepo.findUserByUserId(userId);
-        if(user.isEmpty())
+        if(user.isEmpty()) {
+            log.error("There is not user with id: " + userId + " in the DB");
             throw new ResponseStatusException(NOT_FOUND, "No user with id " + userId + " found in the DB!");
+        }
         return user.get();
     }
 
@@ -140,16 +147,18 @@ public class UserServiceImpl  implements UserService, UserDetailsService {
         userRepo.saveAndFlush(user);
     }
 
+    @Override
+    public String getUsernameByAuthentication(){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("The currently logged in user is " + username);
+        return username;
+    }
+
     static List<SimpleGrantedAuthority> buildSimpleGrantedAuthorities(final Set<Role> roles) {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         for (Role role : roles) {
             authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
         }
         return authorities;
-    }
-
-    @Override
-    public String getUsernameByAuthentication(){
-        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }
