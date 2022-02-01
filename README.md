@@ -1,4 +1,4 @@
-Hello and welcome to my first self-made API! ✌
+# Hello and welcome to my first self-made API! ✌
 
 First of all, I would love to tell you a little bit about the idea and why I invested so much time into this project. As I am a CS university student, each semester we have the task to create a project based on the things we learn throughout  those 3-5 months. Well, this semester our assignment as to build an API. I saw this as a great opportunity to improve my skills in Java, as well as learn how to work with Spring! With that being said, as well as the fact that I am kind of obsessed with tracking my expenses, the idea of a Budget Tracking API appeared!
 
@@ -13,7 +13,7 @@ First of all, I would love to tell you a little bit about the idea and why I inv
 ✔ Learned how to write complex JUnit Tests📝, using a BDD approach and utilizing tools like Mockito and MockMvc.
 ✔ Improved my skills with Version Control (Git).
 
-## Enough rambling😅, lets talk about the API⬇
+Enough rambling😅, lets talk about the API⬇
 
 # Technologies and Versions I've used
 * Java SDK - version: 17
@@ -36,8 +36,5 @@ First of all, I would love to tell you a little bit about the idea and why I inv
 
 # 💬 Contributions & Suggestions
 I would love for you to check the API and if you have any suggestions or tips on its improvement, send me a message on LinkedIn:
- [[params.social]]
-    icon = "linkedin"
-    icon_pack = "fa"
-    link = "https://www.linkedin.com/in/kbor/ "
+https://www.linkedin.com/in/kbor/ 
 And if you want to contribute to this project, feel free to add a branch, develop and request your changes!
