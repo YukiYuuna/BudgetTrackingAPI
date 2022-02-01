@@ -108,6 +108,24 @@ class SecurityControllerTest extends AbstractTest {
         verify(service,never()).saveUser(any());
     }
 
+    @Test
+    void notEnoughDataProvided_ForRegistration() throws Exception {
+//        given
+//        Use doesn't provide last name in this example:
+        User user = new User(999L, "koko", "koko", "Konstantin", null, "deniduhova@gmail.com", 5000.0);
+        user.setRoles(Set.of(new Role(Role.USER)));
+        given(service.getAllDBUsers()).willReturn(setOfUsers());
 
-
+//        when
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapToJson(user))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+//        then
+        verify(service, never()).saveUser(any());
+        String providedException = mapFromJson(result.getResponse().getContentAsString(), LinkedHashMap.class).get("message").toString();
+        assertThat(providedException).isEqualTo("Make sure you provide all data, including: username, password, first and last name, current budget!");
+    }
 }

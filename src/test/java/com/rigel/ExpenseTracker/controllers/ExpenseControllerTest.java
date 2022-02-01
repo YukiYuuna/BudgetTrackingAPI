@@ -115,7 +115,7 @@ class ExpenseControllerTest extends AbstractTest {
     }
 
     @Test
-    void fetchingAllExpenseCategoriesOfTheUser() throws Exception {
+    void fetchingAllExpenseCategories_OfTheUser() throws Exception {
 //        given
         Set<ExpenseCategory> categories = new HashSet<>();
         for (ExpenseTransaction t: transactions) {
@@ -144,7 +144,7 @@ class ExpenseControllerTest extends AbstractTest {
     }
 
     @Test
-    void fetchingTransactionById() throws Exception {
+    void fetchingTransaction_ById() throws Exception {
 //        when
         mockMvc.perform(get("/api/expense/transaction/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -155,7 +155,7 @@ class ExpenseControllerTest extends AbstractTest {
     }
 
     @Test
-    void fetchingTransactionByDate() throws Exception {
+    void fetchingTransaction_ByDate() throws Exception {
 //        given
         Pageable pageable = PageRequest.of(0, 5);
         given(userService.numberOfUsers()).willReturn(5);
@@ -173,7 +173,7 @@ class ExpenseControllerTest extends AbstractTest {
     }
 
     @Test
-    void fetchingTransactionByCategory() throws Exception {
+    void fetchingTransaction_ByCategory() throws Exception {
 //        given
         Pageable pageable = PageRequest.of(0, 5);
         given(userService.numberOfUsers()).willReturn(5);
@@ -191,7 +191,7 @@ class ExpenseControllerTest extends AbstractTest {
     }
 
     @Test
-    void addingExpenseCategoryToDB() throws Exception{
+    void addingExpenseCategory() throws Exception{
 //        given
         ExpenseCategory expenseCategory = new ExpenseCategory(categoryName, firstUser);
         expenseCategory.setExpenseCategoryId(1L);
@@ -233,7 +233,7 @@ class ExpenseControllerTest extends AbstractTest {
     void modifyingCategorySuccessfully() throws Exception {
 //        given
         ExpenseCategory category = new ExpenseCategory(1L, categoryName, firstUser);
-        ExpenseCategory modCategory = new ExpenseCategory(1L, "travel", firstUser);
+        ExpenseCategory providedCategoryByUser = new ExpenseCategory("travel");
 
         given(transactionService.categoryExists(categoryType, categoryName)).willReturn(true);
         when((Optional<ExpenseCategory>)transactionService.getCategory(categoryType, categoryName)).thenReturn(Optional.of(category));
@@ -242,19 +242,44 @@ class ExpenseControllerTest extends AbstractTest {
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/api/modify/expense/category")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("categoryName", categoryName)
-                        .content(mapToJson(modCategory))
+                        .content(mapToJson(providedCategoryByUser))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 //        then
+        then(transactionService).should(atMost(1)).deleteCategory(any(String.class), any(String.class));
         then(transactionService).should(atMost(1)).saveCategoryToDB(any(Optional.class), any(String.class));
-        ExpenseCategory providedCategory = mapFromJson(result.getResponse().getContentAsString(),ExpenseCategory.class);
-        assertThat(providedCategory).isNotNull();
-        assertThat(providedCategory.getCategoryName()).isEqualTo(modCategory.getCategoryName());
+        ExpenseCategory resultedCategory = mapFromJson(result.getResponse().getContentAsString(), ExpenseCategory.class);
+        assertThat(resultedCategory).isNotNull();
+        assertThat(resultedCategory.getCategoryName()).isEqualTo(providedCategoryByUser.getCategoryName());
     }
 
     @Test
-    void notAbleToModifyCategoryBecauseItDoesNotExists() throws Exception {
+    void notAbleToModifyCategory_BecauseCategory_HasTransactions() throws Exception {
+//        given
+        ExpenseCategory category = new ExpenseCategory(1L, categoryName, firstUser);
+        category.setExpenseTransactions(transactions);
+        given(transactionService.categoryExists(categoryType, categoryName)).willReturn(true);
+        when((Optional<ExpenseCategory>)transactionService.getCategory(categoryType, categoryName)).thenReturn(Optional.of(category));
+
+
+//        when
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/api/modify/expense/category")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("categoryName", categoryName)
+                        .content(mapToJson(category)) // it doesn't matter what you pass because this test won't run through any modifications
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotAcceptable())
+                .andReturn();
+//        then
+        then(transactionService).should(never()).saveCategoryToDB(any(),any());
+        String providedException = mapFromJson(result.getResponse().getContentAsString(), LinkedHashMap.class).get("message").toString();
+        assertThat(providedException).isEqualTo("There are attached transactions to category - " + categoryName
+                + ", please either delete those transactions or ADD the category as a new one!");
+    }
+
+    @Test
+    void notAbleToModifyCategory_BecauseItDoesNotExists() throws Exception {
 //        given
         given(transactionService.categoryExists(categoryType, categoryName)).willReturn(false);
 
@@ -273,44 +298,95 @@ class ExpenseControllerTest extends AbstractTest {
     }
 
     @Test
-    void modifyingTransactionSuccessfully() throws Exception{
+    void modifyingTransactionSuccessfully_With_ExistingCategory() throws Exception{
 //        given
         ExpenseCategory category = new ExpenseCategory(1L, categoryName, firstUser);
-        ExpenseTransaction transaction = new ExpenseTransaction( 300.0, categoryName, "Grocery bill", firstUser);
-        transaction.setExpenseTransactionId(1L);
-        ExpenseTransaction modTransaction = new ExpenseTransaction( 600.2, categoryName, "Big bill", firstUser);
+        ExpenseTransaction transactionInDB = new ExpenseTransaction( 300.0, categoryName, "Grocery bill", firstUser);
+        transactionInDB.setExpenseTransactionId(1L);
+        ExpenseTransaction providedTransactionByUser = new ExpenseTransaction( 600.2, categoryName, "Big bill", firstUser);
 
-        given(transactionService.transactionExists(categoryType, 1L)).willReturn(true);
+        when((Optional<ExpenseTransaction>)transactionService.getTransactionById(any(),any())).thenReturn(Optional.of(transactionInDB));
         given(transactionService.categoryExists(categoryType, categoryName)).willReturn(true);
         when((Optional<ExpenseCategory>)transactionService.getCategory(categoryType, categoryName)).thenReturn(Optional.of(category));
-        when((Optional<ExpenseTransaction>)transactionService.getTransactionById(any(),any())).thenReturn(Optional.of(transaction));
 
 //        when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/api/modify/expense/transaction/{transactionId}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapToJson(modTransaction))
+                        .content(mapToJson(providedTransactionByUser))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 //        then
+        then(transactionService).should(atMost(1)).deleteTransactionById(any(String.class), any(Long.class));
         then(transactionService).should(atMost(1)).saveTransactionToDB(any(Optional.class), any(String.class));
-        ExpenseTransaction providedTransaction = mapFromJson(result.getResponse().getContentAsString(),ExpenseTransaction.class);
-        assertThat(providedTransaction).isNotNull();
-        assertThat(providedTransaction.getExpenseAmount()).isEqualTo(modTransaction.getExpenseAmount());
-        assertThat(providedTransaction.getCategoryName()).isEqualTo(modTransaction.getCategoryName());
+        ExpenseTransaction resultedTransaction = mapFromJson(result.getResponse().getContentAsString(),ExpenseTransaction.class);
+        assertThat(resultedTransaction).isNotNull();
+        assertThat(resultedTransaction.getExpenseAmount()).isNotEqualTo(transactionInDB.getExpenseAmount());
+        assertThat(resultedTransaction.getExpenseAmount()).isEqualTo(providedTransactionByUser.getExpenseAmount());
+        assertThat(resultedTransaction.getCategoryName()).isEqualTo(providedTransactionByUser.getCategoryName());
+        assertThat(resultedTransaction.getDate()).isEqualTo(providedTransactionByUser.getDate());
     }
-    @Test
-    void notAbleToModifyTransactionBecauseIdIsInvalid() throws Exception {
-//        given
-        ExpenseTransaction modTransaction = new ExpenseTransaction( 600.2, categoryName, "Big bill", firstUser);
-        modTransaction.setExpenseTransactionId(4L);
 
-        given(transactionService.transactionExists(categoryType, 1L)).willReturn(true);
+    @Test
+    void modifyingTransactionSuccessfully_Without_ExistingCategory() throws Exception{
+//        given
+        ExpenseTransaction transactionInDB = new ExpenseTransaction( 300.0, categoryName, "Grocery bill", firstUser);
+        transactionInDB.setExpenseTransactionId(1L);
+        ExpenseTransaction providedTransactionByUser = new ExpenseTransaction( 600.2, categoryName, "Big bill", firstUser);
+
+        when((Optional<ExpenseTransaction>)transactionService.getTransactionById(any(),any())).thenReturn(Optional.of(transactionInDB));
+        given(transactionService.categoryExists(categoryType, categoryName)).willReturn(false);
+        given(userService.getUser()).willReturn(firstUser);
 
 //        when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/api/modify/expense/transaction/{transactionId}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapToJson(modTransaction))
+                        .content(mapToJson(providedTransactionByUser))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+//        then
+        then(transactionService).should(atMost(1)).saveCategoryToDB(any(Optional.class), any(String.class));
+        then(transactionService).should(atMost(1)).deleteTransactionById(any(String.class), any(Long.class));
+        then(transactionService).should(atMost(1)).saveTransactionToDB(any(Optional.class), any(String.class));
+        ExpenseTransaction resultedTransaction = mapFromJson(result.getResponse().getContentAsString(),ExpenseTransaction.class);
+        assertThat(resultedTransaction).isNotNull();
+        assertThat(resultedTransaction.getExpenseAmount()).isNotEqualTo(transactionInDB.getExpenseAmount());
+        assertThat(resultedTransaction.getExpenseAmount()).isEqualTo(providedTransactionByUser.getExpenseAmount());
+        assertThat(resultedTransaction.getCategoryName()).isEqualTo(providedTransactionByUser.getCategoryName());
+        assertThat(resultedTransaction.getDate()).isEqualTo(providedTransactionByUser.getDate());
+    }
+
+    @Test
+    void notAbleToModifyTransaction_Because_TransactionDoesNotExistInDB() throws Exception {
+//        given
+        when(transactionService.getTransactionById(any(),any())).thenReturn(Optional.empty());
+
+//        when
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/api/modify/expense/transaction/{transactionId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapToJson(new ExpenseTransaction())) // doesn't matter what we pass bc it won't make any modifications
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+//        then
+        then(transactionService).should(never()).saveTransactionToDB(any(Optional.class), any(String.class));
+        String providedException = mapFromJson(result.getResponse().getContentAsString(), LinkedHashMap.class).get("message").toString();
+        assertThat(providedException).isEqualTo("There is no transaction with id: " + 1L);
+    }
+
+    @Test
+    void notAbleToModifyTransaction_BecauseId_IsInvalid() throws Exception {
+//        given
+        ExpenseTransaction providedTransactionByUser = new ExpenseTransaction( 600.2, categoryName, "Big bill", firstUser);
+        providedTransactionByUser.setExpenseTransactionId(4L);
+        when((Optional<ExpenseTransaction>)transactionService.getTransactionById(any(),any())).thenReturn(Optional.of(providedTransactionByUser));
+
+//        when
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/api/modify/expense/transaction/{transactionId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapToJson(providedTransactionByUser))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotAcceptable())
                 .andReturn();
@@ -338,7 +414,7 @@ class ExpenseControllerTest extends AbstractTest {
     }
 
     @Test
-    void deletingAllTransactionsByCategory() throws Exception {
+    void deletingAllTransactions_ByCategory() throws Exception {
 //        given
 //        when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/delete/expense/transactions/category")
@@ -354,7 +430,7 @@ class ExpenseControllerTest extends AbstractTest {
     }
 
     @Test
-    void deletingAllTransactionsInDB() throws Exception {
+    void deletingAllTransactions_InDB() throws Exception {
 //        given
 //        when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/delete/expense/transactions")
@@ -369,7 +445,7 @@ class ExpenseControllerTest extends AbstractTest {
     }
 
     @Test
-   void deletingTransactionById() throws Exception {
+   void deletingTransaction_ById() throws Exception {
 //        given
 //        when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/delete/expense/transaction/{id}", 1L)

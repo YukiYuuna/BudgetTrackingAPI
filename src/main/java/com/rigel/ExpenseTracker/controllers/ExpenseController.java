@@ -58,14 +58,12 @@ public class ExpenseController extends ControlHelper {
 
     @PostMapping("/add/expense/category")
     public ResponseEntity<String> addExpenseCategory(@RequestBody ExpenseCategory category) {
-        String name = category.getCategoryName().toLowerCase();
-        service.addCategory(name, "expense");
+        service.addCategory(category.getCategoryName(), "expense");
         return ResponseEntity.ok("Expense category has been saved successfully!");
     }
 
     @PostMapping("/add/expense/transaction")
-    public ResponseEntity<String> addExpenseTransaction(String date, Double expenseAmount,
-                                                        String categoryName, @Nullable String description) {
+    public ResponseEntity<String> addExpenseTransaction(String date, Double expenseAmount, String categoryName, @Nullable String description) {
         service.addTransaction("expense",date, expenseAmount, categoryName.toLowerCase(), description);
         return ResponseEntity.ok().body("Transaction added successfully!");
     }
@@ -83,7 +81,7 @@ public class ExpenseController extends ControlHelper {
         Optional<ExpenseCategory> category = ((Optional<ExpenseCategory>)service.getCategory("expense",categoryName));
 
 //        Provide the user with button which, he/she can use to delete all transaction correlated with this category!
-        if(category.get().getExpenseTransactions().size() > 0){
+        if(category.get().getExpenseTransactions() != null && category.get().getExpenseTransactions().size() > 0){
             throw new ResponseStatusException(NOT_ACCEPTABLE, "There are attached transactions to category - " + categoryName
                     + ", please either delete those transactions or ADD the category as a new one!");
         }

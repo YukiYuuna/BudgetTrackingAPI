@@ -53,62 +53,84 @@ public class IncomeController extends ControlHelper {
     @GetMapping("/income/transactions/category")
     private HashMap<String, Object> fetchTransactionsByCategory(@RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage, String categoryName) {
         return service.getTransactionsByCategoryAndUsername(createPagination(currentPage, perPage, userService.numberOfUsers()),"income", categoryName);
-
     }
 
     @PostMapping("/add/income/category")
     public ResponseEntity<String> addIncomeCategory(@RequestBody IncomeCategory category) {
-        String name = category.getCategoryName().toLowerCase();
-        service.addCategory(name, "income");
+        service.addCategory(category.getCategoryName(), "income");
         return ResponseEntity.ok("Income category has been saved successfully!");
     }
 
     @PostMapping("/add/income/transaction")
-    public ResponseEntity<String> addIncomeTransaction(@RequestParam String date, @RequestParam Double incomeAmount,
-                                                       @RequestParam String categoryName, @RequestParam @Nullable String description) {
+    public ResponseEntity<String> addIncomeTransaction(String date, Double incomeAmount, String categoryName, @Nullable String description) {
         service.addTransaction("income",date, incomeAmount, categoryName.toLowerCase(), description);
         return ResponseEntity.ok().body("Transaction added successfully");
     }
 
     @PutMapping("/modify/income/category")
     public ResponseEntity<?> modifyIncomeCategory(String categoryName, @RequestBody IncomeCategory modifiedCategory) {
-        if(!service.categoryExists("income", categoryName))
-            throw new ResponseStatusException(NOT_FOUND, "Income category with this name doesn't exist in the DB.");
+        if(!service.categoryExists("income", categoryName)) {
+            throw new ResponseStatusException(NOT_FOUND, "Expense category with this name doesn't exist in the DB.");
+        }
 
-        return service.getCategory("income",categoryName)
-                .map(c -> {
-                    ((IncomeCategory)c).setCategoryName(modifiedCategory.getCategoryName() == null ? ((IncomeCategory) c).getCategoryName() : modifiedCategory.getCategoryName().toLowerCase());
-                    return ResponseEntity.ok().body(c);
-                }).orElse(ResponseEntity.notFound().build());
+        if(modifiedCategory.getIncomeCategoryId() != null) {
+            throw new ResponseStatusException(NOT_ACCEPTABLE, "Don't provide an id for the new category, because you cannot modify it.");
+        }
+
+        Optional<IncomeCategory> category = ((Optional<IncomeCategory>)service.getCategory("income",categoryName));
+
+//        Provide the user with button which, he/she can use to delete all transaction correlated with this category!
+        if(category.get().getIncomeTransactions() != null && category.get().getIncomeTransactions().size() > 0){
+            throw new ResponseStatusException(NOT_ACCEPTABLE, "There are attached transactions to category - " + categoryName
+                    + ", please either delete those transactions or ADD the category as a new one!");
+        }
+
+        return category.map(c -> {
+            modifiedCategory.setCategoryName(modifiedCategory.getCategoryName() == null ? c.getCategoryName() : modifiedCategory.getCategoryName().toLowerCase());
+            modifiedCategory.setUser(c.getUser());
+
+            service.deleteCategory(categoryName, "income");
+            service.saveCategoryToDB(Optional.of(modifiedCategory), "income");
+
+//                    new category changes its ID automatically. Old ID frees up.
+            return ResponseEntity.ok().body(modifiedCategory);
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/modify/income/transaction/{transactionId}")
     public ResponseEntity<?> modifyIncomeTransaction(@PathVariable Long transactionId, @RequestBody IncomeTransaction modifiedTransaction){
-        if(!service.transactionExists("income",transactionId))
+        Optional<IncomeTransaction> transaction = ((Optional<IncomeTransaction>)service.getTransactionById("income", transactionId));
+
+        if(transaction.isEmpty())
             throw new ResponseStatusException(NOT_FOUND,"There is no transaction with id: " + transactionId);
+
         if(modifiedTransaction.getIncomeTransactionId() != null)
             throw new ResponseStatusException(NOT_ACCEPTABLE, "Don't provide an id for the new transaction, because you cannot modify it.");
 
-        if(modifiedTransaction.getCategoryName() != null) {
-            if(!service.categoryExists("income", modifiedTransaction.getCategoryName())) {
-                service.saveCategoryToDB(Optional.of(new IncomeCategory(modifiedTransaction.getCategoryName(),
-                        userService.getUser())), "income");
+        if (modifiedTransaction.getCategoryName() != null) {
+            if (service.categoryExists("income", modifiedTransaction.getCategoryName())) {
+                modifiedTransaction.setIncomeCategory((IncomeCategory) service
+                        .getCategory("income", modifiedTransaction.getCategoryName()).get());
+            } else {
+                Optional<IncomeCategory> newCategory = Optional.of(
+                        new IncomeCategory(modifiedTransaction.getCategoryName(), userService.getUser()));
+                service.saveCategoryToDB(newCategory, "income");
+                modifiedTransaction.setIncomeCategory(newCategory.get());
             }
-            modifiedTransaction.setIncomeCategory((IncomeCategory) service.getCategory("income",modifiedTransaction.getCategoryName()).get());
         }
 
-        return service.getTransactionById("income", transactionId)
-                .map(t -> {
-                    ((IncomeTransaction) t).setIncomeCategory(modifiedTransaction.getIncomeCategory());
-                    ((IncomeTransaction) t).setDate(modifiedTransaction.getDate() == null ? ((IncomeTransaction) t).getDate() : modifiedTransaction.getDate());
-                    ((IncomeTransaction) t).setDescription(modifiedTransaction.getDescription() == null ? ((IncomeTransaction) t).getDescription() : modifiedTransaction.getDescription());
-                    ((IncomeTransaction) t).setCategoryName(modifiedTransaction.getCategoryName() == null ? ((IncomeTransaction) t).getCategoryName().toLowerCase() : modifiedTransaction.getCategoryName().toLowerCase());
+        return transaction.map(t -> {
+            modifiedTransaction.setCategoryName(modifiedTransaction.getCategoryName() == null ? t.getCategoryName().toLowerCase() : modifiedTransaction.getCategoryName().toLowerCase());
+            modifiedTransaction.setDate(modifiedTransaction.getDate() == null ? t.getDate() : modifiedTransaction.getDate());
+            modifiedTransaction.setDescription(modifiedTransaction.getDescription() == null ? t.getDescription() : modifiedTransaction.getDescription());
+            modifiedTransaction.setUser(t.getUser());
 
-                    setBudgetOfUser(((IncomeTransaction) t), modifiedTransaction.getIncomeAmount());
+            setBudgetOfUser(t,modifiedTransaction);
 
-                    service.saveTransactionToDB(Optional.of(modifiedTransaction),"expense");
-                    return ResponseEntity.ok().body(t);
-                }).orElse(ResponseEntity.notFound().build());
+            service.deleteTransactionById("income", transactionId);
+            service.saveTransactionToDB(Optional.of(modifiedTransaction),"income");
+            return ResponseEntity.ok().body(modifiedTransaction);
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     /* Ask the user if he wants to delete the category for sure, before calling this method,
@@ -141,15 +163,13 @@ public class IncomeController extends ControlHelper {
         return ResponseEntity.ok().body("The transaction has been deleted successfully!");
     }
 
-    private void setBudgetOfUser(IncomeTransaction transaction, Double modBudget){
-        if(modBudget != null) {
-            Double change = modBudget - transaction.getIncomeAmount();
+    private void setBudgetOfUser(IncomeTransaction transaction, IncomeTransaction modTransaction){
+        if(modTransaction.getIncomeAmount() != null) {
+            Double change = modTransaction.getIncomeAmount() - transaction.getIncomeAmount();
             User user = transaction.getUser();
-            transaction.setIncomeAmount(modBudget);
-            user.setCurrentBudget(user.getCurrentBudget() + change);
-            userService.saveUserDataAndFlush(user);
+            user.setCurrentBudget(user.getCurrentBudget() - change);
         } else{
-            transaction.setIncomeAmount(transaction.getIncomeAmount());
+            modTransaction.setIncomeAmount(transaction.getIncomeAmount());
         }
     }
 }
