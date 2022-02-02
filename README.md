@@ -21,7 +21,7 @@ The API has two roles, one being the admin, who has access to all endpoints exce
 ### REST Endpoints
 The Budget Tracking API covers all CRUD operations, meaning - POST, GET, PUT, DELETE.
 #### 🚨 Here, I am goind to share a link to Postman, where I've set up all operations and descriptions on what each enpoint does ‼
-* linkkk
+* https://www.getpostman.com/collections/5dd457ac0ef043e168a3
 
 This way, the setup for executing the API won't be such a hastle, as all endpoints are pre-written and documented.
 
