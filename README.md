@@ -8,10 +8,10 @@
 * Bettered my understanding on the concept of abstraction.
 * Learned how to write complex JUnit Tests📝, using a BDD approach and utilizing tools like Mockito and MockMvc.
 * Improved my skills with Version Control (Git).
-* Working with Postman and how to document an API/
+* Working with Postman and how to document an API.
 
 ## Lets look at the API and its functionalities 👇
-
+ ❗ <strong>If you want to see the endpoints and what each one of them does, click the orange button down below</strong> ❗
 ### Authentication
 All REST Endpoints (except endpoints for registration and login) are secured and must be authenticated, using a JWT token that is generated upon successfull login. This JWT token has a set expiration time ⏳ and when it times out, the token becomes invalid. 
 
