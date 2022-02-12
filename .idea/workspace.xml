@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="95028216-68b3-4970-b872-65160f817d59" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/MavenWrapperDownloader.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/ExpenseTrackerApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/ServletInitializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/controllers/ControlHelper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/controllers/ExpenseController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/controllers/IncomeController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/controllers/SecurityController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/controllers/UserController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/entities/DBSeeder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/entities/ExpenseCategory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/entities/ExpenseTransaction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/entities/IncomeCategory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/entities/IncomeTransaction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/entities/Role.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/entities/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/exception/ApiExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/exception/CustomAccessDeniedHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/exception/CustomAuthenticationEntryPoint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/exception/RestApiException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/exception/RestResponseBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/repositories/ExpenseCategoryRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/repositories/ExpenseTransactionRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/repositories/IncomeCategoryRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/repositories/IncomeTransactionRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/repositories/RoleRepo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/repositories/UserRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/security/CustomAuthenticationFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/security/CustomAuthorizationFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/security/SecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/service/TransactionService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/service/TransactionServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/service/UserService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/service/UserServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/rigel/ExpenseTracker/AbstractTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/rigel/ExpenseTracker/ExpenseTrackerApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/rigel/ExpenseTracker/controllers/ExpenseControllerTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/rigel/ExpenseTracker/controllers/SecurityControllerTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/rigel/ExpenseTracker/controllers/UserControllerTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/rigel/ExpenseTracker/service/TransactionServiceImplTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/rigel/ExpenseTracker/service/UserServiceImplTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/resources/application.properties" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+        <option value="JUnit5 Test Class" />
+        <option value="CSS File" />
+        <option value="Vue Single File Component" />
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="JpbToolWindowState">
+    <option name="myId2FirstActivated">
+      <map>
+        <entry key="com.haulmont.jpb.jpaInspector" value="true" />
+        <entry key="com.haulmont.jpb.jpaPalette" value="true" />
+        <entry key="com.haulmont.jpb.jpaStructure" value="true" />
+      </map>
+    </option>
+    <option name="myId2Visible">
+      <map>
+        <entry key="com.haulmont.jpb.jpaInspector" value="false" />
+        <entry key="com.haulmont.jpb.jpaPalette" value="false" />
+        <entry key="com.haulmont.jpb.jpaStructure" value="false" />
+      </map>
+    </option>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="Use Maven wrapper" />
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="ProjectErrors" />
+  </component>
+  <component name="ProjectId" id="23FVti8Rc9UjD2wdjpUVJ4GGuTL" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit5" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5" value="" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../TwitterBot" />
+    <property name="list.type.of.created.stylesheet" value="CSS" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.javacompiler" />
+    <property name="show.run.dashboard.notification" value="false" />
+    <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\IntelliJ IDEA 2021.3.1\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.rigel.ExpenseTracker.controllers" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\konstantin\IdeaProjects\ExpenseTrackerAPI\src\test\resources" />
+    </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\konstantin\IdeaProjects\ExpenseTrackerAPI\expensetrackerapi-ui\src\models" />
+      <recent name="C:\Users\konstantin\IdeaProjects\ExpenseTrackerAPI\expensetrackerapi-ui\src\assets\css" />
+      <recent name="C:\Users\konstantin\IdeaProjects\ExpenseTrackerAPI\expensetrackerapi-ui\src\components" />
+      <recent name="C:\Users\konstantin\IdeaProjects\ExpenseTrackerAPI\expensetrackerapi-ui\src" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="com.rigel.ExpenseTracker.controllers" />
+      <recent name="com.rigel.ExpenseTracker.repositories" />
+      <recent name="com.rigel.ExpenseTracker.service" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Spring Boot.ExpenseTrackerApplication (1)">
+    <configuration name="ExpenseTrackerApplication (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="expensetrackerapi-backend" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.rigel.ExpenseTracker.ExpenseTrackerApplication" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExpenseTrackerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="ExpenseTracker" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.rigel.ExpenseTracker.ExpenseTrackerApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="serve" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/expensetrackerapi-ui/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="serve" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.serve" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="95028216-68b3-4970-b872-65160f817d59" name="Changes" comment="" />
+      <created>1641330043010</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1641330043010</updated>
+      <workItem from="1641330047906" duration="706000" />
+      <workItem from="1641361365291" duration="7376000" />
+      <workItem from="1641414587455" duration="382000" />
+      <workItem from="1641448587896" duration="5756000" />
+      <workItem from="1641466225417" duration="4791000" />
+      <workItem from="1641535534076" duration="1684000" />
+      <workItem from="1641632779845" duration="16647000" />
+      <workItem from="1641710754441" duration="4458000" />
+      <workItem from="1641728281203" duration="9900000" />
+      <workItem from="1641795221653" duration="6830000" />
+      <workItem from="1641834280264" duration="8773000" />
+      <workItem from="1641880766793" duration="5661000" />
+      <workItem from="1641897988738" duration="284000" />
+      <workItem from="1641898485232" duration="3830000" />
+      <workItem from="1641928523917" duration="1481000" />
+      <workItem from="1641967170879" duration="509000" />
+      <workItem from="1641968052285" duration="4473000" />
+      <workItem from="1642015046858" duration="3362000" />
+      <workItem from="1642053687882" duration="4417000" />
+      <workItem from="1642101494041" duration="5087000" />
+      <workItem from="1642140646551" duration="6193000" />
+      <workItem from="1642165014886" duration="625000" />
+      <workItem from="1642166499736" duration="2119000" />
+      <workItem from="1642191328355" duration="2138000" />
+      <workItem from="1642333066799" duration="18714000" />
+      <workItem from="1642397193532" duration="5749000" />
+      <workItem from="1642446105782" duration="2304000" />
+      <workItem from="1642482533333" duration="4416000" />
+      <workItem from="1642489831650" duration="179000" />
+      <workItem from="1642534361316" duration="177000" />
+      <workItem from="1642571301195" duration="6331000" />
+      <workItem from="1642618919889" duration="3758000" />
+      <workItem from="1642656969115" duration="5406000" />
+      <workItem from="1642665023612" duration="25000" />
+      <workItem from="1642700399384" duration="6593000" />
+      <workItem from="1642743434852" duration="13574000" />
+      <workItem from="1642942864728" duration="4715000" />
+      <workItem from="1643004170520" duration="5678000" />
+      <workItem from="1643039564963" duration="1769000" />
+      <workItem from="1643090104302" duration="6333000" />
+      <workItem from="1643137269616" duration="3334000" />
+      <workItem from="1643183287597" duration="596000" />
+      <workItem from="1643225137244" duration="4764000" />
+      <workItem from="1643262725029" duration="5926000" />
+      <workItem from="1643306032529" duration="5646000" />
+      <workItem from="1643347153458" duration="5885000" />
+      <workItem from="1643446230292" duration="20184000" />
+      <workItem from="1643490171256" duration="2133000" />
+      <workItem from="1643526420459" duration="28326000" />
+      <workItem from="1643569468591" duration="4454000" />
+      <workItem from="1643607220424" duration="10407000" />
+      <workItem from="1643657819079" duration="4633000" />
+      <workItem from="1643694268024" duration="9091000" />
+      <workItem from="1643737554733" duration="2739000" />
+      <workItem from="1643781822626" duration="3547000" />
+      <workItem from="1643833803682" duration="1278000" />
+      <workItem from="1643870760046" duration="663000" />
+      <workItem from="1643953882926" duration="92000" />
+      <workItem from="1643955047334" duration="701000" />
+      <workItem from="1644387374752" duration="1871000" />
+      <workItem from="1644396065867" duration="1158000" />
+      <workItem from="1644432992770" duration="4087000" />
+      <workItem from="1644470420782" duration="4200000" />
+      <workItem from="1644515825820" duration="8653000" />
+      <workItem from="1644526531319" duration="1962000" />
+      <workItem from="1644558150340" duration="2408000" />
+      <workItem from="1644560826181" duration="1560000" />
+      <workItem from="1644564415273" duration="1000" />
+      <workItem from="1644564432270" duration="458000" />
+      <workItem from="1644600080867" duration="275000" />
+      <workItem from="1644657744579" duration="6138000" />
+      <workItem from="1644666955026" duration="7624000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="java:jakarta.persistence:jakarta.persistence-api" />
+    <option featureType="dependencySupport" implementationName="java:org.hibernate:hibernate-core" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/ExpenseTrackerAPI$UserControllerTest.ic" NAME="UserControllerTest Coverage Results" MODIFIED="1643699182475" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>com.rigel.ExpenseTracker.controllers.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/ExpenseTrackerAPI$TransactionServiceImplTest.ic" NAME="TransactionServiceImplTest Coverage Results" MODIFIED="1643702327495" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>com.rigel.ExpenseTracker.service.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/ExpenseTrackerAPI$ExpenseControllerTest.ic" NAME="ExpenseControllerTest Coverage Results" MODIFIED="1643699152252" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>com.rigel.ExpenseTracker.controllers.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/ExpenseTrackerAPI$SecurityControllerTest.ic" NAME="SecurityControllerTest Coverage Results" MODIFIED="1643699136482" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>com.rigel.ExpenseTracker.controllers.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/ExpenseTrackerAPI$UserServiceImplTest.ic" NAME="UserServiceImplTest Coverage Results" MODIFIED="1643702386188" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>com.rigel.ExpenseTracker.service.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/ExpenseTrackerAPI$ExpenseControllerTest_modifyingCategorySuccessfully.ic" NAME="ExpenseControllerTest.modifyingCategorySuccessfully Coverage Results" MODIFIED="1643695731325" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>com.rigel.ExpenseTracker.controllers.*</FILTER>
+    </SUITE>
+  </component>
+</project>

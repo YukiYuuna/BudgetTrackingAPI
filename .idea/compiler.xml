@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="expensetrackerapi-backend" />
+        <module name="expensetrackerapi-ui" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="ExpenseTracker" target="1.8" />
+      <module name="expensetrackerapi-backend" target="11" />
+      <module name="expensetrackerapi-ui" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ExpenseTracker" options="-parameters" />
+      <module name="expensetrackerapi-backend" options="-parameters" />
+      <module name="expensetrackerapi-ui" options="-parameters" />
+    </option>
+  </component>
+</project>

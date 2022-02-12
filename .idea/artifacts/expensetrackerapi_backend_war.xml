@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="expensetrackerapi-backend:war">
+    <output-path>$PROJECT_DIR$/expensetrackerapi-backend/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>expensetrackerapi-backend</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="expensetrackerapi-backend-0.0.1-SNAPSHOT.war">
+      <element id="artifact" artifact-name="expensetrackerapi-backend:war exploded" />
+    </root>
+  </artifact>
+</component>
