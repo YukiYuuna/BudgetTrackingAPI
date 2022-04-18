@@ -24,21 +24,6 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="password">Password</label>
-            <input
-              v-model="user.password"
-              v-validate="'required|min:6|max:40'"
-              type="password"
-              class="form-control"
-              name="password"
-            />
-            <div
-              v-if="submitted && errors.has('password')"
-              class="alert-danger"
-            >{{ errors.first('password') }}
-            </div>
-          </div>
-          <div class="form-group">
             <label for="firstName">First Name</label>
             <input
               v-model="user.firstName"
