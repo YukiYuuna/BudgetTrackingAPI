@@ -5,15 +5,18 @@ const API_URL = 'http://localhost:8080/'
 class AuthService {
   login (user) {
     return axios
-      .post(API_URL + 'api/login', {
-        username: user.username,
-        password: user.password
+      .get(API_URL + 'api/login', {
+        params: {
+          username: user.username,
+          password: user.password
+        }
       })
       .then(response => {
-        if (response.data.accessToken) {
-          localStorage.setItem('user', JSON.stringify(response.data))
-        }
+        localStorage.setItem('user', JSON.stringify(response.data))
+        console.log(response)
         return response.data
+      }, (error) => {
+        console.log(error)
       })
   }
 
@@ -24,8 +27,11 @@ class AuthService {
   register (user) {
     return axios.post(API_URL + 'api/register', {
       username: user.username,
+      password: user.password,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
-      password: user.password
+      currentBudget: user.currentBudget
     })
   }
 }

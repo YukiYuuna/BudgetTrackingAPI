@@ -5,55 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="95028216-68b3-4970-b872-65160f817d59" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/MavenWrapperDownloader.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/ExpenseTrackerApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/ServletInitializer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/controllers/ControlHelper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/controllers/ExpenseController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/controllers/IncomeController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/controllers/SecurityController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/controllers/UserController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/entities/DBSeeder.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/entities/ExpenseCategory.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/entities/ExpenseTransaction.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/entities/IncomeCategory.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/entities/IncomeTransaction.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/entities/Role.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/entities/User.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/exception/ApiExceptionHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/exception/CustomAccessDeniedHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/exception/CustomAuthenticationEntryPoint.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/exception/RestApiException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/exception/RestResponseBuilder.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/repositories/ExpenseCategoryRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/repositories/ExpenseTransactionRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/repositories/IncomeCategoryRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/repositories/IncomeTransactionRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/repositories/RoleRepo.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/repositories/UserRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/security/CustomAuthenticationFilter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/security/CustomAuthorizationFilter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/security/SecurityConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/service/TransactionService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/service/TransactionServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/service/UserService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/rigel/ExpenseTracker/service/UserServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/rigel/ExpenseTracker/AbstractTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/rigel/ExpenseTracker/ExpenseTrackerApplicationTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/rigel/ExpenseTracker/controllers/ExpenseControllerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/rigel/ExpenseTracker/controllers/SecurityControllerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/rigel/ExpenseTracker/controllers/UserControllerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/rigel/ExpenseTracker/service/TransactionServiceImplTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/rigel/ExpenseTracker/service/UserServiceImplTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/ExpenseTrackerApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/ExpenseTrackerApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/SecurityController.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/SecurityController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/test/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/test/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/App.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/auth-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/auth-service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/auth.module.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/auth.module.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,7 +92,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit5" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5" value="" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../TwitterBot" />
+    <property name="last_opened_file_path" value="$USER_HOME$/my-app/pom.xml" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="project.structure.last.edited" value="Modules" />
@@ -162,18 +125,24 @@
       <recent name="com.rigel.ExpenseTracker.service" />
     </key>
   </component>
-  <component name="RunManager" selected="Spring Boot.ExpenseTrackerApplication (1)">
-    <configuration name="ExpenseTrackerApplication (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+  <component name="RunManager" selected="Application.ExpenseTrackerApplication">
+    <configuration name="ExpenseTrackerApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.rigel.ExpenseTracker.ExpenseTrackerApplication" />
       <module name="expensetrackerapi-backend" />
-      <option name="SPRING_BOOT_MAIN_CLASS" value="com.rigel.ExpenseTracker.ExpenseTrackerApplication" />
-      <option name="ALTERNATIVE_JRE_PATH" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.rigel.ExpenseTracker.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <configuration name="ExpenseTrackerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-      <module name="ExpenseTracker" />
+      <module name="expensetrackerapi-backend" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.rigel.ExpenseTracker.ExpenseTrackerApplication" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -188,8 +157,14 @@
       <envs />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Application.ExpenseTrackerApplication" />
+      <item itemvalue="npm.serve" />
+      <item itemvalue="Spring Boot.ExpenseTrackerApplication" />
+    </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.ExpenseTrackerApplication" />
         <item itemvalue="npm.serve" />
       </list>
     </recent_temporary>
@@ -273,7 +248,26 @@
       <workItem from="1644564432270" duration="458000" />
       <workItem from="1644600080867" duration="275000" />
       <workItem from="1644657744579" duration="6138000" />
-      <workItem from="1644666955026" duration="7624000" />
+      <workItem from="1644666955026" duration="8418000" />
+      <workItem from="1644817374246" duration="363000" />
+      <workItem from="1644817766160" duration="2961000" />
+      <workItem from="1645080919721" duration="2341000" />
+      <workItem from="1645118677013" duration="213000" />
+      <workItem from="1645193882560" duration="5583000" />
+      <workItem from="1645372160466" duration="39000" />
+      <workItem from="1645556876755" duration="634000" />
+      <workItem from="1645627987658" duration="38000" />
+      <workItem from="1645949618292" duration="230000" />
+      <workItem from="1645960479459" duration="1000" />
+      <workItem from="1647236577050" duration="3135000" />
+      <workItem from="1647409753356" duration="9000" />
+      <workItem from="1647594113453" duration="1000" />
+      <workItem from="1647955455885" duration="210000" />
+      <workItem from="1647962539148" duration="33000" />
+      <workItem from="1647962746660" duration="3000" />
+      <workItem from="1647963917707" duration="32000" />
+      <workItem from="1648045590520" duration="31000" />
+      <workItem from="1650256503418" duration="4911000" />
     </task>
     <servers />
   </component>

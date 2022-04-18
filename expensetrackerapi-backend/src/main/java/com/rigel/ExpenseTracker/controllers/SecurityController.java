@@ -20,7 +20,7 @@ public class SecurityController {
     private final UserService userService;
 
     @Autowired
-    public SecurityController(@Lazy UserService userService){
+    public SecurityController(@Lazy UserService userService) {
         this.userService = userService;
     }
 
@@ -32,23 +32,21 @@ public class SecurityController {
         String lastName = user.getLastName();
         String email = user.getEmail();
         Double currentBudget = user.getCurrentBudget();
-        if (username !=  null && password != null && firstName != null && lastName != null && email != null && currentBudget != null) {
+        if (username != null && password != null && firstName != null && lastName != null && email != null && currentBudget != null) {
             boolean invalidUsername = userService.getAllDBUsers().stream().anyMatch(u -> u.getUsername().equals(username));
             boolean invalidEmail = userService.getAllDBUsers().stream().anyMatch(u -> u.getEmail().equals(email));
-            if(!invalidUsername && !invalidEmail) {
+            if (!invalidUsername && !invalidEmail) {
                 userService.saveUser(new User(username, password, firstName, lastName, email, currentBudget));
                 return ResponseEntity.ok().body(firstName + " " + lastName + " has been added successfully!");
-            } else{
-                if(invalidUsername){
+            } else {
+                if (invalidUsername) {
                     throw new ResponseStatusException(BAD_REQUEST, "User with this username already exists.");
                 }
                 throw new ResponseStatusException(BAD_REQUEST, "User with this email already exists.");
             }
         }
-        throw new ResponseStatusException(BAD_REQUEST, "Make sure you provide all data, including: username, password, first and last name, current budget!");
+        throw new ResponseStatusException(BAD_REQUEST, "Make sure you provide all data, including: username, password, first and last name, email and current budget!");
     }
-
-
 
 
 }

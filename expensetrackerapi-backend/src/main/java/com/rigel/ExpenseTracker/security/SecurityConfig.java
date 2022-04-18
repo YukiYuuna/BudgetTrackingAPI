@@ -42,8 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 customAuthenticationEntryPoint(), authenticationManagerBean());
         customAuthFilter.setFilterProcessesUrl("/api/login");
 
-        http.csrf().disable();
-        http.sessionManagement().sessionCreationPolicy(STATELESS);
+        http.cors().and().csrf().disable();
 
 //        For Security operations:
         http.authorizeRequests().antMatchers("/api/register/**", "/api/login*", "/api/refresh/token/**").permitAll();
