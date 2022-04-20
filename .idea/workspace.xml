@@ -6,8 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="95028216-68b3-4970-b872-65160f817d59" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/App.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/router/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-transactions-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-transactions-service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Register.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Register.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Home.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Home.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Profile.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Profile.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,8 +24,8 @@
         <option value="Class" />
         <option value="JUnit5 Test Class" />
         <option value="CSS File" />
-        <option value="Vue Single File Component" />
         <option value="JavaScript File" />
+        <option value="Vue Single File Component" />
       </list>
     </option>
   </component>
@@ -268,7 +271,10 @@
       <workItem from="1647963917707" duration="32000" />
       <workItem from="1648045590520" duration="31000" />
       <workItem from="1650256503418" duration="4911000" />
-      <workItem from="1650303086664" duration="4249000" />
+      <workItem from="1650303086664" duration="4300000" />
+      <workItem from="1650343040217" duration="3478000" />
+      <workItem from="1650397027121" duration="1205000" />
+      <workItem from="1650430373623" duration="3116000" />
     </task>
     <servers />
   </component>

@@ -39,6 +39,11 @@
             <font-awesome-icon icon="sign-out-alt" />LogOut
           </a>
         </li>
+        <li class="nav-item">
+          <router-link to="/categories" class="nav-link">
+            <font-awesome-icon icon="categories" />Categories
+          </router-link>
+        </li>
       </div>
     </nav>
     <div class="container">
