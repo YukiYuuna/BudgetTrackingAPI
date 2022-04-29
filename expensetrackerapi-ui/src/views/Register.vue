@@ -71,10 +71,10 @@
           </div>
       </form>
       <div
-        v-if="message"
+        v-if="message.message"
         class="alert"
         :class="successful ? 'alert-success' : 'alert-danger'"
-      >{{ message }}
+      >{{ message.message }}
       </div>
     </div>
   </div>

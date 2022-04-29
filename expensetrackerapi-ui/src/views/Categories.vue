@@ -1,10 +1,7 @@
 <template>
   <div>
-    Username: {{username}}
-    <div v-for="(item, index) in totalCategories" :key="index">
-      <input v-model="item.categoryName">
-      </div>
-    <button v-on:click="getAllExpenseCategories">Show Expense Categories</button>
+    <b-table striped hover :items="totalCategories"></b-table>
+    <button v-on:click="getAllExpenseCategories">Load Expense Categories</button>
   </div>
 </template>
 
@@ -18,7 +15,6 @@ export default {
       username: '',
       totalCategories: [
         {
-          expenseCategoryId: 0,
           categoryName: ''
         }
       ]

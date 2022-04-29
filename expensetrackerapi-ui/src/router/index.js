@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Categories from '../views/Categories.vue'
+import Transactions from '@/views/Transactions.vue'
 
 Vue.use(Router)
 
@@ -35,6 +36,11 @@ export const router = new Router({
       path: '/categories',
       name: 'Categories',
       component: Categories
+    },
+    {
+      path: '/transactions',
+      name: 'Transactions',
+      component: Transactions
     },
     {
       path: '/admin',

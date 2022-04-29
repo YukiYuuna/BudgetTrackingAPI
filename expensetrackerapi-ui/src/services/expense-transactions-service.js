@@ -4,7 +4,7 @@ import authHeader from '@/services/auth-header'
 const API_URL = 'http://localhost:8080/'
 
 class ExpenseTransactionsService {
-  getAllTransactions (currentPage, perPage) {
+  getAllExpenseTransactions (currentPage, perPage) {
     return axios.get(API_URL + 'api/expense/transactions', { params: { currentPage: currentPage, perPage: perPage }, headers: authHeader() })
   }
 
