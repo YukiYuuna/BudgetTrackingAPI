@@ -43,6 +43,11 @@ export const router = new Router({
       component: Transactions
     },
     {
+      path: '/addTransaction',
+      name: 'AddTransaction',
+      component: () => import('@/views/AddTransaction.vue')
+    },
+    {
       path: '/admin',
       name: 'Admin',
       // lazy-loaded
