@@ -62,9 +62,9 @@ public class ExpenseController extends ControlHelper {
         return ResponseEntity.ok("Expense category has been saved successfully!");
     }
 
-    @PostMapping("/add/expense/transaction")
-    public ResponseEntity<String> addExpenseTransaction(String date, Double expenseAmount, String categoryName, @Nullable String description) {
-        service.addTransaction("expense",date, expenseAmount, categoryName.toLowerCase(), description);
+    @PostMapping(value = "/add/expense/transaction", consumes = "application/json")
+    public ResponseEntity<String> addExpenseTransaction(@RequestBody ExpenseTransaction transaction) {
+        service.addTransaction("expense",transaction.getDate().toString(), transaction.getExpenseAmount(), transaction.getCategoryName().toLowerCase(), transaction.getDescription());
         return ResponseEntity.ok().body("Transaction added successfully!");
     }
 

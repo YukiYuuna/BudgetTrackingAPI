@@ -24,6 +24,21 @@
             </div>
           </div>
           <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              v-model="user.password"
+              v-validate="'required'"
+              type="password"
+              class="form-control"
+              name="password"
+            />
+            <div
+              v-if="errors.has('password')"
+              class="alert alert-danger"
+              role="alert"
+            >Password is required!</div>
+          </div>
+          <div class="form-group">
             <label for="firstName">First Name</label>
             <input
               v-model="user.firstName"

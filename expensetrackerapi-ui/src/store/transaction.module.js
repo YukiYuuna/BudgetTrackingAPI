@@ -1,7 +1,4 @@
-import AuthService from '../services/auth-service'
 import ExpenseTransactionsService from '../services/expense-transactions-service'
-import IncomeTransactionsService from '../services/income-transactions-service'
-const user = JSON.parse(localStorage.getItem('user'))
 
 export const transactions = {
   namespaced: true,
@@ -16,28 +13,32 @@ export const transactions = {
   },
   mutations: {
     creationSucceeded (state) {
-      state.transaction = null
+      state.transaction.date = ''
+      state.transaction.expenseAmount = 0
+      state.transaction.incomeAmount = 0
+      state.transaction.categoryName = ''
+      state.transaction.description = ''
     },
     creationFailed (state) {
-      state.transaction = null
+      state.transaction.date = ''
+      state.transaction.expenseAmount = 0
+      state.transaction.incomeAmount = 0
+      state.transaction.categoryName = ''
+      state.transaction.description = ''
     }
 
   },
   actions: {
     createTransaction ({ commit }, transaction) {
-      return ExpenseTransactionsService.createExpenseTransaction(
-        transaction.date,
-        transaction.expenseAmount,
-        transaction.categoryName,
-        transaction.description).then(
-          response => {
-            commit('creationSucceeded')
-            return Promise.resolve(response.data)
-          },
-          error => {
-            commit('creationFailed')
-            return Promise.reject(error)
-        }
+      ExpenseTransactionsService.createExpenseTransaction(transaction, () =>
+        transaction => {
+          commit('creationSucceeded')
+          return Promise.resolve(transaction)
+        },
+      error => {
+        commit('creationFailed')
+        return Promise.reject(error)
+      }
       )
     }
 

@@ -3,9 +3,12 @@ import authHeader from '@/services/auth-header'
 
 const API_URL = 'http://localhost:8080/'
 class ExpenseCategoriesService {
-
   getAllExpenseCategories () {
-    return axios.get(API_URL + 'api/expense/categories', { headers: authHeader() })
+    return axios.get(API_URL + 'api/expense/categories', {
+      headers: {
+        Authorization: authHeader()
+      }
+    })
   }
 
   createExpenseCategory (expenseCategory) {
@@ -22,4 +25,3 @@ class ExpenseCategoriesService {
 }
 
 export default new ExpenseCategoriesService()
-

@@ -6,10 +6,23 @@
   <component name="ChangeListManager">
     <list default="true" id="95028216-68b3-4970-b872-65160f817d59" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/ExpenseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/ExpenseController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/IncomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/IncomeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/SecurityController.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/SecurityController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/App.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/models/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/models/user.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/auth-header.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/auth-header.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-categories-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-categories-service.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-transactions-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-transactions-service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/income-transactions-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/income-transactions-service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/user-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/user-service.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/transaction.module.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/transaction.module.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/AddTransaction.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/AddTransaction.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Categories.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Categories.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Profile.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Profile.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Register.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Register.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Transactions.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Transactions.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -77,7 +90,7 @@
     </option>
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectId" id="23FVti8Rc9UjD2wdjpUVJ4GGuTL" />
   <component name="ProjectViewState">
@@ -286,6 +299,12 @@
       <workItem from="1651424059744" duration="985000" />
       <workItem from="1651553479988" duration="2728000" />
       <workItem from="1651641698694" duration="5364000" />
+      <workItem from="1651674430864" duration="1515000" />
+      <workItem from="1651725017558" duration="4323000" />
+      <workItem from="1651922717359" duration="11431000" />
+      <workItem from="1652030532956" duration="6659000" />
+      <workItem from="1652071557836" duration="5010000" />
+      <workItem from="1652113354609" duration="10754000" />
     </task>
     <servers />
   </component>
@@ -306,6 +325,23 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/ExpenseController.java</url>
+          <line>66</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest" memberName="request" />
+        <PinnedItemInfo parentTag="org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest" memberName="this$0" />
+      </pinned-members>
+    </pin-to-top-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

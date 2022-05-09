@@ -2,10 +2,22 @@ import axios from 'axios'
 import authHeader from './auth-header'
 
 const API_URL = 'http://localhost:8080/'
+var headers = {
+  withCredentials: false,
+  headers: {
+    Authorization: authHeader(),
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  }
+}
 
 class UserService {
   getUserInfo () {
-    return axios.get(API_URL + 'api/user', { headers: authHeader() })
+    return axios.get(API_URL + 'api/user', {
+      headers: {
+        Authorization: authHeader()
+      }
+    })
   }
 
   getUserById (id) {
@@ -25,7 +37,12 @@ class UserService {
   }
 
   modifyUserInformation (user) {
-    return axios.put(API_URL + 'api/user/modify', { params: { user: user }, headers: authHeader() })
+    return axios.put(API_URL + 'api/user/modify', user, headers
+    ).then(function (response) {
+      console.log(response)
+    }).catch(function (error) {
+      console.log(error)
+    })
   }
 
   deleteUserFromApp () {

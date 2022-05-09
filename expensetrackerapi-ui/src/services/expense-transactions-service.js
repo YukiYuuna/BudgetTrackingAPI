@@ -2,10 +2,32 @@ import axios from 'axios'
 import authHeader from '@/services/auth-header'
 
 const API_URL = 'http://localhost:8080/'
+var headers = {
+  withCredentials: false,
+  headers: {
+    Authorization: authHeader(),
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  }
+}
 
 class ExpenseTransactionsService {
   getAllExpenseTransactions (currentPage, perPage) {
-    return axios.get(API_URL + 'api/expense/transactions', { params: { currentPage: currentPage, perPage: perPage }, headers: authHeader() })
+    return axios.get(API_URL + 'api/expense/transactions',
+      {
+        params:
+          {
+            currentPage: currentPage,
+            perPage: perPage
+          },
+        headers: {
+          Authorization: authHeader()
+        }
+      }).then(response => {
+      return response
+    }, (error) => {
+      console.log(error)
+    })
   }
 
   getTransactionById (id) {
@@ -20,8 +42,20 @@ class ExpenseTransactionsService {
     return axios.get(API_URL + 'api/expense/transactions/category', { params: { category: category, currentPage: currentPage, perPage: perPage }, headers: authHeader() })
   }
 
-  createExpenseTransaction (date, expenseAmount, categoryName, description) {
-    return axios.post(API_URL + 'api/add/expense/transaction', { params: { date: date, expenseAmount: expenseAmount, categoryName: categoryName, description: description }, headers: authHeader() })
+  createExpenseTransaction (transaction) {
+    const requestTransaction = {
+      date: transaction.date,
+      expenseAmount: Number(transaction.expenseAmount),
+      categoryName: transaction.categoryName,
+      description: transaction.description
+    }
+
+    axios.post(API_URL + 'api/add/expense/transaction', requestTransaction, headers
+    ).then(function (response) {
+      console.log(response)
+    }).catch(function (error) {
+      console.log(error)
+    })
   }
 
   modifyExpenseTransaction (transactionId, modifiedTransaction) {

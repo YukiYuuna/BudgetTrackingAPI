@@ -32,7 +32,7 @@ public class SecurityController {
         String lastName = user.getLastName();
         String email = user.getEmail();
         Double currentBudget = user.getCurrentBudget();
-        if (username != null && password != null && firstName != null && lastName != null && email != null && currentBudget != null) {
+        if (username != null && (password != null || !password.isEmpty()) && firstName != null && lastName != null && email != null && currentBudget != null) {
             boolean invalidUsername = userService.getAllDBUsers().stream().anyMatch(u -> u.getUsername().equals(username));
             boolean invalidEmail = userService.getAllDBUsers().stream().anyMatch(u -> u.getEmail().equals(email));
             if (!invalidUsername && !invalidEmail) {

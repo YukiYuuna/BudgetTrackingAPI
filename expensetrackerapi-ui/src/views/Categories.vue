@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import ExpenseTransactionsService from '../services/expense-transactions-service.js'
+import ExpenseCategoriesService from '@/services/expense-categories-service'
 
 export default {
   name: 'Categories',
@@ -22,7 +22,7 @@ export default {
   },
   methods: {
     getAllExpenseCategories () {
-      ExpenseTransactionsService.getAllExpenseCategories().then(
+      ExpenseCategoriesService.getAllExpenseCategories().then(
         (response) => {
           console.log(response)
           this.username = response.data.username

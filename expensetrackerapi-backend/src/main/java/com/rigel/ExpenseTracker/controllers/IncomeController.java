@@ -61,10 +61,10 @@ public class IncomeController extends ControlHelper {
         return ResponseEntity.ok("Income category has been saved successfully!");
     }
 
-    @PostMapping("/add/income/transaction")
-    public ResponseEntity<String> addIncomeTransaction(String date, Double incomeAmount, String categoryName, @Nullable String description) {
-        service.addTransaction("income",date, incomeAmount, categoryName.toLowerCase(), description);
-        return ResponseEntity.ok().body("Transaction added successfully");
+    @PostMapping(value = "/add/income/transaction", consumes = "application/json")
+    public ResponseEntity<String> addIncomeTransaction(@RequestBody IncomeTransaction transaction) {
+        service.addTransaction("income",transaction.getDate().toString(), transaction.getIncomeAmount(), transaction.getCategoryName().toLowerCase(), transaction.getDescription());
+        return ResponseEntity.ok().body("Transaction added successfully!");
     }
 
     @PutMapping("/modify/income/category")
