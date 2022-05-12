@@ -29,7 +29,7 @@ export const transactions = {
 
   },
   actions: {
-    createTransaction ({ commit }, transaction) {
+    createExpenseTransaction ({ commit }, transaction) {
       ExpenseTransactionsService.createExpenseTransaction(transaction, () =>
         transaction => {
           commit('creationSucceeded')

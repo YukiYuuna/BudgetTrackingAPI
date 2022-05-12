@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-table striped hover :items="totalCategories"></b-table>
-    <button v-on:click="getAllExpenseCategories">Load Expense Categories</button>
+    <button v-on:click="addExpenseCategories">Add Category</button>
   </div>
 </template>
 
@@ -12,7 +12,6 @@ export default {
   name: 'Categories',
   data () {
     return {
-      username: '',
       totalCategories: [
         {
           categoryName: ''
@@ -20,15 +19,16 @@ export default {
       ]
     }
   },
+  mounted () {
+    ExpenseCategoriesService.getAllExpenseCategories().then(
+      (response) => {
+        this.totalCategories = response.data.totalCategories
+      }
+    )
+  },
   methods: {
-    getAllExpenseCategories () {
-      ExpenseCategoriesService.getAllExpenseCategories().then(
-        (response) => {
-          console.log(response)
-          this.username = response.data.username
-          this.totalCategories = response.data.totalCategories
-        }
-      )
+    addExpenseCategories () {
+      this.$router.push('/addCategory')
     }
   }
 }

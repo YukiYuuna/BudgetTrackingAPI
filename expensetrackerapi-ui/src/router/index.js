@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
-import Categories from '../views/Categories.vue'
+import Categories from '@/views/Categories.vue'
 import Transactions from '@/views/Transactions.vue'
 
 Vue.use(Router)
@@ -46,6 +46,11 @@ export const router = new Router({
       path: '/addTransaction',
       name: 'AddTransaction',
       component: () => import('@/views/AddTransaction.vue')
+    },
+    {
+      path: '/addCategory',
+      name: 'AddCategory',
+      component: () => import('@/views/AddCategory.vue')
     },
     {
       path: '/modifyUser',

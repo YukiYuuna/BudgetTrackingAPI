@@ -6,23 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="95028216-68b3-4970-b872-65160f817d59" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/ExpenseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/ExpenseController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/IncomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/IncomeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/SecurityController.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/SecurityController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/App.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/models/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/models/user.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/router/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/auth-header.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/auth-header.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-categories-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-categories-service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-transactions-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-transactions-service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/user-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/user-service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/category.module.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/category.module.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/transaction.module.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/transaction.module.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/AddTransaction.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/AddTransaction.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Categories.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Categories.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Profile.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Profile.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Register.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Register.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/ModifyUser.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/ModifyUser.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Transactions.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Transactions.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -108,7 +98,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit5" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5" value="" />
-    <property name="last_opened_file_path" value="$USER_HOME$/my-app/pom.xml" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/expensetrackerapi-ui/src/views" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="project.structure.last.edited" value="Modules" />
@@ -124,6 +114,7 @@
       <recent name="com.rigel.ExpenseTracker.controllers" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\konstantin\IdeaProjects\ExpenseTrackerAPI\expensetrackerapi-ui\src\views" />
       <recent name="C:\Users\konstantin\IdeaProjects\ExpenseTrackerAPI\src\test\resources" />
     </key>
     <key name="CreateTestDialog.Recents.Supers">
@@ -305,6 +296,8 @@
       <workItem from="1652030532956" duration="6659000" />
       <workItem from="1652071557836" duration="5010000" />
       <workItem from="1652113354609" duration="10754000" />
+      <workItem from="1652157723310" duration="823000" />
+      <workItem from="1652330149239" duration="2897000" />
     </task>
     <servers />
   </component>

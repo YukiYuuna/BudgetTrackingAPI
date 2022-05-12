@@ -2,6 +2,15 @@ import axios from 'axios'
 import authHeader from '@/services/auth-header'
 
 const API_URL = 'http://localhost:8080/'
+var headers = {
+  withCredentials: false,
+  headers: {
+    Authorization: authHeader(),
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  }
+}
+
 class ExpenseCategoriesService {
   getAllExpenseCategories () {
     return axios.get(API_URL + 'api/expense/categories', {
@@ -12,7 +21,16 @@ class ExpenseCategoriesService {
   }
 
   createExpenseCategory (expenseCategory) {
-    return axios.post(API_URL + 'api/add/expense/category', { params: { expenseCategory: expenseCategory }, headers: authHeader() })
+    const requestCategory = {
+      categoryName: expenseCategory.categoryName
+    }
+
+    axios.post(API_URL + 'api/add/expense/category', requestCategory, headers
+    ).then(function (response) {
+      console.log(response)
+    }).catch(function (error) {
+      console.log(error)
+    })
   }
 
   modifyExpenseCategory (categoryName, modifiedCategory) {

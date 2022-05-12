@@ -104,7 +104,7 @@ export default {
         data => {
           this.message = data.message
           this.successful = true
-          console.log(data)
+          this.$router.push('/profile')
         },
         error => {
           this.message =
@@ -114,6 +114,7 @@ export default {
           this.successful = false
         }
       )
+      this.$router.push('/profile')
     }
   }
 }

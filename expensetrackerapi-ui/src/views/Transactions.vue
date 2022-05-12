@@ -1,8 +1,7 @@
 <template>
   <div>
     <b-table striped hover :items="transactions"></b-table>
-    <button v-on:click="getAllExpenseTransactions">Load Expense Transactions</button>
-    <button v-on:click="addExpenseTransaction">Add Expense</button>
+    <button v-on:click="addExpenseTransaction">Add Transaction</button>
   </div>
 </template>
 
@@ -23,14 +22,14 @@ export default {
       ]
     }
   },
+  mounted () {
+    ExpenseTransactionsService.getAllExpenseTransactions().then(
+      (response) => {
+        this.transactions = response.data.transactions
+      }
+    )
+  },
   methods: {
-    getAllExpenseTransactions () {
-      ExpenseTransactionsService.getAllExpenseTransactions().then(
-        (response) => {
-          this.transactions = response.data.transactions
-        }
-      )
-    },
     addExpenseTransaction () {
       this.$router.push('/addTransaction')
     }

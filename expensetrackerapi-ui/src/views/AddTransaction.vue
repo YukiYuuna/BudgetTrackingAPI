@@ -83,7 +83,7 @@ export default {
     submitTransaction () {
       this.message = ''
       this.submitted = true
-      this.$store.dispatch('transactions/createTransaction', this.transaction).then(
+      this.$store.dispatch('transactions/createExpenseTransaction', this.transaction).then(
         data => {
           this.message = data.message
           this.successful = true
@@ -97,6 +97,7 @@ export default {
           this.successful = false
         }
       )
+      this.$router.push('/transactions')
     }
   }
 }
