@@ -6,13 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="95028216-68b3-4970-b872-65160f817d59" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/entities/IncomeCategory.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/entities/IncomeCategory.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/router/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-categories-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-categories-service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/category.module.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/category.module.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/income-categories-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/income-categories-service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/income-transactions-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/income-transactions-service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/transaction.module.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/transaction.module.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/AddTransaction.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/AddTransaction.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/AddCategory.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/AddExpenseCategory.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/AddTransaction.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/AddExpenseTransaction.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Categories.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Categories.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/ModifyUser.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/ModifyUser.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Transactions.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Transactions.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -297,7 +299,9 @@
       <workItem from="1652071557836" duration="5010000" />
       <workItem from="1652113354609" duration="10754000" />
       <workItem from="1652157723310" duration="823000" />
-      <workItem from="1652330149239" duration="2897000" />
+      <workItem from="1652330149239" duration="4016000" />
+      <workItem from="1652416399759" duration="7332000" />
+      <workItem from="1652446458958" duration="7144000" />
     </task>
     <servers />
   </component>
@@ -320,15 +324,6 @@
     </option>
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/ExpenseController.java</url>
-          <line>66</line>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest" memberName="request" />

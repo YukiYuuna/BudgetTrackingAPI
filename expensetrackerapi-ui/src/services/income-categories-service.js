@@ -2,14 +2,35 @@ import axios from 'axios'
 import authHeader from '@/services/auth-header'
 
 const API_URL = 'http://localhost:8080/'
-class IncomeCategoriesService {
+var headers = {
+  withCredentials: false,
+  headers: {
+    Authorization: authHeader(),
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  }
+}
 
+class IncomeCategoriesService {
   getAllIncomeCategories () {
-    return axios.get(API_URL + 'api/income/categories', { headers: authHeader() })
+    return axios.get(API_URL + 'api/income/categories', {
+      headers: {
+        Authorization: authHeader()
+      }
+    })
   }
 
   createIncomeCategory (incomeCategory) {
-    return axios.post(API_URL + 'api/add/income/category', { params: { incomeCategory: incomeCategory }, headers: authHeader() })
+    const requestCategory = {
+      categoryName: incomeCategory.categoryName
+    }
+
+    axios.post(API_URL + 'api/add/income/category', requestCategory, headers
+    ).then(function (response) {
+      console.log(response)
+    }).catch(function (error) {
+      console.log(error)
+    })
   }
 
   modifyIncomeCategory (categoryName, modifiedCategory) {

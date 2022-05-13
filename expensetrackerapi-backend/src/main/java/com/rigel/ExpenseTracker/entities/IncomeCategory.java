@@ -22,6 +22,7 @@ public class IncomeCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "income_category_id")
+    @JsonIgnore
     private Long incomeCategoryId;
 
     @Column(name = "category_name")

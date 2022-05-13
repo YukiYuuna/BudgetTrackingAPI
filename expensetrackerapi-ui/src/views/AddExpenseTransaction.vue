@@ -7,7 +7,7 @@
             <label for="date">Choose a date: </label>
             <b-form-datepicker
               id="date"
-              v-model="transaction.date"
+              v-model="expenseTransaction.date"
               class="mb-2"
             ></b-form-datepicker>
           </div>
@@ -20,7 +20,7 @@
             <label for="expenseAmount">Expense Amount: </label>
             <input
               id="expenseAmount"
-              v-model="transaction.expenseAmount"
+              v-model="expenseTransaction.expenseAmount"
               type="number"
               class="form-control"
               style="text-align: center"
@@ -36,8 +36,9 @@
             <label for="categoryName">Category Name: </label>
             <b-form-select
               id="categoryName"
-              v-model="transaction.categoryName"
-              :options="categories"
+              style="text-align: center"
+              v-model="expenseTransaction.categoryName"
+              :options="expenseCategories"
               required
             ></b-form-select>
           </div>
@@ -49,9 +50,10 @@
           <div class="form-group">
             <label for="description">Description: </label>
             <input
-              v-model="transaction.description"
+              v-model="expenseTransaction.description"
               type="text"
               class="form-control"
+              style="text-align: center"
               name="description"
             />
             <div class="form-group">
@@ -71,8 +73,8 @@ import ExpenseTransaction from '@/models/expense-transaction'
 export default {
   data () {
     return {
-      transaction: new ExpenseTransaction('', 0, '', ''),
-      categories: [{ text: 'Select One', value: null }, 'Groceries', 'Travel', 'House', 'Gas', 'Healthcare'],
+      expenseTransaction: new ExpenseTransaction('', 0, '', ''),
+      expenseCategories: [{ text: 'Select One', value: null }, 'Groceries', 'Travel', 'House', 'Gas', 'Healthcare'],
       show: true,
       submitted: false,
       successful: false,
@@ -83,7 +85,7 @@ export default {
     submitTransaction () {
       this.message = ''
       this.submitted = true
-      this.$store.dispatch('transactions/createExpenseTransaction', this.transaction).then(
+      this.$store.dispatch('allTransactions/createExpenseTransaction', this.expenseTransaction).then(
         data => {
           this.message = data.message
           this.successful = true

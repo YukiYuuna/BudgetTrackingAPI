@@ -43,14 +43,24 @@ export const router = new Router({
       component: Transactions
     },
     {
-      path: '/addTransaction',
-      name: 'AddTransaction',
-      component: () => import('@/views/AddTransaction.vue')
+      path: '/addExpenseTransaction',
+      name: 'AddExpenseTransaction',
+      component: () => import('@/views/AddExpenseTransaction.vue')
     },
     {
-      path: '/addCategory',
-      name: 'AddCategory',
-      component: () => import('@/views/AddCategory.vue')
+      path: '/addIncomeTransaction',
+      name: 'AddIncomeTransaction',
+      component: () => import('@/views/AddIncomeTransaction.vue')
+    },
+    {
+      path: '/addExpenseCategory',
+      name: 'AddExpenseCategory',
+      component: () => import('@/views/AddExpenseCategory.vue')
+    },
+    {
+      path: '/addIncomeCategory',
+      name: 'AddIncomeCategory',
+      component: () => import('@/views/AddIncomeCategory.vue')
     },
     {
       path: '/modifyUser',

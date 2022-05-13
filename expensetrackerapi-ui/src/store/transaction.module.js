@@ -1,47 +1,73 @@
+import IncomeTransactionsService from '../services/income-transactions-service'
 import ExpenseTransactionsService from '../services/expense-transactions-service'
 
-export const transactions = {
+export const allTransactions = {
   namespaced: true,
   state: {
-    transaction: {
+    expenseTransaction: {
       date: '',
       expenseAmount: 0,
+      categoryName: '',
+      description: ''
+    },
+    incomeTransaction: {
+      date: '',
       incomeAmount: 0,
       categoryName: '',
       description: ''
     }
   },
   mutations: {
-    creationSucceeded (state) {
-      state.transaction.date = ''
-      state.transaction.expenseAmount = 0
-      state.transaction.incomeAmount = 0
-      state.transaction.categoryName = ''
-      state.transaction.description = ''
+    expenseCreationSucceeded (state) {
+      state.expenseTransaction.date = ''
+      state.expenseTransaction.expenseAmount = 0
+      state.expenseTransaction.categoryName = ''
+      state.expenseTransaction.description = ''
     },
-    creationFailed (state) {
-      state.transaction.date = ''
-      state.transaction.expenseAmount = 0
-      state.transaction.incomeAmount = 0
-      state.transaction.categoryName = ''
-      state.transaction.description = ''
+    expenseCreationFailed (state) {
+      state.expenseTransaction.date = ''
+      state.expenseTransaction.expenseAmount = 0
+      state.expenseTransaction.categoryName = ''
+      state.expenseTransaction.description = ''
+    },
+    incomeCreationSucceeded (state) {
+      state.incomeTransaction.date = ''
+      state.incomeTransaction.incomeAmount = 0
+      state.incomeTransaction.categoryName = ''
+      state.incomeTransaction.description = ''
+    },
+    incomeCreationFailed (state) {
+      state.incomeTransaction.date = ''
+      state.incomeTransaction.incomeAmount = 0
+      state.incomeTransaction.categoryName = ''
+      state.incomeTransaction.description = ''
     }
-
   },
   actions: {
-    createExpenseTransaction ({ commit }, transaction) {
-      ExpenseTransactionsService.createExpenseTransaction(transaction, () =>
-        transaction => {
-          commit('creationSucceeded')
-          return Promise.resolve(transaction)
+    createExpenseTransaction ({ commit }, expenseTransaction) {
+      ExpenseTransactionsService.createExpenseTransaction(expenseTransaction, () =>
+        expenseTransaction => {
+          commit('expenseCreationSucceeded')
+          return Promise.resolve(expenseTransaction)
         },
       error => {
-        commit('creationFailed')
+        commit('expenseCreationFailed')
+        return Promise.reject(error)
+      }
+      )
+    },
+    createIncomeTransaction ({ commit }, incomeTransaction) {
+      IncomeTransactionsService.createIncomeTransaction(incomeTransaction, () =>
+        incomeTransaction => {
+          commit('incomeCreationSucceeded')
+          return Promise.resolve(incomeTransaction)
+        },
+      error => {
+        commit('incomeCreationFailed')
         return Promise.reject(error)
       }
       )
     }
-
   },
   getters: {}
 }
