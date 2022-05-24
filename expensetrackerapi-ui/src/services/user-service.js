@@ -13,40 +13,31 @@ var headers = {
 
 class UserService {
   getUserInfo () {
-    return axios.get(API_URL + 'api/user', {
-      headers: {
-        Authorization: authHeader()
-      }
+    return axios.get(API_URL + 'api/user', headers)
+      .then(response => {
+      return response.data
     })
   }
 
-  getUserById (id) {
-    return axios.get(API_URL + 'api/user/id', { params: { id: id }, headers: authHeader() })
-  }
-
-  getAllUsers () {
-    return axios.get(API_URL + 'api/users', { headers: authHeader() })
-  }
-
-  createNewRole (roleName) {
-    return axios.post(API_URL + 'api/user/save/role', { params: { roleName: roleName }, headers: authHeader() })
-  }
-
-  addRoleToUser (roleName) {
-    return axios.post(API_URL + 'api/user/add/role', { params: { roleName: roleName }, headers: authHeader() })
-  }
-
   modifyUserInformation (user) {
-    return axios.put(API_URL + 'api/user/modify', user, headers
-    ).then(function (response) {
-      console.log(response)
-    }).catch(function (error) {
-      console.log(error)
+    const requestUser = {
+      username: user.username,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      currentBudget: user.currentBudget
+    }
+    return axios.put(API_URL + 'api/user/modify', requestUser, headers
+    ).then(response => {
+      return response.data
     })
   }
 
   deleteUserFromApp () {
-    return axios.delete(API_URL + 'api/user/delete', { headers: authHeader() })
+    return axios.delete(API_URL + 'api/user/delete', headers
+    ).then(response => {
+      return response.data
+    })
   }
 }
 

@@ -13,10 +13,9 @@ var headers = {
 
 class ExpenseCategoriesService {
   getAllExpenseCategories () {
-    return axios.get(API_URL + 'api/expense/categories', {
-      headers: {
-        Authorization: authHeader()
-      }
+    return axios.get(API_URL + 'api/expense/categories', headers
+    ).then(response => {
+      return response.data
     })
   }
 
@@ -25,20 +24,25 @@ class ExpenseCategoriesService {
       categoryName: expenseCategory.categoryName
     }
 
-    axios.post(API_URL + 'api/add/expense/category', requestCategory, headers
-    ).then(function (response) {
-      console.log(response)
-    }).catch(function (error) {
-      console.log(error)
+    return axios.post(API_URL + 'api/add/expense/category', requestCategory, headers
+    ).then(response => {
+      return response.data
     })
   }
 
   modifyExpenseCategory (categoryName, modifiedCategory) {
-    return axios.put(API_URL + 'api/modify/expense/category', { params: { categoryName: categoryName, modifiedCategory: modifiedCategory }, headers: authHeader() })
+    const requestCategory = {
+      categoryName: modifiedCategory.categoryName
+    }
+
+    return axios.put(API_URL + 'api/modify/expense/category' + categoryName, requestCategory, headers
+    ).then(response => {
+        return response.data
+    })
   }
 
   deleteExpenseCategory (categoryName) {
-    return axios.delete(API_URL + 'api/delete/expense/category', { params: { categoryName: categoryName }, headers: authHeader() })
+    return axios.delete(API_URL + 'api/delete/expense/category' + categoryName , headers)
   }
 }
 

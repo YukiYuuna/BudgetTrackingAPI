@@ -3,12 +3,12 @@ import axios from 'axios'
 const API_URL = 'http://localhost:8080/'
 
 class AuthService {
-  login (user) {
+  login (username, password) {
     return axios
       .get(API_URL + 'api/login', {
         params: {
-          username: user.username,
-          password: user.password
+          username: username,
+          password: password
         }
       })
       .then(response => {
