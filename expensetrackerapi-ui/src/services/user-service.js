@@ -15,8 +15,8 @@ class UserService {
   getUserInfo () {
     return axios.get(API_URL + 'api/user', headers)
       .then(response => {
-      return response.data
-    })
+        return response.data
+      })
   }
 
   modifyUserInformation (user) {

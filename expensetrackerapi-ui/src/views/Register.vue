@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-content>
+    <v-main>
       <v-container fill-height>
         <v-layout align-center justify-center>
           <v-flex xs12 sm8 md4>
@@ -13,7 +13,7 @@
                   <v-text-field
                     v-model="registerForm.username"
                     placeholder="Username"
-                    :rules="[required('Username'), email('Username')]"
+                    :rules="[required('Username')]"
                     dense
                   ></v-text-field>
                   <v-text-field
@@ -82,13 +82,12 @@
           </v-flex>
         </v-layout>
       </v-container>
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-import { REGISTER } from '@/store/_actiontypes'
+import { mapState } from 'vuex'
 import validations from '@/helpers/validations'
 import router from '@/router/index'
 
@@ -113,20 +112,17 @@ export default {
     }
   },
   computed: {
-    ...mapState ({
-      loading: state => state.loader.loading
-    })
+    ...mapState({ loading: state => state.loader.loading })
   },
   methods: {
     handleRegisterSubmit () {
       if (!this.$refs.registerForm.validate()) return
 
       const user = this.registerForm
-      this.$store.dispatch('account/register', {
-        user: user })
+      this.$store.dispatch('account/register', user)
     },
     handleLoginClick () {
-     router.push('/login')
+      router.push('/login')
     }
   }
 }

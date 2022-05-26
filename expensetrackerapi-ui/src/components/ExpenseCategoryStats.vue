@@ -62,23 +62,23 @@
   </v-container>
 </template>
 <script>
-import Api from "@/services/api";
-import PieChart from "@/components/Charts/PieChart";
-import forEach from "lodash/forEach";
-import { mapState } from "vuex";
+import Api from '@/services/api'
+import PieChart from '@/components/Charts/PieChart'
+import forEach from 'lodash/forEach'
+import { mapState } from 'vuex'
 
 export default {
   props: {
     years: {
       type: Array,
-      default() {
-        return [];
+      default () {
+        return []
       }
     },
     months: {
       type: Array,
-      default() {
-        return [];
+      default () {
+        return []
       }
     },
     theme: {
@@ -88,31 +88,31 @@ export default {
   components: {
     PieChart
   },
-  mounted() {
-    this.loaddata(this.selectedYear, this.selectedMonth);
+  mounted () {
+    this.loaddata(this.selectedYear, this.selectedMonth)
   },
   methods: {
-    loaddata(year, month) {
+    loaddata (year, month) {
       this.loadyearlydata(year, month).then(() => {
-        this.loadchart();
-      });
+        this.loadchart()
+      })
     },
-    loadyearlydata(year, month) {
+    loadyearlydata (year, month) {
       return Api.get(
         `/statistics/getcategoriesbreakdownforyear/${this.selectedYear}/${this.selectedMonth}`
       ).then(response => {
-        this.categoryBreakdown = response.data;
-      });
+        this.categoryBreakdown = response.data
+      })
     },
-    loadchart() {
-      this.categoryChartData = [];
+    loadchart () {
+      this.categoryChartData = []
       forEach(this.categoryBreakdown, (value, key) => {
         this.categoryChartData.push({
           value: value.spent.toFixed(2),
           name: value.name,
           itemStyle: { color: value.colour }
-        });
-      });
+        })
+      })
     }
   },
   computed: {
@@ -122,14 +122,14 @@ export default {
   },
   data: () => ({
     selectedYear: new Date().getFullYear(),
-    selectedMonth: "",
+    selectedMonth: '',
     categoryBreakdown: [],
     categoryChartData: [],
     headers: [
-      { text: "Category", value: "name" },
-      { text: "Budget (cumulative)", value: "budget" },
-      { text: "Spent", value: "spent" }
+      { text: 'Category', value: 'name' },
+      { text: 'Budget (cumulative)', value: 'budget' },
+      { text: 'Spent', value: 'spent' }
     ]
   })
-};
+}
 </script>

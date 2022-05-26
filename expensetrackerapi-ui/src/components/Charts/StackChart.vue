@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import map from "lodash/map";
+import map from 'lodash/map'
 
 export default {
   props: {
@@ -16,21 +16,21 @@ export default {
     },
     seriesData: {
       type: Object,
-      default() {
+      default () {
         return {
           xAxisData: [],
           legendData: [],
           data: []
-        };
+        }
       }
     }
   },
   computed: {
-    options() {
+    options () {
       return {
-        backgroundColor: this.$vuetify.theme.dark ? "#424242" : "",
+        backgroundColor: this.$vuetify.theme.dark ? '#424242' : '',
         textStyle: {
-          fontFamily: "Nunito"
+          fontFamily: 'Nunito'
         },
         grid: {
           top: 60,
@@ -39,11 +39,11 @@ export default {
           right: 10
         },
         xAxis: {
-          type: "category",
+          type: 'category',
           data: this.seriesData.xAxisData // ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"]
         },
         yAxis: {
-          type: "value",
+          type: 'value',
           splitLine: {
             show: false
           }
@@ -55,13 +55,13 @@ export default {
         //     data: [320, 302, 301, 334, 390, 330, 320]
         //   }]
         tooltip: {
-          trigger: "axis",
+          trigger: 'axis',
           textStyle: {
             fontSize: 12,
-            fontWeight: "normal"
+            fontWeight: 'normal'
           },
           axisPointer: {
-            type: "shadow"
+            type: 'shadow'
           }
         },
         legend: {
@@ -70,19 +70,19 @@ export default {
               ? this.seriesData.legendData
               : [] // ["General", "Travel", "Shopping", "Utilities", "Misc"]
         }
-      };
+      }
     }
   },
   methods: {
-    getSeries() {
-      let yy =
+    getSeries () {
+      const yy =
         this.seriesData.data &&
         this.seriesData.data.map(x => {
           return {
             name: x.name,
-            type: "bar",
-            stack: "stack",
-            barWidth: "45%",
+            type: 'bar',
+            stack: 'stack',
+            barWidth: '45%',
             label: {
               normal: {
                 show: false
@@ -90,20 +90,20 @@ export default {
             },
             itemStyle: { color: x.color },
             data: x.data
-          };
-        });
-      return yy;
+          }
+        })
+      return yy
     }
   },
-  data() {
+  data () {
     return {
       style: {
-        height: this.height + "%",
-        width: "100%"
+        height: this.height + '%',
+        width: '100%'
       }
-    };
+    }
   }
-};
+}
 </script>
 
 <style>

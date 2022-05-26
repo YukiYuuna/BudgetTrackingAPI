@@ -15,6 +15,7 @@ class ExpenseCategoriesService {
   getAllExpenseCategories () {
     return axios.get(API_URL + 'api/expense/categories', headers
     ).then(response => {
+      console.log(response.data.totalCategories)
       return response.data
     })
   }
@@ -37,12 +38,12 @@ class ExpenseCategoriesService {
 
     return axios.put(API_URL + 'api/modify/expense/category' + categoryName, requestCategory, headers
     ).then(response => {
-        return response.data
+      return response.data
     })
   }
 
   deleteExpenseCategory (categoryName) {
-    return axios.delete(API_URL + 'api/delete/expense/category' + categoryName , headers)
+    return axios.delete(API_URL + 'api/delete/expense/category' + categoryName, headers)
   }
 }
 

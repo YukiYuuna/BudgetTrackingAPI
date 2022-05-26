@@ -12,7 +12,7 @@ var headers = {
 }
 
 class ExpenseTransactionsService {
-  getAllExpenseTransactions (currentPage, perPage) {
+  async getAllExpenseTransactions (currentPage, perPage) {
     return axios.get(API_URL + 'api/expense/transactions', headers
     ).then(response => {
       return response.data
@@ -40,7 +40,7 @@ class ExpenseTransactionsService {
     })
   }
 
-  createExpenseTransaction (transaction) {
+  async createExpenseTransaction (transaction) {
     const requestTransaction = {
       date: transaction.date,
       expenseAmount: Number(transaction.expenseAmount),
@@ -50,8 +50,8 @@ class ExpenseTransactionsService {
 
     return axios.post(API_URL + 'api/add/expense/transaction', requestTransaction, headers)
       .then(response => {
-      return response.data
-    })
+        return response.data
+      })
   }
 
   modifyExpenseTransaction (id, modifiedTransaction) {
@@ -63,8 +63,8 @@ class ExpenseTransactionsService {
     }
     return axios.put(API_URL + 'api/modify/expense/transaction/' + id, requestTransaction, headers)
       .then(response => {
-      return response.data
-    })
+        return response.data
+      })
   }
 
   deleteExpenseTransactionByCategory (categoryName) {

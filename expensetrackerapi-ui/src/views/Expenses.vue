@@ -3,7 +3,7 @@
     <v-container>
       <v-layout row>
         <v-flex xs12>
-          <v-data-table :headers="headers" :items="expenseTransactions" sort-by="date" class="elevation-1">
+          <v-data-table :headers=headers :items=expenseTransactions sort-by='date' class="elevation-1">
             <template v-slot:top>
               <div class="d-flex align-center pa-4">
                 <span class="blue--text font-weight-medium">Expenses</span>
@@ -51,33 +51,34 @@ import ExpenseForm from '@/components/ExpenseForm'
 
 export default {
   components: { ExpenseForm },
-  data: () => ({
-    loading: false,
-    dialog: false,
-    headers: [
-      { text: 'Id', value: 'id', align: ' d-none' },
-      { text: 'CategoryId', value: 'categoryId', align: ' d-none' },
-      { text: 'Value', value: 'value' },
-      { text: 'Date', value: 'date' },
-      { text: 'Category', value: 'category' },
-      { text: 'Description', value: 'comments' },
-      { text: 'Actions', value: 'action', sortable: false, width: 50 }
-    ],
-    editedExpenseTransaction: {
-      expenseTransactionId: 0,
-      date: '',
-      value: '',
-      categoryName: '',
-      comments: ''
-    },
-    defaultExpenseTransaction: {
-      expenseTransactionId: 0,
-      date: '',
-      value: '',
-      categoryName: '',
-      comments: ''
+  data () {
+    return {
+      loading: false,
+      dialog: false,
+      headers: [
+        { text: 'Id', value: 'id', align: ' d-none' },
+        { text: 'Value', value: 'expenseAmount' },
+        { text: 'Date', value: 'date' },
+        { text: 'Category', value: 'category' },
+        { text: 'Description', value: 'description' },
+        { text: 'Actions', value: 'action', sortable: false, width: 50 }
+      ],
+      editedExpenseTransaction: {
+        expenseTransactionId: 0,
+        date: '',
+        expenseAmount: '',
+        categoryName: '',
+        description: ''
+      },
+      defaultExpenseTransaction: {
+        expenseTransactionId: 0,
+        date: '',
+        expenseAmount: '',
+        categoryName: '',
+        description: ''
+      }
     }
-  }),
+  },
   computed: {
     ...mapState({
       expenseTransactions: state => state.expenseTransactions.expenseTransactions,
@@ -101,8 +102,7 @@ export default {
 
     deleteExpense (expenseTransaction) {
       confirm('Are you sure you want to delete this item?') &&
-      this.$store.dispatch('expenseTransactions/deleteExpenseTransaction', {
-        expenseTransactionId: expenseTransaction.expenseTransactionId })
+      this.$store.dispatch('expenseTransactions/deleteExpenseTransaction', { expenseTransactionId: expenseTransaction.expenseTransactionId })
     },
 
     close () {
@@ -112,7 +112,7 @@ export default {
     },
 
     saveExpense () {
-      var editedExpenseTransaction = this.editedExpenseTransaction
+      const editedExpenseTransaction = this.editedExpenseTransaction
       this.loading = true
       if (editedExpenseTransaction.expenseTransactionId === 0) {
         this.$store.dispatch('expenseTransactions/createExpenseTransaction', {

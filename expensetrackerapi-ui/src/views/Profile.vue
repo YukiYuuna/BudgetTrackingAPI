@@ -68,14 +68,14 @@ import validations from '@/helpers/validations'
 
 export default {
   computed: {
-    ...mapState ({
+    ...mapState({
       user: state => state.account.user
     })
   },
   methods: {
     handleSubmit () {
       this.loading = true
-      this.$store.dispatch('account/modifyUserInfo',this.profile).finally (() => {
+      this.$store.dispatch('account/modifyUserInfo', this.profile).finally(() => {
         this.loading = false
       })
     }

@@ -21,14 +21,14 @@ export default {
       alert: state => state.alert.alert
     })
   },
-  data() {
-    return {};
+  data () {
+    return {}
   }
-};
+}
 </script>
 
 <style lang="scss">
 .container {
-  max-width: 1185px !important
+  max-width: 1185px !important;
 }
 </style>

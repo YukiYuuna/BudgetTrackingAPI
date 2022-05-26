@@ -28,17 +28,15 @@
       <v-spacer class="hidden-md-and-up"></v-spacer>
       <v-toolbar-title class="text-uppercase">
         <router-link to="/dashboard" tag="span" style="cursor: pointer" class="text-h5">
-          <!-- <span class="grey--text text--lighten-1">Vue</span> -->
           <span class="font-weight-bold">{{ systemName }}</span>
         </router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <!-- menu -->
       <v-menu offset-y>
         <template v-slot:activator="{ on }" class="ml-4">
           <div v-on="on" class="d-flex align-center">
             <v-avatar size="30px" color="blue lighten-2" class="ml-2" style="cursor: pointer">
-              <span class="white--text">{{nameInitials}}</span>
+              <span class="white--text">{{ nameInitials }}</span>
             </v-avatar>
             <div class="hidden-sm-and-down">
               <v-btn text class="pa-1">
@@ -78,38 +76,38 @@
 </template>
 
 <script>
-import ProgressBar from "@/components/TheProgressBar";
-import { mapState, mapGetters } from "vuex";
+import ProgressBar from '@/components/TheProgressBar'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   components: {
     ProgressBar
   },
   computed: {
-    ...mapGetters("account", ["nameInitials"]),
+    ...mapGetters('account', ['nameInitials']),
     ...mapState({
       fullName: state =>
-        state.account.user ? state.account.user.fullName : "",
+        state.account.user ? state.account.user.firstName + ' ' + state.account.user.lastName : '',
       systemName: state =>
-        state.account.user ? state.account.user.systemName : ""
+        state.account.user ? state.account.user.username : ''
     })
   },
-  data() {
+  data () {
     return {
       sidebar: false,
       navItems: [
-        { icon: "dashboard", text: "Dashboard", route: "/dashboard" },
-        { icon: "shopping_cart", text: "Expenses", route: "/expenses" },
-        { icon: "insert_chart_outlined", text: "Stats", route: "/stats" },
-        { icon: "settings", text: "Settings", route: "/settings" }
+        { icon: 'dashboard', text: 'Dashboard', route: '/dashboard' },
+        { icon: 'shopping_cart', text: 'Expenses', route: '/expenses' },
+        { icon: 'insert_chart_outlined', text: 'Stats', route: '/stats' },
+        { icon: 'settings', text: 'Settings', route: '/settings' }
       ],
       menuItems: [
-        { icon: "perm_identity", text: "Profile", route: "/profile" },
-        { icon: "exit_to_app", text: "Sign Out", route: "/login" }
+        { icon: 'perm_identity', text: 'Profile', route: '/profile' },
+        { icon: 'exit_to_app', text: 'Sign Out', route: '/login' }
       ]
-    };
+    }
   }
-};
+}
 </script>
 
 <style scoped lang="scss">

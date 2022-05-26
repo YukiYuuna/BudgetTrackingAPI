@@ -61,7 +61,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import ExpenseCategories from '@/components/ExpenseCategories'
 
 export default {
@@ -70,7 +69,7 @@ export default {
   },
   data: () => ({
     loading: false,
-    settings: {},
+    settings: {}
   })
 }
 </script>

@@ -10,20 +10,19 @@ import store from '@/store/index.js'
 
 Vue.use(Router)
 
-const router = new Router({
+export const router = new Router({
   mode: 'history',
   routes: [
     {
-      path: '/', component: HomePage,
+      path: '/',
+      component: HomePage,
       children: [
-        //HomePage's <router-view>
-        { path: '/dashboard', component: Dashboard },
         { path: '/expenses', component: Expenses },
         { path: '/settings', component: Settings },
-        { path: '/profile', component: Profile },
-        { path: '/', component: Dashboard },
+        { path: '/profile', component: Profile }
       ]
     },
+    { path: '/expenses', component: Expenses },
     { path: '/login', component: Login },
     { path: '/register', component: Register },
     { path: '*', redirect: '/' }
@@ -38,8 +37,8 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
-  const publicPages = ['/login', '/register'];
-  const authRequired = !publicPages.includes(to.path);
+  const publicPages = ['/login', '/register']
+  const authRequired = !publicPages.includes(to.path)
   const loggedIn = store.state.account.user !== undefined && true
 
   if (authRequired && !loggedIn) {

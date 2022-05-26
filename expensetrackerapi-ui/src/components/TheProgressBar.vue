@@ -9,14 +9,14 @@
   ></v-progress-linear>
 </template>
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex'
 export default {
   computed: {
     ...mapState({
       loading: state => state.loader.loading
     })
   }
-};
+}
 </script>
 <style scoped>
 .singlebar {

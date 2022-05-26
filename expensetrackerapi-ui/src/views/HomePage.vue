@@ -15,38 +15,28 @@
 <script>
 import { mapState } from 'vuex'
 import Navbar from '@/components/TheNavbar'
-import {
-  LOAD_EXPENSE_TYPES,
-  LOAD_CATEGORIES,
-  LOAD_CATEGORIES_BREAKDOWN,
-  LOAD_EXPENSES_BREAKDOWN,
-  LOAD_EXPENSES,
-  LOAD_CURRENCIES
-} from '@/store/_actiontypes'
 export default {
   components: {
     Navbar
   },
   mounted () {
-    this.$store.dispatch(`expenseTypes/${LOAD_EXPENSE_TYPES}`)
-    this.$store.dispatch(`expenseCategories/${LOAD_CATEGORIES}`)
-    this.$store.dispatch(`statistics/${LOAD_CATEGORIES_BREAKDOWN}`)
-    this.$store.dispatch(`statistics/${LOAD_EXPENSES_BREAKDOWN}`)
-    this.$store.dispatch(`expenses/${LOAD_EXPENSES}`)
-    this.$store.dispatch(`account/${LOAD_CURRENCIES}`)
+    this.$store.dispatch('expenseTransactions/loadExpenseTransactions')
+    this.$store.dispatch('expenseCategories/loadExpenseCategories')
+    this.$store.dispatch('account/getUserInfo')
     this.$vuetify.theme.dark = this.theme === 'dark'
   },
   computed: {
-    ...mapState ({
-      theme: state => (state.account.user ? state.account.user.theme : '')
+    ...mapState({
+      theme: state => (state.account.user ? state.account.user.theme : 'light')
     })
   },
   watch: {
-    theme (newTheme, oldTheme) {
+    theme (newTheme) {
       this.$vuetify.theme.dark = newTheme === 'dark'
     }
   },
   data: () => ({
+    //
   })
 }
 </script>

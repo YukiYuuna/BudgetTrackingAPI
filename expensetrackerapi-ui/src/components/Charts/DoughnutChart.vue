@@ -11,7 +11,7 @@ export default {
     },
     titleText: {
       type: String,
-      default: ""
+      default: ''
     },
     titleFontSize: {
       type: Number,
@@ -54,49 +54,49 @@ export default {
     },
     seriesData: {
       type: Array,
-      default() {
+      default () {
         return [
-          { value: 310, name: "Spent", itemStyle: { color: "#2779bd" } },
-          { value: 234, name: "Remaining", itemStyle: { color: "#BDBDBD" } }
-        ];
+          { value: 310, name: 'Spent', itemStyle: { color: '#2779bd' } },
+          { value: 234, name: 'Remaining', itemStyle: { color: '#BDBDBD' } }
+        ]
       }
     }
   },
   computed: {
-    options() {
+    options () {
       return {
-        backgroundColor: this.$vuetify.theme.dark ? "#424242" : "",
+        backgroundColor: this.$vuetify.theme.dark ? '#424242' : '',
         textStyle: {
-          fontFamily: "Nunito"
+          fontFamily: 'Nunito'
         },
         series: [
           {
-            name: "Category",
-            type: "pie",
-            radius: [this.pieRadiusInner + "%", this.pieRadiusOuter + "%"],
-            center: [this.centerX + "%", this.centerY + "%"],
+            name: 'Category',
+            type: 'pie',
+            radius: [this.pieRadiusInner + '%', this.pieRadiusOuter + '%'],
+            center: [this.centerX + '%', this.centerY + '%'],
             data: this.seriesData,
             itemStyle: {
               emphasis: {
                 show: true,
                 shadowBlur: 10,
                 shadowOffsetX: 0,
-                shadowColor: "rgba(0, 0, 0, 0.5)"
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
               }
             },
             label: {
               normal: {
                 show: this.showLabel,
-                fontSize: "14",
-                position: this.showLabel ? "outside" : "center"
+                fontSize: '14',
+                position: this.showLabel ? 'outside' : 'center'
               },
               emphasis: {
                 show: !this.showLabel,
                 textStyle: {
-                  fontSize: "12",
-                  fontWeight: "bold"
+                  fontSize: '12',
+                  fontWeight: 'bold'
                 },
-                formatter: "{b}\n{c}\n({d}%)"
+                formatter: '{b}\n{c}\n({d}%)'
               }
             },
             labelLine: {
@@ -108,40 +108,40 @@ export default {
         ],
         title: {
           text: this.titleText,
-          x: "center",
-          top: "10",
+          x: 'center',
+          top: '10',
           show: this.showTitle,
           textStyle: {
             fontSize: this.titleFontSize,
-            fontWeight: "normal"
+            fontWeight: 'normal'
           }
         },
         legend: {
           show: false,
-          orient: "vertical",
-          left: "left"
+          orient: 'vertical',
+          left: 'left'
         },
         tooltip: {
           show: this.showTooltip,
-          trigger: "item",
-          formatter: "{b} : {c} <br/>({d}%)",
+          trigger: 'item',
+          formatter: '{b} : {c} <br/>({d}%)',
           textStyle: {
             fontSize: 12,
-            fontWeight: "normal"
+            fontWeight: 'normal'
           }
         }
-      };
+      }
     }
   },
-  data() {
+  data () {
     return {
       style: {
-        height: this.height + "%",
-        width: "100%"
+        height: this.height + '%',
+        width: '100%'
       }
-    };
+    }
   }
-};
+}
 </script>
 
 <style>

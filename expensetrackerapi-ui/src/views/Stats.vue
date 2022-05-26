@@ -63,44 +63,44 @@ import { mapState, mapGetters } from 'vuex'
 export default {
   components: { ExpensesStats, ExpenseCategoryStats, ExpenseTypeStats },
   methods: {
-    getYears() {
-      var items = [];
-      var startYear = new Date().getFullYear() - 4;
+    getYears () {
+      var items = []
+      var startYear = new Date().getFullYear() - 4
       for (var i = 0; i < 7; i++) {
-        items.push(startYear++);
+        items.push(startYear++)
       }
-      return items;
+      return items
     }
   },
   computed: {
-    ...mapGetters("expenses", [
-      "overallSpent",
-      "mostSpentBy",
-      "mostSpentOn",
-      "spentThisYear"
+    ...mapGetters('expenses', [
+      'overallSpent',
+      'mostSpentBy',
+      'mostSpentOn',
+      'spentThisYear'
     ]),
     ...mapState({
-      theme: state => (state.account.user ? state.account.user.theme : "")
+      theme: state => (state.account.user ? state.account.user.theme : '')
     })
   },
   data: () => ({
     months: [
-      { name: "All", value: "" },
-      { name: "January", value: 1 },
-      { name: "February", value: 2 },
-      { name: "March", value: 3 },
-      { name: "April", value: 4 },
-      { name: "May", value: 5 },
-      { name: "June", value: 6 },
-      { name: "July", value: 7 },
-      { name: "August", value: 8 },
-      { name: "September", value: 9 },
-      { name: "October", value: 10 },
-      { name: "November", value: 11 },
-      { name: "December", value: 12 }
+      { name: 'All', value: '' },
+      { name: 'January', value: 1 },
+      { name: 'February', value: 2 },
+      { name: 'March', value: 3 },
+      { name: 'April', value: 4 },
+      { name: 'May', value: 5 },
+      { name: 'June', value: 6 },
+      { name: 'July', value: 7 },
+      { name: 'August', value: 8 },
+      { name: 'September', value: 9 },
+      { name: 'October', value: 10 },
+      { name: 'November', value: 11 },
+      { name: 'December', value: 12 }
     ]
   })
-};
+}
 </script>
 
 <style scoped>

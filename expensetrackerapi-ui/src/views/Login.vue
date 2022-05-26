@@ -13,7 +13,7 @@
                   <v-text-field
                     v-model="loginForm.username"
                     placeholder="Username"
-                    :rules="[required('Username'), email('Username')]"
+                    :rules="[required('Username')]"
                     dense
                   ></v-text-field>
                   <v-text-field
@@ -40,7 +40,7 @@
                   small
                   outlined
                   class="primary--text"
-                  @click="handleLoginSubmit"
+                  @click="handleLoginSubmit()"
                   :loading="loading"
                 >Login</v-btn>
               </v-card-actions>
@@ -58,7 +58,7 @@ import validations from '@/helpers/validations'
 import router from '@/router/index'
 
 export default {
-  data() {
+  data () {
     return {
       loginForm: {
         username: '',
@@ -69,7 +69,7 @@ export default {
     }
   },
   computed: {
-    ...mapState ({
+    ...mapState({
       loading: state => state.loader.loading
     })
   },
@@ -77,18 +77,18 @@ export default {
     // reset theme
     this.$vuetify.theme.dark = false
     // reset login status
-    this.$store.dispatch('account/logout');
+    this.$store.dispatch('account/logout')
   },
   methods: {
     handleLoginSubmit () {
       if (!this.$refs.loginForm.validate()) return
 
-      const { username, password } = this.loginForm
-      if (username && password) {
-        this.$store.dispatch('account/login', {
-            username: username,
-            password: password
-          })
+      if (this.loginForm.username && this.loginForm.password) {
+        this.$store.dispatch('account/login', this.loginForm).then(
+          () => {
+            this.$router.push('/profile')
+          }
+        )
       }
     },
     handleRegisterClick () {

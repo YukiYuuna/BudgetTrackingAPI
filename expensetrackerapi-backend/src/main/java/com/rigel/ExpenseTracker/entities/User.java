@@ -4,15 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.*;
 import java.util.*;
 
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.CascadeType.DETACH;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Entity
 @Table(name="users")

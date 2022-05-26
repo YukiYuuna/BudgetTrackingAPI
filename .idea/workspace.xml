@@ -5,60 +5,49 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="95028216-68b3-4970-b872-65160f817d59" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/Charts/BarChart.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/Charts/DoughnutChart.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/Charts/PieChart.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/Charts/StackChart.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/ExpenseCategories.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/ExpenseCategoryStats.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/ExpenseForm.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/ExpensesStats.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/TheNavbar.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/TheProgressBar.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/account.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/alert.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/expensecategories.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/loader.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Expenses.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/HomePage.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Settings.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Stats.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/entities/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/repositories/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/repositories/UserRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/public/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/App.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/assets/logo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/HelloWorld.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/Charts/BarChart.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/Charts/BarChart.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/Charts/DoughnutChart.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/Charts/DoughnutChart.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/Charts/PieChart.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/Charts/PieChart.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/Charts/StackChart.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/Charts/StackChart.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/ExpenseCategories.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/ExpenseCategories.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/ExpenseCategoryStats.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/ExpenseCategoryStats.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/ExpenseForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/ExpenseForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/ExpensesStats.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/ExpensesStats.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/TheNavbar.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/TheNavbar.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/TheProgressBar.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/components/TheProgressBar.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/helpers/validations.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/helpers/validations.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/models/expense-category.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/models/expense-transaction.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/models/income-category.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/models/income-transaction.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/models/user.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/plugins/vuetify.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/plugins/vuetify.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/sass/variables.scss" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/sass/variables.scss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/auth-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/auth-service.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-categories-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-categories-service.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-transactions-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-transactions-service.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/user-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/services/user-service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/auth.module.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/category.module.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/_actiontypes.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/_actiontypes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/_mutationtypes.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/_mutationtypes.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/transaction.module.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/user.module.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/AddExpenseCategory.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/AddExpenseTransaction.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/AddIncomeCategory.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/AddIncomeTransaction.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Admin.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Categories.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Home.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/account.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/account.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/alert.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/alert.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/expensecategories.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/expensecategories.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/expensetransactions.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/expensetransactions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/loader.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/loader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/statistics.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/statistics.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Expenses.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Expenses.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/HomePage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/HomePage.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Login.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/ModifyUser.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/NormalUser.vue" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Profile.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Profile.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Register.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Register.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Spending.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Transactions.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Settings.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Settings.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Stats.vue" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/src/views/Stats.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/vue.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/vue.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -345,6 +334,10 @@
       <workItem from="1652330149239" duration="4016000" />
       <workItem from="1652416399759" duration="7332000" />
       <workItem from="1652446458958" duration="7144000" />
+      <workItem from="1653452957737" duration="501000" />
+      <workItem from="1653489140210" duration="4644000" />
+      <workItem from="1653510359926" duration="3269000" />
+      <workItem from="1653539481848" duration="7066000" />
     </task>
     <servers />
   </component>
@@ -367,6 +360,20 @@
     </option>
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/security/CustomAuthenticationFilter.java</url>
+          <line>44</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/security/CustomAuthenticationFilter.java</url>
+          <line>49</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest" memberName="request" />

@@ -7,7 +7,7 @@
           <v-autocomplete
             v-model="expenseTransaction.categoryName"
             :items="expenseCategories"
-            item-text="name"
+            item-text="categoryName"
             item-value="categoryName"
             placeholder="Category"
             class="ma-0 pa-0 form-label"
@@ -36,7 +36,7 @@
       <v-row>
         <v-col cols="12" md="6" class="py-0 ma-0">
           <v-text-field
-            v-model="expenseTransaction.value"
+            v-model="expenseTransaction.expenseAmount"
             placeholder="Amount"
             required
             class="ma-0 pa-0 form-label"
@@ -46,7 +46,7 @@
         </v-col>
       </v-row>
       <v-textarea
-        v-model="expenseTransaction.comments"
+        v-model="expenseTransaction.description"
         placeholder="Description"
         :auto-grow="true"
         required
@@ -83,6 +83,9 @@ export default {
     expenseTransaction: {
       type: Object
     },
+    expenseCategory: {
+      type: Object
+    },
     showCloseButton: {
       type: Boolean,
       default: false
@@ -97,21 +100,21 @@ export default {
       type: Boolean
     }
   },
-  data() {
+  data () {
     return {
       dateMenu: false,
       ...validations
-    };
+    }
   },
   computed: {
     ...mapState('expenseCategories', ['expenseCategories'])
   },
   methods: {
-    reset() {
-      this.$refs.expenseform.reset();
+    reset () {
+      this.$refs.expenseform.reset()
     }
   }
-};
+}
 </script>
 
 <style>

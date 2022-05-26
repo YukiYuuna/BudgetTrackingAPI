@@ -11,7 +11,7 @@ export default {
     },
     titleText: {
       type: String,
-      default: ""
+      default: ''
     },
     theme: {
       type: String
@@ -26,20 +26,20 @@ export default {
     },
     seriesData: {
       type: Object,
-      default() {
+      default () {
         return {
           xAxisData: [],
           data: []
-        };
+        }
       }
     }
   },
   computed: {
-    options() {
+    options () {
       return {
-        backgroundColor: this.$vuetify.theme.dark ? "#424242" : "",
+        backgroundColor: this.$vuetify.theme.dark ? '#424242' : '',
         textStyle: {
-          fontFamily: "Nunito"
+          fontFamily: 'Nunito'
         },
         grid: {
           show: false,
@@ -53,7 +53,7 @@ export default {
         },
         yAxis: [
           {
-            type: "value",
+            type: 'value',
             splitLine: {
               show: false
             }
@@ -61,15 +61,15 @@ export default {
         ],
         series: [
           {
-            type: "bar",
+            type: 'bar',
             data: this.seriesData.data,
-            barWidth: this.barWidth + "%",
+            barWidth: this.barWidth + '%',
             label: {
               normal: {
                 show: true,
                 // position: "inside",
                 // rotate: 90
-                position: "top"
+                position: 'top'
               }
             },
             itemStyle: {
@@ -79,41 +79,41 @@ export default {
                 shadowBlur: 10,
                 shadowOffsetX: 0,
                 shadowOffsetY: 0,
-                shadowColor: "rgba(0,0,0,0.8)"
+                shadowColor: 'rgba(0,0,0,0.8)'
               }
             }
           }
         ],
         title: {
           text: this.titleText,
-          x: "center",
-          top: "20",
+          x: 'center',
+          top: '20',
           textStyle: {
             fontSize: 14,
-            fontWeight: "normal"
+            fontWeight: 'normal'
           },
           show: this.showTitle
         },
-        //color: ["#2196f3"],
+        // color: ["#2196f3"],
         tooltip: {
-          trigger: "item",
+          trigger: 'item',
           textStyle: {
             fontSize: 12,
-            fontWeight: "normal"
+            fontWeight: 'normal'
           }
         }
-      };
+      }
     }
   },
-  data() {
+  data () {
     return {
       style: {
-        height: this.height + "%",
-        width: "100%"
+        height: this.height + '%',
+        width: '100%'
       }
-    };
+    }
   }
-};
+}
 </script>
 
 <style>

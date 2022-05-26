@@ -120,12 +120,12 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions } from 'vuex'
 import {
   CREATE_CATEGORY,
   EDIT_CATEGORY,
   REMOVE_CATEGORY
-} from "@/store/_actiontypes";
+} from '@/store/_actiontypes'
 
 export default {
   data: () => ({
@@ -133,101 +133,101 @@ export default {
     dialog: false,
     menu: false,
     headers: [
-      { text: "Id", value: "id", align: " d-none" },
-      { text: "Name", value: "name" },
-      { text: "Description", value: "description" },
-      { text: "Budget", value: "budget", width: 100 },
-      { text: "Colour", value: "colourHex", width: 100 },
-      { text: "Actions", value: "action", sortable: false, width: 50 }
+      { text: 'Id', value: 'id', align: ' d-none' },
+      { text: 'Name', value: 'name' },
+      { text: 'Description', value: 'description' },
+      { text: 'Budget', value: 'budget', width: 100 },
+      { text: 'Colour', value: 'colourHex', width: 100 },
+      { text: 'Actions', value: 'action', sortable: false, width: 50 }
     ],
     editedCategory: {
       id: 0,
-      name: "",
-      description: "",
+      name: '',
+      description: '',
       budget: 0,
-      colourHex: "#1976D2FF"
+      colourHex: '#1976D2FF'
     },
     defaultCategory: {
       id: 0,
-      name: "",
-      description: "",
+      name: '',
+      description: '',
       budget: 0,
-      colourHex: "#1976D2FF"
+      colourHex: '#1976D2FF'
     }
   }),
 
   computed: {
     ...mapState({ categories: state => state.expenseCategories.expenseCategories }),
-    categoryFormTitle() {
-      return this.editedCategory.id === 0 ? "New Category" : "Edit Category";
+    categoryFormTitle () {
+      return this.editedCategory.id === 0 ? 'New Category' : 'Edit Category'
     }
   },
 
   watch: {
-    dialog(val) {
-      val || this.close();
+    dialog (val) {
+      val || this.close()
     }
   },
   methods: {
-    ...mapActions("expenseCategories", [
+    ...mapActions('expenseCategories', [
       CREATE_CATEGORY,
       EDIT_CATEGORY,
       REMOVE_CATEGORY
     ]),
 
-    swatchStyle(item) {
-      const { colourHex } = item;
+    swatchStyle (item) {
+      const { colourHex } = item
       return {
         backgroundColor: colourHex,
-        cursor: "pointer",
-        height: "20px",
-        width: "20px",
-        borderRadius: "50%"
-      };
+        cursor: 'pointer',
+        height: '20px',
+        width: '20px',
+        borderRadius: '50%'
+      }
     },
 
-    editCategory(item) {
-      this.editedCategory = Object.assign({}, item);
-      this.dialog = true;
+    editCategory (item) {
+      this.editedCategory = Object.assign({}, item)
+      this.dialog = true
     },
 
-    deleteCategory(item) {
-      confirm("Are you sure you want to delete this item?") &&
-        this.REMOVE_CATEGORY({ id: item.id });
+    deleteCategory (item) {
+      confirm('Are you sure you want to delete this item?') &&
+        this.REMOVE_CATEGORY({ id: item.id })
     },
 
-    close() {
-      this.dialog = false;
-      this.editedCategory = Object.assign({}, this.defaultCategory);
+    close () {
+      this.dialog = false
+      this.editedCategory = Object.assign({}, this.defaultCategory)
     },
 
-    saveCategory() {
-      this.loading = true;
-      var expenseCategory = this.editedCategory;
-      if (expenseCategory.id == 0) {
+    saveCategory () {
+      this.loading = true
+      var expenseCategory = this.editedCategory
+      if (expenseCategory.id === 0) {
         this.CREATE_CATEGORY({
           expenseCategory
         })
           .then(() => {
-            this.close();
+            this.close()
           })
           .finally(() => {
-            this.loading = false;
-          });
+            this.loading = false
+          })
       } else {
         this.EDIT_CATEGORY({
           expenseCategory
         })
           .then(() => {
-            this.close();
+            this.close()
           })
           .finally(() => {
-            this.loading = false;
-          });
+            this.loading = false
+          })
       }
     }
   }
-};
+}
 </script>
 
 <style>

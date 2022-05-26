@@ -1,7 +1,7 @@
 import UserService from '../../services/user-service'
 import AuthService from '../../services/auth-service'
-import router from '@/router/index';
-import {ADD_ALERT} from "@/store/_actiontypes";
+import router from '@/router/index'
+import { ADD_ALERT } from '@/store/_actiontypes'
 
 const state = {
   user: {
@@ -12,18 +12,18 @@ const state = {
     currentBudget: 0
   },
   currencies: []
-};
+}
 
 const actions = {
-  login ({ commit }, username, password) {
-    return AuthService.login(username, password).then(
+  login ({ commit }, loginForm) {
+    return AuthService.login(loginForm).then(
       user => {
         commit('loginSuccess', user)
       })
       .catch(() => {
         commit('loginFailure')
       }
-    )
+      )
   },
   logout ({ commit }) {
     AuthService.logout()
@@ -32,8 +32,8 @@ const actions = {
   register ({ commit }, user) {
     return AuthService.register(user).then(
       () => {
-        commit(`alert/${ADD_ALERT}`, { message: 'User registered successfully', color: 'success' }, { root: true });
-        router.push('/login');
+        commit(`alert/${ADD_ALERT}`, { message: 'User registered successfully', color: 'success' }, { root: true })
+        router.push('/login')
       }
     )
   },
@@ -41,7 +41,19 @@ const actions = {
     UserService.modifyUserInformation(user).then(
       user => {
         commit('modificationFinished', user)
-        dispatch(`alert/${ADD_ALERT}`, { message: 'Profile updaded successfully', color: 'success' }, { root: true });
+        dispatch(`alert/${ADD_ALERT}`, { message: 'Profile updated successfully', color: 'success' }, { root: true })
+      },
+      error => {
+        commit('modificationFinished')
+        return Promise.reject(error)
+      }
+    )
+  },
+  getUserInfo ({ commit, dispatch }) {
+    UserService.getUserInfo().then(
+      user => {
+        commit('modificationFinished', user)
+        dispatch(`alert/${ADD_ALERT}`, { message: 'Profile extracted successfully', color: 'success' }, { root: true })
       },
       error => {
         commit('modificationFinished')
@@ -53,22 +65,13 @@ const actions = {
 
 const mutations = {
   loginSuccess (state, user) {
-    state.status.loggedIn = true
     state.user = user
   },
   loginFailure (state) {
-    state.status.loggedIn = false
-    state.user = null
+    state.user = {}
   },
   logout (state) {
-    state.status.loggedIn = false
-    state.user = null
-  },
-  registerSuccess (state) {
-    state.status.loggedIn = false
-  },
-  registerFailure (state) {
-    state.status.loggedIn = false
+    state.user = {}
   },
   modificationFinished (state, user) {
     state.user.username = user.username
@@ -77,19 +80,19 @@ const mutations = {
     state.user.email = user.email
     state.user.currentBudget = user.currentBudget
   }
-};
+}
 
 const getters = {
-    nameInitials: (state) => {
-      const initials = state.user.firstName.match(/\b\w/g) || []
-      return ((initials.shift() || "") + (initials.pop() || "")).toUpperCase()
-    }
+  nameInitials: (state) => {
+    const initials = (state.user.firstName + ' ' + state.user.lastName).match(/\b\w/g) || []
+    return ((initials.shift() || '') + (initials.pop() || '')).toUpperCase()
+  }
 }
 
 export const account = {
-    namespaced: true,
-    state,
-    actions,
-    mutations,
-    getters
+  namespaced: true,
+  state,
+  actions,
+  mutations,
+  getters
 }
