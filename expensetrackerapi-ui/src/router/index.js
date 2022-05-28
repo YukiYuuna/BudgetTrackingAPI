@@ -4,6 +4,7 @@ import Login from '@/views/Login.vue'
 import Register from '@/views/Register.vue'
 import HomePage from '@/views/HomePage.vue'
 import Expenses from '@/views/Expenses.vue'
+import Dashboard from '@/views/Dashboard.vue'
 import Settings from '@/views/Settings.vue'
 import Profile from '@/views/Profile.vue'
 import store from '@/store/index.js'
@@ -17,12 +18,12 @@ export const router = new Router({
       path: '/',
       component: HomePage,
       children: [
+        { path: '/dashboard', component: Dashboard },
         { path: '/expenses', component: Expenses },
         { path: '/settings', component: Settings },
         { path: '/profile', component: Profile }
       ]
     },
-    { path: '/expenses', component: Expenses },
     { path: '/login', component: Login },
     { path: '/register', component: Register },
     { path: '*', redirect: '/' }

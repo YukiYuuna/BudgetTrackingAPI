@@ -12,9 +12,11 @@ public interface ExpenseCategoryRepository extends JpaRepository<ExpenseCategory
 
     Set<ExpenseCategory> findExpenseCategoriesByUser(User user);
 
-    Optional<ExpenseCategory> findExpenseCategoryByCategoryNameAndUser(String categoryName, User user);
+    Optional<ExpenseCategory> findExpenseCategoryByExpenseCategoryIdAndUser(Long expenseCategoryId, User user);
 
-    boolean existsExpenseCategoryByCategoryNameAndUser(String categoryName, User user);
+    Optional<ExpenseCategory> findExpenseCategoryByCategoryNameAndUser(String name, User user);
 
-    void deleteExpenseCategoryByUserAndCategoryName(User user, String categoryName);
+    boolean existsExpenseCategoryByExpenseCategoryIdAndUser(Long expenseCategoryId, User user);
+
+    void deleteExpenseCategoryByUserAndExpenseCategoryId(User user, Long expenseCategoryId);
 }

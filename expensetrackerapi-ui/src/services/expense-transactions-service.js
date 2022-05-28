@@ -2,7 +2,7 @@ import axios from 'axios'
 import authHeader from '@/services/auth-header'
 
 const API_URL = 'http://localhost:8080/'
-var headers = {
+const headers = {
   withCredentials: false,
   headers: {
     Authorization: authHeader(),
@@ -33,6 +33,13 @@ class ExpenseTransactionsService {
     })
   }
 
+  getTransactionsForCurrentMonth (year, month) {
+    return axios.get(API_URL + 'api/expense/transactions/current/' + year + '/' + month, headers
+    ).then(response => {
+      return response.data
+    })
+  }
+
   getTransactionByCategory (category) {
     return axios.get(API_URL + 'api/expense/transactions/category?category' + category, headers
     ).then(response => {
@@ -40,12 +47,12 @@ class ExpenseTransactionsService {
     })
   }
 
-  async createExpenseTransaction (transaction) {
+  createExpenseTransaction (transaction) {
     const requestTransaction = {
-      date: transaction.date,
-      expenseAmount: Number(transaction.expenseAmount),
-      categoryName: transaction.categoryName,
-      description: transaction.description
+      date: transaction.expenseTransaction.date,
+      expenseAmount: Number(transaction.expenseTransaction.expenseAmount),
+      categoryName: transaction.expenseTransaction.categoryName,
+      description: transaction.expenseTransaction.description
     }
 
     return axios.post(API_URL + 'api/add/expense/transaction', requestTransaction, headers)

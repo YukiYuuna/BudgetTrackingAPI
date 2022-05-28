@@ -12,22 +12,20 @@
                 <v-divider></v-divider>
                 <v-form class="xs12 my-1">
                   <v-container>
-                    <v-switch
+                    <v-text-field
+                      label="System Name"
+                      required
                       class="ma-0 pa-0 form-label"
-                      color="grey"
-                      label="Dark Theme"
+                      v-model="settings.systemName"
                       dense
-                      v-model="settings.useDarkMode"
-                    ></v-switch>
-                    <v-row class="justify-end">
-                      <v-btn
-                        outlined
-                        small
-                        class="blue--text font-weight-bold"
-                        @click="handleSubmit"
-                        :loading="loading"
-                      >Submit</v-btn>
-                    </v-row>
+                    ></v-text-field>
+                    <v-text-field
+                      label="Currency"
+                      required
+                      class="ma-0 pa-0 form-label"
+                      v-model="settings.currency"
+                      dense
+                    ></v-text-field>
                   </v-container>
                 </v-form>
               </v-card>
@@ -61,11 +59,25 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import ExpenseCategories from '@/components/ExpenseCategories'
 
 export default {
   components: {
     ExpenseCategories
+  },
+  computed: {
+    ...mapState({
+      user: state => state.account.user,
+      currency: state => state.account.currency
+    })
+  },
+  mounted () {
+    this.settings = {
+      systemName: this.user.username,
+      useDarkMode: this.user.useDarkMode,
+      currency: 'BGN'
+    }
   },
   data: () => ({
     loading: false,

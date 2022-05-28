@@ -133,7 +133,7 @@ class TransactionServiceImplTest {
         when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
 
 //        when
-        Optional<?> result = service.getCategory("expense", "food");
+        Optional<?> result = service.getCategory("expense", 1L);
 
 //        then
         then(mockExpenseCategoryRepo).should(atMost(1)).findExpenseCategoryByCategoryNameAndUser(any(), any());
@@ -149,7 +149,7 @@ class TransactionServiceImplTest {
 
 //        when
 //        then
-        assertThatThrownBy(() -> service.getCategory("expense", "travel"))
+        assertThatThrownBy(() -> service.getCategory("expense", 2L))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessage("404 NOT_FOUND \"Category with this name doesn't exist.\"");
 
@@ -393,10 +393,10 @@ class TransactionServiceImplTest {
         when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
 
         //when
-        boolean exists = service.categoryExists("expense", "party");
+        boolean exists = service.categoryExists("expense", 1L);
 
         //then
-        then(mockExpenseCategoryRepo).should().existsExpenseCategoryByCategoryNameAndUser("party", user);
+        then(mockExpenseCategoryRepo).should().existsExpenseCategoryByExpenseCategoryIdAndUser(1L, user);
         assertThat(exists).isNotNull();
     }
 
@@ -473,10 +473,10 @@ class TransactionServiceImplTest {
         when(mockUserRepo.findUserByUsername("koko")).thenReturn(Optional.of(user));
 
 //        when
-        service.deleteCategory("food", "expense");
+        service.deleteCategory(1L, "expense");
 
 //        then
-        then(mockExpenseCategoryRepo).should(atMost(1)).deleteExpenseCategoryByUserAndCategoryName(user, "food");
+        then(mockExpenseCategoryRepo).should(atMost(1)).deleteExpenseCategoryByUserAndExpenseCategoryId(user, 1L);
     }
 
     private User getOneNormalUser(){
@@ -498,6 +498,7 @@ class TransactionServiceImplTest {
         user.setExpenseCategories(Set.of(expenseCategory));
         return expenseCategory;
     }
+
     private Set<ExpenseCategory> setOfCategories(User user){
         ExpenseCategory expenseCategory = new ExpenseCategory(1L, "food", user);
         ExpenseCategory expenseCategory1 = new ExpenseCategory(2L,"travel", user);

@@ -74,17 +74,17 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
     @Override
-    public Optional<?> getCategory(String type, String categoryName) {
+    public Optional<?> getCategory(String type, Long categoryId) {
         Optional<?> category;
 
         if(type.equals("expense"))
-            category = expenseCategoryRepo.findExpenseCategoryByCategoryNameAndUser(categoryName.toLowerCase(), getUser());
+            category = expenseCategoryRepo.findExpenseCategoryByExpenseCategoryIdAndUser(categoryId, getUser());
         else
-            category = incomeCategoryRepo.findIncomeCategoryByCategoryNameAndUser(categoryName.toLowerCase(), getUser());
+            category = incomeCategoryRepo.findIncomeCategoryByIncomeCategoryIdAndUser(categoryId, getUser());
 
         if(category.isEmpty()) {
-            log.error("Category with name: " + categoryName + " doesn't exist in the DB!");
-            throw new ResponseStatusException(NOT_FOUND, "Category with this name doesn't exist.");
+            log.error("Category: " + categoryId + " doesn't exist in the DB!");
+            throw new ResponseStatusException(NOT_FOUND, "Category with this id doesn't exist.");
         }
         return category;
     }
@@ -182,6 +182,104 @@ public class TransactionServiceImpl implements TransactionService{
 
         return result;
     }
+
+    public HashMap<String, Object> getTransactionByYear(Integer year, String type) {
+        String username = getUsernameByAuthentication();
+        HashMap<String, Object> result = new LinkedHashMap<>();
+        result.put("username", username);
+        result.put("year", year);
+
+        if(type.equals("expense")){
+            List<ExpenseTransaction> transactions = expenseTransactionRepo
+                    .filterTransactionsByYear(username, year);
+            result.put("transactions", transactions);
+            result.put("totalAmount", transactions.stream()
+                    .mapToDouble(ExpenseTransaction::getExpenseAmount).sum());
+        } else{
+            List<IncomeTransaction> transactions = incomeTransactionRepo
+                    .filterTransactionsByYear(username, year);
+            result.put("transactions", transactions);
+            result.put("totalAmount", transactions.stream()
+                    .mapToDouble(IncomeTransaction::getIncomeAmount).sum());
+        }
+
+        return result;
+    }
+
+    public HashMap<String, Object> getTransactionForCurrentMonth(Integer year, Integer month, String type) {
+        String username = getUsernameByAuthentication();
+        HashMap<String, Object> result = new LinkedHashMap<>();
+        result.put("username", username);
+
+        result.put("year_month", year + "_" + month);
+
+        if(type.equals("expense")){
+            List<ExpenseTransaction> transactions = expenseTransactionRepo
+                    .filterTransactionsForCurrentMonth(username, year, month);
+            result.put("transactions", transactions);
+            result.put("totalAmount", transactions.stream()
+                    .mapToDouble(ExpenseTransaction::getExpenseAmount).sum());
+        } else{
+            List<IncomeTransaction> transactions = incomeTransactionRepo
+                    .filterTransactionsForCurrentMonth(username, year, month);
+            result.put("transactions", transactions);
+            result.put("totalAmount", transactions.stream()
+                    .mapToDouble(IncomeTransaction::getIncomeAmount).sum());
+        }
+
+        return result;
+    }
+
+    public HashMap<String, Object> getTransactionByCurrentYear(String type) {
+        String username = getUsernameByAuthentication();
+        int currentYear = LocalDate.now().getYear();
+        HashMap<String, Object> result = new LinkedHashMap<>();
+        result.put("username", username);
+        result.put("currentYear", currentYear);
+
+        if(type.equals("expense")){
+            List<ExpenseTransaction> transactions = expenseTransactionRepo
+                    .filterTransactionsByYear(username, currentYear);
+            result.put("transactions", transactions);
+            result.put("totalAmount", transactions.stream()
+                    .mapToDouble(ExpenseTransaction::getExpenseAmount).sum());
+        } else{
+            List<IncomeTransaction> transactions = incomeTransactionRepo
+                    .filterTransactionsByYear(username, currentYear);
+            result.put("transactions", transactions);
+            result.put("totalAmount", transactions.stream()
+                    .mapToDouble(IncomeTransaction::getIncomeAmount).sum());
+        }
+
+        return result;
+    }
+
+    public HashMap<String, Object> getTransactionByYearMonthAndCategory(Integer year, Integer month,
+                                                                        String categoryName, String type) {
+        String username = getUsernameByAuthentication();
+        HashMap<String, Object> result = new LinkedHashMap<>();
+        result.put("username", username);
+
+        result.put("year_month", year + "_" + month);
+        result.put("categoryName", categoryName);
+
+        if(type.equals("expense")){
+            List<ExpenseTransaction> transactions = expenseTransactionRepo
+                    .filterTransactionsByCategoryYearAndMonth(username, year, month, categoryName);
+            result.put("transactions", transactions);
+            result.put("totalAmount", transactions.stream()
+                    .mapToDouble(ExpenseTransaction::getExpenseAmount).sum());
+        } else{
+            List<IncomeTransaction> transactions = incomeTransactionRepo
+                    .filterTransactionsByCategoryYearAndMonth(username, year, month, categoryName);
+            result.put("transactions", transactions);
+            result.put("totalAmount", transactions.stream()
+                    .mapToDouble(IncomeTransaction::getIncomeAmount).sum());
+        }
+
+        return result;
+    }
+
 
     @Override
     public HashMap<String, Object> getAllUserTransactions(Pageable pageable, String type) {
@@ -305,11 +403,11 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
     @Override
-    public boolean categoryExists(String type, String categoryName) {
+    public boolean categoryExists(String type, Long categoryId) {
         if(type.equals("expense"))
-            return expenseCategoryRepo.existsExpenseCategoryByCategoryNameAndUser(categoryName.toLowerCase(), getUser());
+            return expenseCategoryRepo.existsExpenseCategoryByExpenseCategoryIdAndUser(categoryId, getUser());
 
-        return incomeCategoryRepo.existsIncomeCategoryByCategoryNameAndUser(categoryName.toLowerCase(), getUser());
+        return incomeCategoryRepo.existsIncomeCategoryByIncomeCategoryIdAndUser(categoryId, getUser());
     }
 
     @Override
@@ -371,14 +469,14 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
     @Override
-    public void deleteCategory(String categoryName, String type) {
+    public void deleteCategory(Long categoryId, String type) {
         User user = getUser();
         if(type.equals("expense")){
-            expenseCategoryRepo.deleteExpenseCategoryByUserAndCategoryName(
-                    user, categoryName.toLowerCase());
+            expenseCategoryRepo.deleteExpenseCategoryByUserAndExpenseCategoryId(
+                    user, categoryId);
         }else{
-            incomeCategoryRepo.deleteIncomeCategoryByUserAndCategoryName(
-                    user, categoryName.toLowerCase());
+            incomeCategoryRepo.deleteIncomeCategoryByUserAndIncomeCategoryId(
+                    user, categoryId);
         }
         log.info("Category has been deleted successfully!");
     }

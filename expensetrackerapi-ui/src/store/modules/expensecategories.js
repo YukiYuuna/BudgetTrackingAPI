@@ -8,7 +8,6 @@ const state = {
 const actions = {
   loadExpenseCategories ({ commit }) {
     return ExpenseCategoriesService.getAllExpenseCategories().then(expenseCategories => {
-      console.log(expenseCategories.totalCategories)
       commit('getAllExpenseCategories', expenseCategories.totalCategories)
     })
   },
@@ -19,8 +18,8 @@ const actions = {
       dispatch(`statistics/${CREATE_NEWCATEGORY_STATISTICS}`, { category: expenseCategory }, { root: true })
     })
   },
-  modifyExpenseCategory ({ commit, dispatch }, categoryName, expenseCategory) {
-    return ExpenseCategoriesService.modifyExpenseCategory(categoryName, expenseCategory).then(expenseCategory => {
+  modifyExpenseCategory ({ commit, dispatch }, expenseCategory) {
+    return ExpenseCategoriesService.modifyExpenseCategory(expenseCategory).then(expenseCategory => {
       commit('modifyExpenseCategory', expenseCategory)
       dispatch(`alert/${ADD_ALERT}`, { message: 'Expense category updated successfully', color: 'success' }, { root: true })
       dispatch(`statistics/${EDIT_CATEGORY_STATISTICS}`, { category: expenseCategory }, { root: true })
@@ -30,9 +29,9 @@ const actions = {
     ExpenseCategoriesService.deleteExpenseCategory(categoryName)
       .then(() => {
         commit('deleteExpenseCategory', categoryName)
-        dispatch(`alert/${ADD_ALERT}`, { message: 'Expense category deleted successfully', color: 'success' }, { root: true })
-        dispatch(`expenses/${REMOVE_EXPENSESOFCATEGORY}`, { categoryName: categoryName }, { root: true })
-        dispatch(`statistics/${LOAD_CATEGORIES_BREAKDOWN}`, {}, { root: true })
+        dispatch(`alert/${ADD_ALERT}`, { message: 'Expense category deleted successfully', color: 'success' }, { root: true }) // eslint-disable-next-line
+        dispatch(`expenses/${REMOVE_EXPENSESOFCATEGORY}`, { categoryName: categoryName }, { root: true }) // eslint-disable-next-line
+        dispatch(`statistics/${LOAD_CATEGORIES_BREAKDOWN}`, {}, { root: true }) // eslint-disable-next-line
         dispatch(`statistics/${LOAD_EXPENSES_BREAKDOWN}`, {}, { root: true })
       })
   }
@@ -47,11 +46,8 @@ const mutations = {
     state.expenseCategories.push(expenseCategory)
   },
   modifyExpenseCategory (state, expenseCategory) {
-    const expenseCategoryUpdated = state.expenseCategories.find(ec => ec.categoryName === expenseCategory.categoryName)
-    expenseCategoryUpdated.name = expenseCategory.name
-    expenseCategoryUpdated.description = expenseCategory.description
-    expenseCategoryUpdated.budget = expenseCategory.budget
-    expenseCategoryUpdated.colourHex = expenseCategory.colourHex
+    const oldCategoryName = state.expenseCategories.find(ec => ec.categoryName === expenseCategory.oldCategoryName)
+    oldCategoryName.categoryName = expenseCategory.categoryName
   },
   deleteExpenseCategory (state, categoryName) {
     state.expenseCategories = state.expenseCategories.filter(ec => ec.categoryName !== categoryName)

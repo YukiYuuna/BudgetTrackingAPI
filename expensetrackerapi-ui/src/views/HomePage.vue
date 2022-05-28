@@ -23,6 +23,7 @@ export default {
     this.$store.dispatch('expenseTransactions/loadExpenseTransactions')
     this.$store.dispatch('expenseCategories/loadExpenseCategories')
     this.$store.dispatch('account/getUserInfo')
+    this.$store.dispatch('statistics/loadExpenseTransactionsForCurrentMonth')
     this.$vuetify.theme.dark = this.theme === 'dark'
   },
   computed: {

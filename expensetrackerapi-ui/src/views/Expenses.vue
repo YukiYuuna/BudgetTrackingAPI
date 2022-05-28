@@ -59,7 +59,7 @@ export default {
         { text: 'Id', value: 'id', align: ' d-none' },
         { text: 'Value', value: 'expenseAmount' },
         { text: 'Date', value: 'date' },
-        { text: 'Category', value: 'category' },
+        { text: 'Category', value: 'categoryName' },
         { text: 'Description', value: 'description' },
         { text: 'Actions', value: 'action', sortable: false, width: 50 }
       ],
@@ -95,12 +95,13 @@ export default {
     }
   },
   methods: {
-    editExpense (item) {
-      this.editedExpenseTransaction = Object.assign({}, item)
+    editExpense (expenseTransaction) {
+      this.editedExpenseTransaction = Object.assign({}, expenseTransaction)
       this.dialog = true
     },
 
     deleteExpense (expenseTransaction) {
+      console.log(expenseTransaction.expenseTransactionId)
       confirm('Are you sure you want to delete this item?') &&
       this.$store.dispatch('expenseTransactions/deleteExpenseTransaction', { expenseTransactionId: expenseTransaction.expenseTransactionId })
     },

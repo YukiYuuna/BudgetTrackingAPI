@@ -50,6 +50,11 @@ public class IncomeController extends ControlHelper {
         return service.getTransactionByDate(createPagination(currentPage, perPage, userService.numberOfUsers()), date, "income");
     }
 
+    @GetMapping("/income/transactions/current/{year}/{month}")
+    public HashMap<String, Object> fetchTransactionsByYear(@PathVariable Integer year, @PathVariable Integer month) {
+        return service.getTransactionForCurrentMonth(year, month, "income");
+    }
+
     @GetMapping("/income/transactions/category")
     private HashMap<String, Object> fetchTransactionsByCategory(@RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage, String categoryName) {
         return service.getTransactionsByCategoryAndUsername(createPagination(currentPage, perPage, userService.numberOfUsers()),"income", categoryName);
@@ -68,8 +73,8 @@ public class IncomeController extends ControlHelper {
     }
 
     @PutMapping("/modify/income/category")
-    public ResponseEntity<?> modifyIncomeCategory(String categoryName, @RequestBody IncomeCategory modifiedCategory) {
-        if(!service.categoryExists("income", categoryName)) {
+    public ResponseEntity<?> modifyIncomeCategory(Long categoryId, @RequestBody IncomeCategory modifiedCategory) {
+        if(!service.categoryExists("income", categoryId)) {
             throw new ResponseStatusException(NOT_FOUND, "Expense category with this name doesn't exist in the DB.");
         }
 
@@ -77,11 +82,11 @@ public class IncomeController extends ControlHelper {
             throw new ResponseStatusException(NOT_ACCEPTABLE, "Don't provide an id for the new category, because you cannot modify it.");
         }
 
-        Optional<IncomeCategory> category = ((Optional<IncomeCategory>)service.getCategory("income",categoryName));
+        Optional<IncomeCategory> category = ((Optional<IncomeCategory>)service.getCategory("income", categoryId));
 
 //        Provide the user with button which, he/she can use to delete all transaction correlated with this category!
         if(category.get().getIncomeTransactions() != null && category.get().getIncomeTransactions().size() > 0){
-            throw new ResponseStatusException(NOT_ACCEPTABLE, "There are attached transactions to category - " + categoryName
+            throw new ResponseStatusException(NOT_ACCEPTABLE, "There are attached transactions to category - " + categoryId
                     + ", please either delete those transactions or ADD the category as a new one!");
         }
 
@@ -89,7 +94,7 @@ public class IncomeController extends ControlHelper {
             modifiedCategory.setCategoryName(modifiedCategory.getCategoryName() == null ? c.getCategoryName() : modifiedCategory.getCategoryName().toLowerCase());
             modifiedCategory.setUser(c.getUser());
 
-            service.deleteCategory(categoryName, "income");
+            service.deleteCategory(categoryId, "income");
             service.saveCategoryToDB(Optional.of(modifiedCategory), "income");
 
 //                    new category changes its ID automatically. Old ID frees up.
@@ -108,9 +113,9 @@ public class IncomeController extends ControlHelper {
             throw new ResponseStatusException(NOT_ACCEPTABLE, "Don't provide an id for the new transaction, because you cannot modify it.");
 
         if (modifiedTransaction.getCategoryName() != null) {
-            if (service.categoryExists("income", modifiedTransaction.getCategoryName())) {
+            if (service.categoryExists("income", modifiedTransaction.getIncomeCategory().getIncomeCategoryId())) {
                 modifiedTransaction.setIncomeCategory((IncomeCategory) service
-                        .getCategory("income", modifiedTransaction.getCategoryName()).get());
+                        .getCategory("income", modifiedTransaction.getIncomeCategory().getIncomeCategoryId()).get());
             } else {
                 Optional<IncomeCategory> newCategory = Optional.of(
                         new IncomeCategory(modifiedTransaction.getCategoryName(), userService.getUser()));
@@ -137,8 +142,8 @@ public class IncomeController extends ControlHelper {
      * because if he deletes the category all transactions, made with this category will be deleted too.
      */
     @DeleteMapping("/delete/income/category")
-    public ResponseEntity<String> deleteIncomeCategory(String categoryName) {
-        service.deleteCategory(categoryName, "income");
+    public ResponseEntity<String> deleteIncomeCategory(Long categoryId) {
+        service.deleteCategory(categoryId, "income");
         return ResponseEntity.ok().body("Income category has been deleted successfully!");
     }
 

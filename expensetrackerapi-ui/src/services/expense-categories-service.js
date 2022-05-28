@@ -2,7 +2,7 @@ import axios from 'axios'
 import authHeader from '@/services/auth-header'
 
 const API_URL = 'http://localhost:8080/'
-var headers = {
+const headers = {
   withCredentials: false,
   headers: {
     Authorization: authHeader(),
@@ -31,12 +31,14 @@ class ExpenseCategoriesService {
     })
   }
 
-  modifyExpenseCategory (categoryName, modifiedCategory) {
+  modifyExpenseCategory (modifiedCategory) {
     const requestCategory = {
       categoryName: modifiedCategory.categoryName
     }
+    const expenseCategoryId = modifiedCategory.expenseCategoryId
+    console.log(expenseCategoryId)
 
-    return axios.put(API_URL + 'api/modify/expense/category' + categoryName, requestCategory, headers
+    return axios.put(API_URL + 'api/modify/expense/category/' + expenseCategoryId, requestCategory, headers
     ).then(response => {
       return response.data
     })

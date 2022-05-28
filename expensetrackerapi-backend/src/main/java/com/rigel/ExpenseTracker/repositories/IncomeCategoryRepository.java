@@ -12,9 +12,11 @@ public interface IncomeCategoryRepository extends JpaRepository<IncomeCategory, 
 
     Set<IncomeCategory> findIncomeCategoriesByUser(User user);
 
-    Optional<IncomeCategory> findIncomeCategoryByCategoryNameAndUser(String categoryName, User user);
+    Optional<IncomeCategory> findIncomeCategoryByIncomeCategoryIdAndUser(Long incomeCategoryId, User user);
 
-    boolean existsIncomeCategoryByCategoryNameAndUser(String categoryName, User user);
+    Optional<IncomeCategory> findIncomeCategoryByCategoryNameAndUser(String name, User user);
 
-    void deleteIncomeCategoryByUserAndCategoryName(User user, String categoryName);
+    boolean existsIncomeCategoryByIncomeCategoryIdAndUser(Long incomeCategoryId, User user);
+
+    void deleteIncomeCategoryByUserAndIncomeCategoryId(User user, Long incomeCategoryId);
 }

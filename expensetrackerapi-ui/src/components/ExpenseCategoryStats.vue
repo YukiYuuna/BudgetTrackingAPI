@@ -41,7 +41,7 @@
                   :footer-props="{itemsPerPageOptions: [12]}"
                 >
                   <template #item.spent="{ value }">
-                    <span>{{`${user.displayCurrency} ${value.toFixed(2)}`}}</span>
+                    <span>{{` BGN ${value.toFixed(2)}`}}</span>
                   </template>
                 </v-data-table>
               </v-flex>

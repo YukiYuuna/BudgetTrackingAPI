@@ -11,7 +11,7 @@ const state = {
     email: '',
     currentBudget: 0
   },
-  currencies: []
+  currency: 'BGN'
 }
 
 const actions = {
