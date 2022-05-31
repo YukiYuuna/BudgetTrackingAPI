@@ -40,10 +40,8 @@ class ExpenseTransactionsService {
     })
   }
 
-  getTransactionsForCurrentMonthByCategory (year, month, category) {
-    const categoryName = category.categoryName
-
-    return axios.get(API_URL + 'api/expense/transactions/year/' + year + '/' + month + '/' + categoryName, headers
+  getTransactionsForCurrentMonthByCategory (year, month) {
+    return axios.get(API_URL + 'api/expense/transactions/year/' + year + '/' + month, headers
     ).then(response => {
       return response.data
     })

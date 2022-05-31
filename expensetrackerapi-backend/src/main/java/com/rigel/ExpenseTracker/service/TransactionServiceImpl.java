@@ -277,6 +277,7 @@ public class TransactionServiceImpl implements TransactionService{
 
         result.put("year_month", year + "_" + month);
 
+        HashMap<String, Object> categoriesInfo = new LinkedHashMap<>();
         if(type.equals("expense")){
             Set<ExpenseCategory> categories = expenseCategoryRepo
                     .findExpenseCategoriesByUser(
@@ -289,8 +290,10 @@ public class TransactionServiceImpl implements TransactionService{
                 transactionsByCategory.put("totalAmount", transactions.stream()
                         .mapToDouble(ExpenseTransaction::getExpenseAmount).sum());
                 transactionsByCategory.put("transactions", transactions);
-                result.put(category.getCategoryName(), transactionsByCategory);
+                categoriesInfo.put(category.getCategoryName(), transactionsByCategory);
             }
+            categoriesInfo.put("totalCategories", categories.size());
+
         } else {
             Set<IncomeCategory> categories = incomeCategoryRepo
                     .findIncomeCategoriesByUser(
@@ -303,9 +306,12 @@ public class TransactionServiceImpl implements TransactionService{
                 transactionsByCategory.put("totalAmount", transactions.stream()
                         .mapToDouble(IncomeTransaction::getIncomeAmount).sum());
                 transactionsByCategory.put("transactions", transactions);
-                result.put(category.getCategoryName(), transactionsByCategory);
+                categoriesInfo.put(category.getCategoryName(), transactionsByCategory);
             }
+            categoriesInfo.put("totalCategories", categories.size());
         }
+
+        result.put("categoriesInfo", categoriesInfo);
 
         return result;
     }

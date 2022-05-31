@@ -7,7 +7,7 @@ import {
   DELETE_CATEGORY_STATISTICS
 } from '@/store/_actiontypes'
 import {
-  SET_CATEGORIES_BREAKDOWN, UPDATE_STATISTICS, ADD_NEWCATEGORY_STATISTICS, UPDATE_CATEGORY_STATISTICS, REMOVE_CATEGORY_STATISTICS
+  UPDATE_STATISTICS, ADD_NEWCATEGORY_STATISTICS, UPDATE_CATEGORY_STATISTICS, REMOVE_CATEGORY_STATISTICS
 } from '@/store/_mutationtypes'
 import sumBy from 'lodash/sumBy'
 import groupBy from 'lodash/groupBy'
@@ -16,22 +16,31 @@ import uniq from 'lodash/uniq'
 import ExpenseTransactionsService from '@/services/expense-transactions-service'
 import UserService from '@/services/user-service'
 import IncomeTransactionsService from '@/services/income-transactions-service'
+import map from 'lodash/map'
 
 const state = {
   user: {},
   expenseCategoriesBreakdown: [],
   incomeCategoriesBreakdown: [],
   expenseTransactionsBreakdown: [],
-  incomeTransactionsBreakdown: [],
-  totalAmount: 0
+  incomeTransactionsBreakdown: []
 }
 
 const actions = {
-  loadExpenseTransactionsForCurrentMonthByCategory ({ commit }, category) {
+  loadExpenseTransactionsForCurrentMonthByCategory ({ commit }) {
     const year = new Date().getFullYear()
     const month = new Date().getMonth() + 1
-    ExpenseTransactionsService.getTransactionsForCurrentMonthByCategory(year, month, category).then(data => {
-      commit('getAllExpenseTransactionsForCurrentMonth', data)
+    ExpenseTransactionsService.getTransactionsForCurrentMonthByCategory(year, month).then(data => {
+      commit('getAllExpenseCategoriesForCurrentMonth', data.categoriesInfo)
+    })
+    UserService.getUserInfo().then(user => { commit('userInfo', user) }
+    )
+  },
+  loadIncomeTransactionsForCurrentMonthByCategory ({ commit }) {
+    const year = new Date().getFullYear()
+    const month = new Date().getMonth() + 1
+    IncomeTransactionsService.getTransactionsForCurrentMonthByCategory(year, month).then(data => {
+      commit('getAllIncomeCategoriesForCurrentMonth', data.categoriesInfo)
     })
     UserService.getUserInfo().then(user => { commit('userInfo', user) }
     )
@@ -75,8 +84,11 @@ const actions = {
 }
 
 const mutations = {
-  [SET_CATEGORIES_BREAKDOWN] (state, expenseCategoriesBreakdown) {
-    state.expenseCategoriesBreakdown = expenseCategoriesBreakdown
+  getAllExpenseCategoriesForCurrentMonth (state, expenseCategoriesInfo) {
+    state.expenseCategoriesBreakdown = expenseCategoriesInfo
+  },
+  getAllIncomeCategoriesForCurrentMonth (state, incomeCategoriesInfo) {
+    state.incomeCategoriesBreakdown = incomeCategoriesInfo
   },
   getAllExpenseTransactionsForCurrentMonth (state, expenseTransactionsBreakdown) {
     state.expenseTransactionsBreakdown = expenseTransactionsBreakdown
@@ -184,6 +196,27 @@ const getters = {
       totalSpent: new Intl.NumberFormat(window.navigator.language).format(totalSpent),
       totalMade: new Intl.NumberFormat(window.navigator.language).format(totalMade)
     }
+  },
+  monthlyBudgetsByCategory: state => {
+    const totalBudget = state.user.currentBudget + state.incomeTransactionsBreakdown.totalAmount
+    var currentMonthBudgets = state.expenseCategoriesBreakdown
+    console.log(currentMonthBudgets)
+
+    const perCategoryBudget = totalBudget / currentMonthBudgets.totalCategories
+    console.log(perCategoryBudget)
+
+    return map(currentMonthBudgets, function (value, key) {
+      console.log(value)
+      const remaining = perCategoryBudget - value.totalAmount
+      return {
+        name: key,
+        colour: 'blue',
+        monthlyBudget: [
+          { value: value.totalAmount, name: 'Spent', itemStyle: { color: '#2196F3' } },
+          { value: (remaining < 0 ? 0 : remaining).toFixed(2), name: 'Remaining', itemStyle: { color: '#BDBDBD' } }
+        ]
+      }
+    })
   },
   yearlyExpenses: state => {
     const months = ['Jan',

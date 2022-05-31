@@ -40,6 +40,13 @@ class IncomeTransactionsService {
     })
   }
 
+  getTransactionsForCurrentMonthByCategory (year, month) {
+    return axios.get(API_URL + 'api/income/transactions/year/' + year + '/' + month, headers
+    ).then(response => {
+      return response.data
+    })
+  }
+
   getIncomeTransactionByCategory (category, currentPage, perPage) {
     return axios.get(API_URL + 'api/income/transactions/category' + category, headers
     ).then(response => {

@@ -49,6 +49,34 @@
             </div>
           </v-card>
         </v-flex>
+        <v-flex xs12 md12>
+          <v-container px-0 pb-0>
+            <v-card class="pa-2 mr-2" tile>
+              <div
+                class="blue--text px-2 py-1 text-capitalize font-weight-medium"
+                style="margin-bottom: -15px"
+              >Budgets By Categories (Current Month)</div>
+              <v-divider></v-divider>
+              <div class="category-budgets">
+                <div
+                  v-for="budget in monthlyBudgetsByCategory"
+                  :key="budget.name"
+                  class="category-budgets-budget"
+                >
+                  <DoughnutChart
+                    :titleText="budget.name"
+                    :showTitle="true"
+                    :height="90"
+                    :titleFontSize="14"
+                    :theme="theme"
+                    :showTooltip="false"
+                    :seriesData="budget.monthlyBudget"
+                  />
+                </div>
+              </div>
+            </v-card>
+          </v-container>
+        </v-flex>
       </v-layout>
     </v-container>
   </div>
@@ -61,7 +89,7 @@ import { mapGetters } from 'vuex'
 export default {
   components: { ExpenseForm, DoughnutChart },
   computed: {
-    ...mapGetters('statistics', ['monthlyBudget', 'yearlyExpenses'])
+    ...mapGetters('statistics', ['monthlyBudget', 'yearlyExpenses', 'monthlyBudgetsByCategory'])
   },
   data () {
     return {
