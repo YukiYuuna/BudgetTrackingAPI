@@ -8,7 +8,7 @@
   >
     <template v-slot:top>
       <div class="d-flex align-center pa-1 pb-2">
-        <span class="blue--text font-weight-medium">Categories</span>
+        <span class="blue--text font-weight-medium">Income Categories</span>
         <v-divider class="mx-2 my-1" inset vertical style="height: 20px"></v-divider>
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="500px">
@@ -22,7 +22,7 @@
 
             <v-card-text>
               <v-container>
-                <input type="hidden" v-model="editedCategory.expenseCategoryId" />
+                <input type="hidden" v-model="editedCategory.incomeCategoryId" />
                 <v-text-field
                   class="ma-0 pa-0 form-label"
                   dense
@@ -77,7 +77,7 @@
                 outlined
                 small
                 class="blue--text font-weight-bold"
-                @click="saveExpenseCategory"
+                @click="saveIncomeCategory"
                 :loading="loading"
               >Save</v-btn>
               <v-btn outlined small class="blue--text font-weight-bold" @click="close">Cancel</v-btn>
@@ -96,8 +96,8 @@
       ></v-chip>
     </template>
     <template v-slot:item.action="{ item }">
-      <v-icon small class="mr-2" @click="editExpenseCategory(item)">edit</v-icon>
-      <v-icon small @click="deleteExpenseCategory(item)">delete</v-icon>
+      <v-icon small class="mr-2" @click="editIncomeCategory(item)">edit</v-icon>
+      <v-icon small @click="deleteIncomeCategory(item)">delete</v-icon>
     </template>
     <template v-slot:no-data>
       <span>No Data Available</span>
@@ -114,18 +114,18 @@ export default {
     dialog: false,
     menu: false,
     headers: [
-      { text: 'Id', value: 'expenseCategoryId', align: ' d-none' },
+      { text: 'Id', value: 'incomeCategoryId', align: ' d-none' },
       { text: 'Name', value: 'categoryName' },
       { text: 'Colour', value: 'colourHex', width: 100 },
       { text: 'Actions', value: 'action', sortable: false, width: 50 }
     ],
     editedCategory: {
-      expenseCategoryId: 0,
+      incomeCategoryId: 0,
       categoryName: '',
       colourHex: '#1976D2FF'
     },
     defaultCategory: {
-      expenseCategoryId: 0,
+      incomeCategoryId: 0,
       categoryName: '',
       colourHex: '#1976D2FF'
     }
@@ -133,11 +133,11 @@ export default {
 
   computed: {
     ...mapState({
-      categories: state => state.expenseCategories.expenseCategories
+      categories: state => state.incomeCategories.incomeCategories
     }),
 
     categoryFormTitle () {
-      return this.editedCategory.expenseCategoryId === 0 ? 'New Category' : 'Edit Category'
+      return this.editedCategory.incomeCategoryId === 0 ? 'New Category' : 'Edit Category'
     }
   },
 
@@ -158,12 +158,12 @@ export default {
       }
     },
 
-    deleteExpenseCategory (expenseCategory) {
+    deleteIncomeCategory (incomeCategory) {
       confirm('Are you sure you want to delete this item?') &&
-      this.$store.dispatch('expenseCategories/deleteExpenseCategory', { categoryName: expenseCategory.categoryName })
+      this.$store.dispatch('incomeCategories/deleteIncomeCategory', { categoryName: incomeCategory.categoryName })
     },
 
-    editExpenseCategory (item) {
+    editIncomeCategory (item) {
       this.editedCategory = Object.assign({}, item)
       this.dialog = true
     },
@@ -173,16 +173,14 @@ export default {
       this.editedCategory = Object.assign({}, this.defaultCategory)
     },
 
-    saveExpenseCategory () {
+    saveIncomeCategory () {
       this.loading = true
-      const editedExpenseCategory = this.editedCategory
-      console.log(this.editedCategory)
-      if (editedExpenseCategory.expenseCategoryId === 0) {
-        this.$store.dispatch('expenseCategories/createExpenseCategory', {
-          expenseCategory: editedExpenseCategory
+      const editedIncomeCategory = this.editedCategory
+      if (editedIncomeCategory.incomeCategoryId === 0) {
+        this.$store.dispatch('incomeCategories/createIncomeCategory', {
+          incomeCategory: editedIncomeCategory
         })
           .then(() => {
-            console.log('done')
             this.close()
           })
           .finally(() => {
@@ -190,8 +188,8 @@ export default {
             this.loading = false
           })
       } else {
-        this.$store.dispatch('expenseCategories/modifyExpenseCategory', {
-          expenseCategory: editedExpenseCategory
+        this.$store.dispatch('incomeCategories/modifyIncomeCategory', {
+          incomeCategory: editedIncomeCategory
         })
           .then(() => {
             this.close()

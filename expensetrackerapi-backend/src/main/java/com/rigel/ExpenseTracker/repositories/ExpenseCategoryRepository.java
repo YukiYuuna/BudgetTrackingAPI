@@ -18,5 +18,7 @@ public interface ExpenseCategoryRepository extends JpaRepository<ExpenseCategory
 
     boolean existsExpenseCategoryByExpenseCategoryIdAndUser(Long expenseCategoryId, User user);
 
+    boolean existsExpenseCategoryByCategoryNameAndUser(String categoryName, User user);
+
     void deleteExpenseCategoryByUserAndExpenseCategoryId(User user, Long expenseCategoryId);
 }

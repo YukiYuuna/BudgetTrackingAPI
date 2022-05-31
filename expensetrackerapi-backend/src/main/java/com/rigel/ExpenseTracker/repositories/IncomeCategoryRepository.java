@@ -18,5 +18,7 @@ public interface IncomeCategoryRepository extends JpaRepository<IncomeCategory, 
 
     boolean existsIncomeCategoryByIncomeCategoryIdAndUser(Long incomeCategoryId, User user);
 
+    boolean existsIncomeCategoryByCategoryNameAndUser(String categoryName, User user);
+
     void deleteIncomeCategoryByUserAndIncomeCategoryId(User user, Long incomeCategoryId);
 }

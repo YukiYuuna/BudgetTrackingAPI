@@ -15,14 +15,13 @@ class ExpenseCategoriesService {
   getAllExpenseCategories () {
     return axios.get(API_URL + 'api/expense/categories', headers
     ).then(response => {
-      console.log(response.data.totalCategories)
       return response.data
     })
   }
 
   createExpenseCategory (expenseCategory) {
     const requestCategory = {
-      categoryName: expenseCategory.categoryName
+      categoryName: expenseCategory.expenseCategory.categoryName
     }
 
     return axios.post(API_URL + 'api/add/expense/category', requestCategory, headers
@@ -33,10 +32,9 @@ class ExpenseCategoriesService {
 
   modifyExpenseCategory (modifiedCategory) {
     const requestCategory = {
-      categoryName: modifiedCategory.categoryName
+      categoryName: modifiedCategory.expenseCategory.categoryName
     }
-    const expenseCategoryId = modifiedCategory.expenseCategoryId
-    console.log(expenseCategoryId)
+    const expenseCategoryId = modifiedCategory.expenseCategory.expenseCategoryId
 
     return axios.put(API_URL + 'api/modify/expense/category/' + expenseCategoryId, requestCategory, headers
     ).then(response => {

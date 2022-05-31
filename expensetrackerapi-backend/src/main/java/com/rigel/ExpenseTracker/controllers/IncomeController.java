@@ -55,6 +55,17 @@ public class IncomeController extends ControlHelper {
         return service.getTransactionForCurrentMonth(year, month, "income");
     }
 
+    @GetMapping("/income/transactions/current/year")
+    public HashMap<String, Object> fetchTransactionsByCurrentYear() {
+        return service.getTransactionByCurrentYear("income");
+    }
+
+    @GetMapping("/income/transactions/year/{year}/{month}")
+    public HashMap<String, Object> fetchTransactionsByYearMonthAndCategory(@PathVariable Integer year,
+                                                                           @PathVariable Integer month) {
+        return service.getTransactionByYearMonthAndCategory(year, month, "income");
+    }
+
     @GetMapping("/income/transactions/category")
     private HashMap<String, Object> fetchTransactionsByCategory(@RequestParam @Nullable Integer currentPage, @RequestParam @Nullable Integer perPage, String categoryName) {
         return service.getTransactionsByCategoryAndUsername(createPagination(currentPage, perPage, userService.numberOfUsers()),"income", categoryName);
@@ -75,7 +86,7 @@ public class IncomeController extends ControlHelper {
     @PutMapping("/modify/income/category")
     public ResponseEntity<?> modifyIncomeCategory(Long categoryId, @RequestBody IncomeCategory modifiedCategory) {
         if(!service.categoryExists("income", categoryId)) {
-            throw new ResponseStatusException(NOT_FOUND, "Expense category with this name doesn't exist in the DB.");
+            throw new ResponseStatusException(NOT_FOUND, "Income category with this name doesn't exist in the DB.");
         }
 
         if(modifiedCategory.getIncomeCategoryId() != null) {
@@ -164,7 +175,7 @@ public class IncomeController extends ControlHelper {
 
     @DeleteMapping("/delete/income/transaction/{id}")
     ResponseEntity<String> deleteIncomeTransactionById(@PathVariable Long id) {
-        service.deleteTransactionById("income",id);
+        service.deleteTransactionById("income", id);
         return ResponseEntity.ok().body("The transaction has been deleted successfully!");
     }
 

@@ -4,7 +4,9 @@
       <v-layout row justify-space-around>
         <v-flex xs12 sm8>
           <v-card class="pa-2 mr-2" flat height="100%">
-            <div class="blue--text px-2 py-1 text-capitalize font-weight-medium">Profile</div>
+            <div class="blue--text px-2 py-1 text-capitalize font-weight-medium"
+            style="margin-bottom: -15px"
+            >Profile</div>
             <v-divider></v-divider>
             <v-form class="xs12 my-1">
               <v-container>
@@ -43,7 +45,6 @@
                   v-model="profile.currentBudget"
                   type="number"
                   dense
-                  readonly
                 ></v-text-field>
                 <v-row class="justify-end">
                   <v-btn

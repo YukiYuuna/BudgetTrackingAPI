@@ -20,7 +20,6 @@ public class ExpenseCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "expense_category_id")
-    @JsonIgnore
     private Long expenseCategoryId;
 
     @Column(name = "category_name")

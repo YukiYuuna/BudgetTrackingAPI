@@ -12,6 +12,7 @@
                 <v-form ref="loginForm">
                   <v-text-field
                     v-model="loginForm.username"
+                    prepend-icon="mdi-account"
                     placeholder="Username"
                     :rules="[required('Username')]"
                     dense
@@ -33,14 +34,14 @@
                   small
                   outlined
                   class="primary--text"
-                  @click.native="handleRegisterClick()"
+                  @click.native="handleRegisterClick"
                 >Register</v-btn>
                 <v-spacer></v-spacer>
                 <v-btn
                   small
                   outlined
                   class="primary--text"
-                  @click="handleLoginSubmit()"
+                  @click="handleLoginSubmit"
                   :loading="loading"
                 >Login</v-btn>
               </v-card-actions>
@@ -84,11 +85,14 @@ export default {
       if (!this.$refs.loginForm.validate()) return
 
       if (this.loginForm.username && this.loginForm.password) {
-        this.$store.dispatch('account/login', this.loginForm).then(
-          () => {
-            this.$router.push('/profile')
-          }
-        )
+        this.$store.dispatch('account/login', this.loginForm)
+          .then(() => {
+            this.$router.push('/dashboard')
+          })
+          .finally(() => {
+            window.location.reload()
+            this.loading = false
+          })
       }
     },
     handleRegisterClick () {

@@ -4,6 +4,7 @@ import Login from '@/views/Login.vue'
 import Register from '@/views/Register.vue'
 import HomePage from '@/views/HomePage.vue'
 import Expenses from '@/views/Expenses.vue'
+import Income from '@/views/Income.vue'
 import Dashboard from '@/views/Dashboard.vue'
 import Settings from '@/views/Settings.vue'
 import Profile from '@/views/Profile.vue'
@@ -20,6 +21,7 @@ export const router = new Router({
       children: [
         { path: '/dashboard', component: Dashboard },
         { path: '/expenses', component: Expenses },
+        { path: '/income', component: Income },
         { path: '/settings', component: Settings },
         { path: '/profile', component: Profile }
       ]

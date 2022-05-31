@@ -8,19 +8,18 @@ const state = {
 const actions = {
   loadExpenseTransactions ({ commit }) {
     ExpenseTransactionsService.getAllExpenseTransactions().then(expenseTransactions => {
-      commit('getAllExpenseTransactions', expenseTransactions.transactions)
+      commit('getAllExpenseTransactions', expenseTransactions)
     })
   },
   createExpenseTransaction ({ commit, dispatch }, expenseTransaction) {
     return ExpenseTransactionsService.createExpenseTransaction(expenseTransaction).then(expenseTransaction => {
       commit('createExpenseTransaction', expenseTransaction)
       dispatch(`alert/${ADD_ALERT}`, { message: 'Expense Transaction added successfully', color: 'success' }, { root: true })
-      // TODO: why expense: expenseTransaction ??
       dispatch(`statistics/${EDIT_STATISTICS}`, { expense: expenseTransaction, operation: 'create' }, { root: true })
     })
   },
-  modifyExpenseTransaction ({ commit, dispatch }, id, expenseTransaction) {
-    return ExpenseTransactionsService.modifyExpenseTransaction(id, expenseTransaction).then(expenseTransaction => {
+  modifyExpenseTransaction ({ commit, dispatch }, expenseTransaction) {
+    return ExpenseTransactionsService.modifyExpenseTransaction(expenseTransaction).then(expenseTransaction => {
       commit('modifyExpenseTransaction', expenseTransaction)
       dispatch(`alert/${ADD_ALERT}`, { message: 'Expense Transaction updated successfully', color: 'success' }, { root: true })
       dispatch(`statistics/${EDIT_STATISTICS}`, { expense: expenseTransaction, operation: 'edit' }, { root: true })

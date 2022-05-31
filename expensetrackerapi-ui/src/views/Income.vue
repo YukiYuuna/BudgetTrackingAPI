@@ -3,15 +3,15 @@
     <v-container>
       <v-layout row>
         <v-flex xs12>
-          <v-data-table :headers=headers :items=expenseTransactions sort-by='date' class="elevation-1">
+          <v-data-table :headers=headers :items=incomeTransactions sort-by='date' class="elevation-1">
             <template v-slot:top>
               <div class="d-flex align-center pa-4">
-                <span class="blue--text font-weight-medium">Expenses</span>
+                <span class="blue--text font-weight-medium">Income</span>
                 <v-divider class="mx-2 my-1" inset vertical style="height: 20px"></v-divider>
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="650px">
                   <template v-slot:activator="{ on }">
-                    <v-btn outlined small class="blue--text font-weight-bold" v-on="on">New Expense</v-btn>
+                    <v-btn outlined small class="blue--text font-weight-bold" v-on="on">New Income</v-btn>
                   </template>
                   <v-card>
                     <v-card-title>
@@ -19,11 +19,11 @@
                     </v-card-title>
 
                     <v-card-text>
-                      <ExpenseForm
-                        :expenseTransaction="editedExpenseTransaction"
+                      <IncomeForm
+                        :income-transaction="editedIncomeTransaction"
                         :showCloseButton="true"
                         :onCloseClick="close"
-                        :onSubmitClick="saveExpense"
+                        :onSubmitClick="saveIncome"
                         :loading="loading"
                         ref="form"
                       />
@@ -36,8 +36,8 @@
               <span>{{ `BGN ${item.value.toFixed(2)}` }}</span>
             </template>
             <template v-slot:item.action="{ item }">
-              <v-icon small class="mr-2" @click="editExpense(item)">edit</v-icon>
-              <v-icon small @click="deleteExpense(item)">delete</v-icon>
+              <v-icon small class="mr-2" @click="editIncome(item)">edit</v-icon>
+              <v-icon small @click="deleteIncome(item)">delete</v-icon>
             </template>
           </v-data-table>
         </v-flex>
@@ -47,33 +47,33 @@
 </template>
 <script>
 import { mapState } from 'vuex'
-import ExpenseForm from '@/components/ExpenseForm'
+import IncomeForm from '@/components/IncomeForm'
 
 export default {
-  components: { ExpenseForm },
+  components: { IncomeForm },
   data () {
     return {
       loading: false,
       dialog: false,
       headers: [
         { text: 'Id', value: 'id', align: ' d-none' },
-        { text: 'Value', value: 'expenseAmount' },
+        { text: 'Value', value: 'incomeAmount' },
         { text: 'Date', value: 'date' },
         { text: 'Category', value: 'categoryName' },
         { text: 'Description', value: 'description' },
         { text: 'Actions', value: 'action', sortable: false, width: 50 }
       ],
-      editedExpenseTransaction: {
-        expenseTransactionId: 0,
+      editedIncomeTransaction: {
+        incomeTransactionId: 0,
         date: '',
-        expenseAmount: '',
+        incomeAmount: '',
         categoryName: '',
         description: ''
       },
-      defaultExpenseTransaction: {
-        expenseTransactionId: 0,
+      defaultIncomeTransaction: {
+        incomeTransactionId: 0,
         date: '',
-        expenseAmount: '',
+        incomeAmount: '',
         categoryName: '',
         description: ''
       }
@@ -81,12 +81,12 @@ export default {
   },
   computed: {
     ...mapState({
-      expenseTransactions: state => state.expenseTransactions.expenseTransactions,
+      incomeTransactions: state => state.incomeTransactions.incomeTransactions,
       user: state => state.account.user
     }),
 
     formTitle () {
-      return this.editedExpenseTransaction.expenseTransactionId === 0 ? 'New Transaction' : 'Edit Transaction'
+      return this.editedIncomeTransaction.incomeTransactionId === 0 ? 'New Transaction' : 'Edit Transaction'
     }
   },
   watch: {
@@ -95,32 +95,31 @@ export default {
     }
   },
   methods: {
-    editExpense (expenseTransaction) {
-      this.editedExpenseTransaction = Object.assign({}, expenseTransaction)
+    editIncome (incomeTransaction) {
+      this.editedIncomeTransaction = Object.assign({}, incomeTransaction)
       this.dialog = true
       window.location.reload()
     },
 
-    deleteExpense (expenseTransaction) {
-      console.log(expenseTransaction.expenseTransactionId)
+    deleteIncome (incomeTransaction) {
       confirm('Are you sure you want to delete this item?') &&
-      this.$store.dispatch('expenseTransactions/deleteExpenseTransaction', { expenseTransactionId: expenseTransaction.expenseTransactionId })
+      this.$store.dispatch('incomeTransactions/deleteIncomeTransaction', { incomeTransactionId: incomeTransaction.incomeTransactionId })
       window.location.reload()
     },
 
     close () {
       this.dialog = false
-      this.editedExpenseTransaction = Object.assign({}, this.defaultExpenseTransaction)
+      this.editedIncomeTransaction = Object.assign({}, this.defaultIncomeTransaction)
       this.$refs.form.reset()
+      window.location.reload()
     },
 
-    saveExpense () {
-      const editedExpenseTransaction = this.editedExpenseTransaction
+    saveIncome () {
+      const editedIncomeTransaction = this.editedIncomeTransaction
       this.loading = true
-      console.log(editedExpenseTransaction)
-      if (editedExpenseTransaction.expenseTransactionId === 0) {
-        this.$store.dispatch('expenseTransactions/createExpenseTransaction', {
-          expenseTransaction: editedExpenseTransaction
+      if (editedIncomeTransaction.incomeTransactionId === 0) {
+        this.$store.dispatch('incomeTransactions/createIncomeTransaction', {
+          incomeTransaction: editedIncomeTransaction
         })
           .then(() => {
             this.close()
@@ -130,8 +129,9 @@ export default {
             this.loading = false
           })
       } else {
-        this.$store.dispatch('expenseTransactions/modifyExpenseTransaction', {
-          expenseTransaction: editedExpenseTransaction
+        this.$store.dispatch('incomeTransactions/modifyIncomeTransaction', {
+          id: editedIncomeTransaction.incomeTransactionId,
+          incomeTransaction: editedIncomeTransaction
         })
           .then(() => {
             this.close()

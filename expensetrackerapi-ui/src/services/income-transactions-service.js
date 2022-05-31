@@ -13,64 +13,82 @@ var headers = {
 
 class IncomeTransactionsService {
   getAllIncomeTransactions (currentPage, perPage) {
-    return axios.get(API_URL + 'api/income/transactions', {
-      params:
-        {
-          currentPage: currentPage,
-          perPage: perPage
-        },
-      headers: {
-        Authorization: authHeader()
-      }
-    }).then(response => {
-      return response
-    }, (error) => {
-      console.log(error)
+    return axios.get(API_URL + 'api/income/transactions', headers
+    ).then(response => {
+      return response.data.transactions
     })
   }
 
   getIncomeTransactionById (id) {
-    return axios.get(API_URL + 'api/income/transaction/' + id, { headers: authHeader() })
+    return axios.get(API_URL + 'api/income/transaction/' + id, headers
+    ).then(response => {
+      return response.data
+    })
   }
 
   getIncomeTransactionsByDate (date, currentPage, perPage) {
-    return axios.get(API_URL + 'api/income/transactions/date', { params: { date: date, currentPage: currentPage, perPage: perPage }, headers: authHeader() })
+    return axios.get(API_URL + 'api/income/transactions/date' + date, headers
+    ).then(response => {
+      return response.data
+    })
+  }
+
+  getTransactionsForCurrentMonth (year, month) {
+    return axios.get(API_URL + 'api/income/transactions/current/' + year + '/' + month, headers
+    ).then(response => {
+      return response.data
+    })
   }
 
   getIncomeTransactionByCategory (category, currentPage, perPage) {
-    return axios.get(API_URL + 'api/income/transactions/category', { params: { category: category, currentPage: currentPage, perPage: perPage }, headers: authHeader() })
+    return axios.get(API_URL + 'api/income/transactions/category' + category, headers
+    ).then(response => {
+      return response.data
+    })
   }
 
   createIncomeTransaction (transaction) {
     const requestTransaction = {
-      date: transaction.date,
-      incomeAmount: Number(transaction.incomeAmount),
-      categoryName: transaction.categoryName,
-      description: transaction.description
+      date: transaction.incomeTransaction.date,
+      incomeAmount: Number(transaction.incomeTransaction.incomeAmount),
+      categoryName: transaction.incomeTransaction.categoryName,
+      description: transaction.incomeTransaction.description
     }
 
-    axios.post(API_URL + 'api/add/income/transaction', requestTransaction, headers
-    ).then(function (response) {
-      console.log(response)
-    }).catch(function (error) {
-      console.log(error)
-    })
+    return axios.post(API_URL + 'api/add/income/transaction', requestTransaction, headers)
+      .then(response => {
+        return response.data
+      })
   }
 
-  modifyIncomeTransaction (transactionId, modifiedTransaction) {
-    return axios.put(API_URL + 'api/modify/income/transaction/{transactionId}', { params: { transactionId: transactionId, modifiedTransaction: modifiedTransaction }, headers: authHeader() })
+  modifyIncomeTransaction (transaction) {
+    const requestTransaction = {
+      date: transaction.incomeTransaction.date,
+      incomeAmount: Number(transaction.incomeTransaction.incomeAmount),
+      categoryName: transaction.incomeTransaction.categoryName,
+      description: transaction.incomeTransaction.description
+    }
+
+    const incomeTransactionId = transaction.incomeTransaction.incomeTransactionId
+
+    return axios.put(API_URL + 'api/modify/income/transaction/' + incomeTransactionId, requestTransaction, headers)
+      .then(response => {
+        return response.data
+      })
   }
 
   deleteIncomeTransactionByCategory (categoryName) {
-    return axios.delete(API_URL + 'api/delete/income/transactions/category', { params: { categoryName: categoryName }, headers: authHeader() })
-  }
+    const incomeCategoryName = categoryName.categoryName
 
-  deleteIncomeTransactions () {
-    return axios.delete(API_URL + 'api/delete/income/transactions', { headers: authHeader() })
+    return axios.delete(API_URL + 'api/delete/income/transactions/category' + incomeCategoryName, headers)
   }
 
   deleteIncomeTransactionById (id) {
-    return axios.delete(API_URL + 'api/delete/income/transaction/' + id, { headers: authHeader() })
+    const incomeTransactionId = id.incomeTransactionId
+
+    return axios.delete(API_URL + 'api/delete/income/transaction/' + incomeTransactionId, headers).then(response => {
+      return response.data
+    })
   }
 }
 

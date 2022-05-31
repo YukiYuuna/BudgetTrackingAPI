@@ -29,6 +29,13 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
             + "FROM ExpenseTransaction e "
             + "WHERE "
             + "lower(e.user.username) "
+            + "LIKE :#{#username == null || #username.isEmpty()? '%' : #username + '%'} ")
+    List<ExpenseTransaction> getAllTransactionsByUsername(String username);
+
+    @Query("SELECT e "
+            + "FROM ExpenseTransaction e "
+            + "WHERE "
+            + "lower(e.user.username) "
             + "LIKE :#{#username == null || #username.isEmpty()? '%' : #username + '%'} "
             + "AND "
             + "lower(e.categoryName) "

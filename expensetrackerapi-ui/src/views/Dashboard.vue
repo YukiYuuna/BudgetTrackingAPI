@@ -4,7 +4,9 @@
       <v-layout row justify-space-between>
         <v-flex xs12 md6>
           <v-card class="pa-2 mr-2" raised min-height="350px">
-            <div class="blue--text px-2 py-1 text-capitalize font-weight-medium">Add New Expense</div>
+            <div class="blue--text px-2 py-1 text-capitalize font-weight-medium"
+                 style="margin-bottom: -15px"
+            >Add New Expense</div>
             <v-divider></v-divider>
             <ExpenseForm
               :expense-transaction="expenseTransaction"
@@ -18,15 +20,17 @@
           <v-card
             :class="{'pa-2 mr-2 mt-2': $vuetify.breakpoint.smAndDown, 'pa-2 mr-2': $vuetify.breakpoint.mdAndUp}"
             tile
-            min-height="340px"
+            min-height="350px"
             height="100%"
           >
             <div
               class="blue--text px-2 py-1 text-capitalize font-weight-medium"
+              style="margin-bottom: -15px"
             >Budget (Current Month)</div>
             <v-divider></v-divider>
             <DoughnutChart
               :height="75"
+              :theme="theme"
               :showLabel="true"
               :showLabelLines="true"
               :seriesData="monthlyBudget.data"
@@ -63,6 +67,7 @@ export default {
     return {
       loading: false,
       dateMenu: false,
+      theme: 'light',
       expenseTransaction: {}
     }
   },
@@ -77,6 +82,7 @@ export default {
           this.$refs.form.reset()
         })
         .finally(() => {
+          window.location.reload()
           this.loading = false
         })
     }

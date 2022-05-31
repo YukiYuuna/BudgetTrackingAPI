@@ -20,10 +20,13 @@ export default {
     Navbar
   },
   mounted () {
+    this.$store.dispatch('account/getUserInfo')
     this.$store.dispatch('expenseTransactions/loadExpenseTransactions')
     this.$store.dispatch('expenseCategories/loadExpenseCategories')
-    this.$store.dispatch('account/getUserInfo')
     this.$store.dispatch('statistics/loadExpenseTransactionsForCurrentMonth')
+    this.$store.dispatch('incomeTransactions/loadIncomeTransactions')
+    this.$store.dispatch('incomeCategories/loadIncomeCategories')
+    this.$store.dispatch('statistics/loadIncomeTransactionsForCurrentMonth')
     this.$vuetify.theme.dark = this.theme === 'dark'
   },
   computed: {

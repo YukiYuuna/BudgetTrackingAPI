@@ -5,6 +5,8 @@ import { loader } from '@/store/modules/loader'
 import { account } from '@/store/modules/account'
 import { expenseCategories } from '@/store/modules/expensecategories'
 import { expenseTransactions } from '@/store/modules/expensetransactions'
+import { incomeCategories } from '@/store/modules/incomecategories'
+import { incomeTransactions } from '@/store/modules/incometransactions'
 import { statistics } from '@/store/modules/statistics'
 import createPersistedState from 'vuex-persistedstate'
 import SecureLS from 'secure-ls'
@@ -19,6 +21,8 @@ const store = new Vuex.Store({
     account,
     expenseCategories,
     expenseTransactions,
+    incomeCategories,
+    incomeTransactions,
     statistics
   },
   plugins: [

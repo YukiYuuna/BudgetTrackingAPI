@@ -32,6 +32,13 @@ public interface IncomeTransactionRepository extends JpaRepository<IncomeTransac
             + "FROM IncomeTransaction i "
             + "WHERE "
             + "lower(i.user.username) "
+            + "LIKE :#{#username == null || #username.isEmpty()? '%' : #username + '%'} ")
+    List<IncomeTransaction> getAllTransactionsByUsername( String username);
+
+    @Query("SELECT i "
+            + "FROM IncomeTransaction i "
+            + "WHERE "
+            + "lower(i.user.username) "
             + "LIKE :#{#username == null || #username.isEmpty()? '%' : #username + '%'} "
             + "AND "
             + "lower(i.categoryName) "

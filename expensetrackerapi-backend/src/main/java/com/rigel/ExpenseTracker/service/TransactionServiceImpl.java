@@ -90,6 +90,22 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
     @Override
+    public Optional<?> getCategoryByName(String type, String categoryName) {
+        Optional<?> category;
+
+        if(type.equals("expense"))
+            category = expenseCategoryRepo.findExpenseCategoryByCategoryNameAndUser(categoryName, getUser());
+        else
+            category = incomeCategoryRepo.findIncomeCategoryByCategoryNameAndUser(categoryName, getUser());
+
+        if(category.isEmpty()) {
+            log.error("Category: " + categoryName + " doesn't exist in the DB!");
+            throw new ResponseStatusException(NOT_FOUND, "Category with this id doesn't exist.");
+        }
+        return category;
+    }
+
+    @Override
     public HashMap<String, Object> getCategories(String type) throws ResponseStatusException{
         Set<?> categories;
         User user = getUser();
@@ -254,27 +270,41 @@ public class TransactionServiceImpl implements TransactionService{
         return result;
     }
 
-    public HashMap<String, Object> getTransactionByYearMonthAndCategory(Integer year, Integer month,
-                                                                        String categoryName, String type) {
+    public HashMap<String, Object> getTransactionByYearMonthAndCategory(Integer year, Integer month, String type) {
         String username = getUsernameByAuthentication();
         HashMap<String, Object> result = new LinkedHashMap<>();
         result.put("username", username);
 
         result.put("year_month", year + "_" + month);
-        result.put("categoryName", categoryName);
 
         if(type.equals("expense")){
-            List<ExpenseTransaction> transactions = expenseTransactionRepo
-                    .filterTransactionsByCategoryYearAndMonth(username, year, month, categoryName);
-            result.put("transactions", transactions);
-            result.put("totalAmount", transactions.stream()
-                    .mapToDouble(ExpenseTransaction::getExpenseAmount).sum());
-        } else{
-            List<IncomeTransaction> transactions = incomeTransactionRepo
-                    .filterTransactionsByCategoryYearAndMonth(username, year, month, categoryName);
-            result.put("transactions", transactions);
-            result.put("totalAmount", transactions.stream()
-                    .mapToDouble(IncomeTransaction::getIncomeAmount).sum());
+            Set<ExpenseCategory> categories = expenseCategoryRepo
+                    .findExpenseCategoriesByUser(
+                            userRepo.findUserByUsername(username).get());
+
+            for(ExpenseCategory category : categories){
+                HashMap<String, Object> transactionsByCategory = new LinkedHashMap<>();
+                List<ExpenseTransaction> transactions = expenseTransactionRepo
+                        .filterTransactionsByCategoryYearAndMonth(username, year, month, category.getCategoryName());
+                transactionsByCategory.put("totalAmount", transactions.stream()
+                        .mapToDouble(ExpenseTransaction::getExpenseAmount).sum());
+                transactionsByCategory.put("transactions", transactions);
+                result.put(category.getCategoryName(), transactionsByCategory);
+            }
+        } else {
+            Set<IncomeCategory> categories = incomeCategoryRepo
+                    .findIncomeCategoriesByUser(
+                            userRepo.findUserByUsername(username).get());
+
+            for(IncomeCategory category : categories){
+                HashMap<String, Object> transactionsByCategory = new LinkedHashMap<>();
+                List<IncomeTransaction> transactions = incomeTransactionRepo
+                        .filterTransactionsByCategoryYearAndMonth(username, year, month, category.getCategoryName());
+                transactionsByCategory.put("totalAmount", transactions.stream()
+                        .mapToDouble(IncomeTransaction::getIncomeAmount).sum());
+                transactionsByCategory.put("transactions", transactions);
+                result.put(category.getCategoryName(), transactionsByCategory);
+            }
         }
 
         return result;
@@ -284,6 +314,7 @@ public class TransactionServiceImpl implements TransactionService{
     @Override
     public HashMap<String, Object> getAllUserTransactions(Pageable pageable, String type) {
         Page<?> transactions;
+        List<?> allTransactions = null;
         String username = getUsernameByAuthentication();
 
         if(getUser().getRoles().stream().anyMatch(role -> role.getRoleName().equals("ROLE_ADMIN"))) {
@@ -296,19 +327,21 @@ public class TransactionServiceImpl implements TransactionService{
         else {
             if(type.equals("expense")){
                 transactions = expenseTransactionRepo.filterTransactionsByUsername(pageable, username);
+                allTransactions = expenseTransactionRepo.getAllTransactionsByUsername(username);
             }else{
                 transactions = incomeTransactionRepo.filterTransactionsByUsername(pageable, username);
+                allTransactions = incomeTransactionRepo.getAllTransactionsByUsername(username);
             }
         }
 
-        if(transactions.isEmpty())
+        if(transactions.isEmpty() || allTransactions == null)
             throw new ResponseStatusException(NOT_FOUND, "No transactions found in the DB.");
 
         HashMap<String, Object> result = new LinkedHashMap<>();
         result.put("username", username);
         result.put("totalTransactions", transactions.getTotalElements());
         result.put("totalPages", transactions.getTotalPages());
-        result.put("transactions", transactions.getContent());
+        result.put("transactions", allTransactions);
 
         return result;
     }
@@ -408,6 +441,14 @@ public class TransactionServiceImpl implements TransactionService{
             return expenseCategoryRepo.existsExpenseCategoryByExpenseCategoryIdAndUser(categoryId, getUser());
 
         return incomeCategoryRepo.existsIncomeCategoryByIncomeCategoryIdAndUser(categoryId, getUser());
+    }
+
+    @Override
+    public boolean categoryExistsByName(String type, String categoryName) {
+        if(type.equals("expense"))
+            return expenseCategoryRepo.existsExpenseCategoryByCategoryNameAndUser(categoryName, getUser());
+
+        return incomeCategoryRepo.existsIncomeCategoryByCategoryNameAndUser(categoryName, getUser());
     }
 
     @Override

@@ -98,7 +98,7 @@ export default {
       navItems: [
         { icon: 'dashboard', text: 'Dashboard', route: '/dashboard' },
         { icon: 'shopping_cart', text: 'Expenses', route: '/expenses' },
-        { icon: 'insert_chart_outlined', text: 'Stats', route: '/stats' },
+        { icon: 'mdi-money', text: 'Income', route: '/income' },
         { icon: 'settings', text: 'Settings', route: '/settings' }
       ],
       menuItems: [

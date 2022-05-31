@@ -34,8 +34,11 @@ const actions = {
       () => {
         commit(`alert/${ADD_ALERT}`, { message: 'User registered successfully', color: 'success' }, { root: true })
         router.push('/login')
-      }
-    )
+      })
+      .finally(() => {
+        window.location.reload()
+        this.loading = false
+      })
   },
   modifyUserInfo ({ commit, dispatch }, user) {
     UserService.modifyUserInformation(user).then(

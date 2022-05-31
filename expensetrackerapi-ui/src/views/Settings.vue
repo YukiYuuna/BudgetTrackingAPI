@@ -2,56 +2,49 @@
   <div>
     <v-container>
       <v-layout row justify-space-between>
-        <v-flex xs12>
-          <v-layout row justify-space-between>
-            <v-flex xs12 md4 my-3>
-              <v-card class="pa-2 mr-2" flat min-height="340px" height="100%">
-                <div
-                  class="blue--text px-2 py-1 text-capitalize font-weight-medium"
-                >General Settings</div>
-                <v-divider></v-divider>
-                <v-form class="xs12 my-1">
-                  <v-container>
-                    <v-text-field
-                      label="System Name"
-                      required
-                      class="ma-0 pa-0 form-label"
-                      v-model="settings.systemName"
-                      dense
-                    ></v-text-field>
-                    <v-text-field
-                      label="Currency"
-                      required
-                      class="ma-0 pa-0 form-label"
-                      v-model="settings.currency"
-                      dense
-                    ></v-text-field>
-                  </v-container>
-                </v-form>
-              </v-card>
-            </v-flex>
-            <v-flex xs12 md8 my-3>
-              <v-card
-                :class="{'pa-2 mr-2 mt-2': $vuetify.breakpoint.smAndDown, 'pa-2 mr-2': $vuetify.breakpoint.mdAndUp}"
-                flat
-                min-height="340px"
-                height="100%"
-              >
-              </v-card>
-            </v-flex>
-          </v-layout>
+        <v-flex xs12 md6>
+          <v-card
+            :class="{'pa-2 mr-2 mt-2': $vuetify.breakpoint.smAndDown,
+             'pa-2 mr-2': $vuetify.breakpoint.mdAndUp}">
+            <div
+              class="blue--text px-2 py-1 text-capitalize font-weight-medium"
+              style="margin-bottom: -15px"
+            >General Settings
+            </div>
+            <v-divider></v-divider>
+            <v-form class="xs12 my-1">
+              <v-container>
+                <v-text-field
+                  label="System Name"
+                  required
+                  class="ma-0 pa-0 form-label"
+                  v-model="settings.systemName"
+                  dense
+                ></v-text-field>
+                <v-text-field
+                  label="Currency"
+                  required
+                  class="ma-0 pa-0 form-label"
+                  v-model="settings.currency"
+                  dense
+                ></v-text-field>
+              </v-container>
+            </v-form>
+          </v-card>
         </v-flex>
-
         <v-flex xs12>
-          <v-container px-0 pb-0>
-            <v-layout row justify-space-between>
-              <v-flex xs12 >
-                <v-card class="pa-2 mr-2 my-3" flat min-height="340px" height="100%">
-                  <ExpenseCategories />
-                </v-card>
-              </v-flex>
-            </v-layout>
-          </v-container>
+          <v-flex xs12>
+            <v-card
+              :class="{'pa-2 mr-2 mt-2': $vuetify.breakpoint.smAndDown, 'pa-2 mr-2': $vuetify.breakpoint.mdAndUp}">
+              <ExpenseCategories/>
+            </v-card>
+          </v-flex>
+        </v-flex>
+        <v-flex xs12>
+          <v-card
+            :class="{'pa-2 mr-2 mt-2': $vuetify.breakpoint.smAndDown, 'pa-2 mr-2': $vuetify.breakpoint.mdAndUp}">
+            <IncomeCategories/>
+          </v-card>
         </v-flex>
       </v-layout>
     </v-container>
@@ -61,10 +54,12 @@
 <script>
 import { mapState } from 'vuex'
 import ExpenseCategories from '@/components/ExpenseCategories'
+import IncomeCategories from '@/components/IncomeCategories'
 
 export default {
   components: {
-    ExpenseCategories
+    ExpenseCategories,
+    IncomeCategories
   },
   computed: {
     ...mapState({

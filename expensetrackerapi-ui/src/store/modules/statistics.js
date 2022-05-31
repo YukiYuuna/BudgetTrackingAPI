@@ -15,26 +15,41 @@ import forEach from 'lodash/forEach'
 import uniq from 'lodash/uniq'
 import ExpenseTransactionsService from '@/services/expense-transactions-service'
 import UserService from '@/services/user-service'
+import IncomeTransactionsService from '@/services/income-transactions-service'
 
 const state = {
   user: {},
   expenseCategoriesBreakdown: [],
+  incomeCategoriesBreakdown: [],
   expenseTransactionsBreakdown: [],
+  incomeTransactionsBreakdown: [],
   totalAmount: 0
 }
 
 const actions = {
-  // [LOAD_CATEGORIES_BREAKDOWN] ({ commit }) {
-  //   return Api.get('/statistics/getcurrentyearcategoriesbreakdown')
-  //     .then(response => {
-  //       commit(SET_CATEGORIES_BREAKDOWN, response.data)
-  //     })
-  // },
+  loadExpenseTransactionsForCurrentMonthByCategory ({ commit }, category) {
+    const year = new Date().getFullYear()
+    const month = new Date().getMonth() + 1
+    ExpenseTransactionsService.getTransactionsForCurrentMonthByCategory(year, month, category).then(data => {
+      commit('getAllExpenseTransactionsForCurrentMonth', data)
+    })
+    UserService.getUserInfo().then(user => { commit('userInfo', user) }
+    )
+  },
   loadExpenseTransactionsForCurrentMonth ({ commit }) {
     const year = new Date().getFullYear()
     const month = new Date().getMonth() + 1
     ExpenseTransactionsService.getTransactionsForCurrentMonth(year, month).then(data => {
       commit('getAllExpenseTransactionsForCurrentMonth', data)
+    })
+    UserService.getUserInfo().then(user => { commit('userInfo', user) }
+    )
+  },
+  loadIncomeTransactionsForCurrentMonth ({ commit }) {
+    const year = new Date().getFullYear()
+    const month = new Date().getMonth() + 1
+    IncomeTransactionsService.getTransactionsForCurrentMonth(year, month).then(data => {
+      commit('getAllIncomeTransactionsForCurrentMonth', data)
     })
     UserService.getUserInfo().then(user => { commit('userInfo', user) }
     )
@@ -65,6 +80,9 @@ const mutations = {
   },
   getAllExpenseTransactionsForCurrentMonth (state, expenseTransactionsBreakdown) {
     state.expenseTransactionsBreakdown = expenseTransactionsBreakdown
+  },
+  getAllIncomeTransactionsForCurrentMonth (state, incomeTransactionsBreakdown) {
+    state.incomeTransactionsBreakdown = incomeTransactionsBreakdown
   },
   userInfo (state, user) {
     state.user = user
@@ -152,8 +170,9 @@ const mutations = {
 
 const getters = {
   monthlyBudget: (state) => {
-    const totalBudget = state.user.currentBudget
+    const totalMade = state.incomeTransactionsBreakdown.totalAmount
     const totalSpent = state.expenseTransactionsBreakdown.totalAmount
+    const totalBudget = state.user.currentBudget + totalMade
     const remaining = totalBudget - totalSpent
 
     return {
@@ -162,7 +181,8 @@ const getters = {
         { value: (remaining < 0 ? 0 : remaining).toFixed(2), name: 'Remaining', itemStyle: { color: '#BDBDBD' } }
       ],
       totalBudget: new Intl.NumberFormat(window.navigator.language).format(totalBudget),
-      totalSpent: new Intl.NumberFormat(window.navigator.language).format(totalSpent)
+      totalSpent: new Intl.NumberFormat(window.navigator.language).format(totalSpent),
+      totalMade: new Intl.NumberFormat(window.navigator.language).format(totalMade)
     }
   },
   yearlyExpenses: state => {

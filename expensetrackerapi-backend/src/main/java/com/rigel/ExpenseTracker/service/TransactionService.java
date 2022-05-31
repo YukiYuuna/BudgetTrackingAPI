@@ -21,6 +21,8 @@ public interface TransactionService {
 //    done
     Optional<?> getCategory(String type, Long categoryId);
 
+    Optional<?> getCategoryByName(String type, String categoryName);
+
 //    done
     HashMap<String, Object> getCategories(String type);
 
@@ -39,7 +41,7 @@ public interface TransactionService {
 
     HashMap<String, Object> getTransactionByCurrentYear(String type);
 
-    HashMap<String, Object> getTransactionByYearMonthAndCategory(Integer year, Integer month, String categoryName, String type);
+    HashMap<String, Object> getTransactionByYearMonthAndCategory(Integer year, Integer month, String type);
 //    done
     HashMap<String, Object> getAllUserTransactions(Pageable pageable, String type);
 
@@ -54,6 +56,8 @@ public interface TransactionService {
 
 //    done
     boolean categoryExists(String type, Long categoryId);
+
+    boolean categoryExistsByName(String type, String categoryName);
 
 //    done
     void deleteAllUserTransactions(String type);
