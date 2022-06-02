@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -274,9 +273,9 @@ public class TransactionServiceImpl implements TransactionService{
         String username = getUsernameByAuthentication();
         HashMap<String, Object> result = new LinkedHashMap<>();
         result.put("username", username);
-
         result.put("year_month", year + "_" + month);
 
+        int totalCategories;
         HashMap<String, Object> categoriesInfo = new LinkedHashMap<>();
         if(type.equals("expense")){
             Set<ExpenseCategory> categories = expenseCategoryRepo
@@ -289,10 +288,11 @@ public class TransactionServiceImpl implements TransactionService{
                         .filterTransactionsByCategoryYearAndMonth(username, year, month, category.getCategoryName());
                 transactionsByCategory.put("totalAmount", transactions.stream()
                         .mapToDouble(ExpenseTransaction::getExpenseAmount).sum());
+                transactionsByCategory.put("categoryColor", category.getColor() == null ? "#2196F3" : category.getColor());
                 transactionsByCategory.put("transactions", transactions);
                 categoriesInfo.put(category.getCategoryName(), transactionsByCategory);
             }
-            categoriesInfo.put("totalCategories", categories.size());
+            totalCategories = categories.size();
 
         } else {
             Set<IncomeCategory> categories = incomeCategoryRepo
@@ -305,12 +305,14 @@ public class TransactionServiceImpl implements TransactionService{
                         .filterTransactionsByCategoryYearAndMonth(username, year, month, category.getCategoryName());
                 transactionsByCategory.put("totalAmount", transactions.stream()
                         .mapToDouble(IncomeTransaction::getIncomeAmount).sum());
+                transactionsByCategory.put("categoryColor", category.getColor() == null ? "#2196F3" : category.getColor());
                 transactionsByCategory.put("transactions", transactions);
                 categoriesInfo.put(category.getCategoryName(), transactionsByCategory);
             }
-            categoriesInfo.put("totalCategories", categories.size());
+            totalCategories = categories.size();
         }
 
+        result.put("totalCategories", totalCategories);
         result.put("categoriesInfo", categoriesInfo);
 
         return result;
@@ -322,6 +324,7 @@ public class TransactionServiceImpl implements TransactionService{
         Page<?> transactions;
         List<?> allTransactions = null;
         String username = getUsernameByAuthentication();
+        HashMap<String, Object> result = new LinkedHashMap<>();
 
         if(getUser().getRoles().stream().anyMatch(role -> role.getRoleName().equals("ROLE_ADMIN"))) {
             if(type.equals("expense")){
@@ -333,17 +336,22 @@ public class TransactionServiceImpl implements TransactionService{
         else {
             if(type.equals("expense")){
                 transactions = expenseTransactionRepo.filterTransactionsByUsername(pageable, username);
-                allTransactions = expenseTransactionRepo.getAllTransactionsByUsername(username);
+                List<ExpenseTransaction> expenseTransactions = expenseTransactionRepo.getAllTransactionsByUsername(username);
+                allTransactions = expenseTransactions;
+                result.put("transactionsAmount", expenseTransactions.stream()
+                        .mapToDouble(ExpenseTransaction::getExpenseAmount).sum());
             }else{
                 transactions = incomeTransactionRepo.filterTransactionsByUsername(pageable, username);
-                allTransactions = incomeTransactionRepo.getAllTransactionsByUsername(username);
+                List<IncomeTransaction> incomeTransactions = incomeTransactionRepo.getAllTransactionsByUsername(username);
+                allTransactions = incomeTransactions;
+                result.put("transactionsAmount", incomeTransactions.stream()
+                        .mapToDouble(IncomeTransaction::getIncomeAmount).sum());
             }
         }
 
         if(transactions.isEmpty() || allTransactions == null)
             throw new ResponseStatusException(NOT_FOUND, "No transactions found in the DB.");
 
-        HashMap<String, Object> result = new LinkedHashMap<>();
         result.put("username", username);
         result.put("totalTransactions", transactions.getTotalElements());
         result.put("totalPages", transactions.getTotalPages());
@@ -356,24 +364,32 @@ public class TransactionServiceImpl implements TransactionService{
     public void addCategory(String categoryName, String type) {
         String dbName = categoryName.toLowerCase();
         User user = getUser();
-        Optional<?> category;
-        if(type.equals("expense")){
-            category = expenseCategoryRepo.findExpenseCategoryByCategoryNameAndUser(dbName, getUser());
-        }else if(type.equals("income")){
-            category = incomeCategoryRepo.findIncomeCategoryByCategoryNameAndUser(dbName, getUser());
-        } else{
-            throw new ResponseStatusException(BAD_REQUEST, "Please enter a valid category type. Either income/expense.");
-        }
-
-        if(category.isPresent())
-            throw new ResponseStatusException(BAD_REQUEST, "Category with name: " + categoryName + ", already exists.");
+        addCategoryValidation(dbName, user, type);
 
         if(type.equals("expense")) {
             ExpenseCategory expenseCategory = new ExpenseCategory(dbName, user);
             user.addExpenseCategoryToUser(expenseCategory);
             expenseCategoryRepo.save(expenseCategory);
         } else{
-            IncomeCategory incomeCategory = new IncomeCategory(categoryName, user);
+            IncomeCategory incomeCategory = new IncomeCategory(dbName, user);
+            user.addIncomeCategoryToUser(incomeCategory);
+            incomeCategoryRepo.save(incomeCategory);
+        }
+        log.info("Category has been added to the user successfully!");
+    }
+
+    @Override
+    public void addCategoryWithColor(String categoryName, String type, String color) {
+        String dbName = categoryName.toLowerCase();
+        User user = getUser();
+        addCategoryValidation(dbName, user, type);
+
+        if(type.equals("expense")) {
+            ExpenseCategory expenseCategory = new ExpenseCategory(dbName, color, user);
+            user.addExpenseCategoryToUser(expenseCategory);
+            expenseCategoryRepo.save(expenseCategory);
+        } else{
+            IncomeCategory incomeCategory = new IncomeCategory(dbName, color, user);
             user.addIncomeCategoryToUser(incomeCategory);
             incomeCategoryRepo.save(incomeCategory);
         }
@@ -405,8 +421,6 @@ public class TransactionServiceImpl implements TransactionService{
                 } else{
                     expenseTransaction.setExpenseCategory(category.get());
                 }
-//            We calculate the users budget:
-                user.addExpenseAmountToUser(expenseTransaction.getExpenseAmount());
 //            Saving to DB:
                 expenseTransactionRepo.save(expenseTransaction);
 
@@ -423,7 +437,6 @@ public class TransactionServiceImpl implements TransactionService{
                 } else{
                     incomeTransaction.setIncomeCategory(category.get());
                 }
-                user.addIncomeAmountToUser(incomeTransaction.getIncomeAmount());
                 incomeTransactionRepo.save(incomeTransaction);
             }
             log.info("Transaction has been added to the currently logged-in user successfully!");
@@ -547,5 +560,19 @@ public class TransactionServiceImpl implements TransactionService{
 
     private User getUser(){
         return getOptionalUser().get();
+    }
+
+    private void addCategoryValidation(String dbName, User user, String type){
+        Optional<?> category;
+        if(type.equals("expense")){
+            category = expenseCategoryRepo.findExpenseCategoryByCategoryNameAndUser(dbName, getUser());
+        }else if(type.equals("income")){
+            category = incomeCategoryRepo.findIncomeCategoryByCategoryNameAndUser(dbName, getUser());
+        } else{
+            throw new ResponseStatusException(BAD_REQUEST, "Please enter a valid category type. Either income/expense.");
+        }
+
+        if(category.isPresent())
+            throw new ResponseStatusException(BAD_REQUEST, "Category with name: " + dbName.toUpperCase() + ", already exists.");
     }
 }

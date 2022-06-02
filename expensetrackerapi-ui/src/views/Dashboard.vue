@@ -3,7 +3,7 @@
     <v-container>
       <v-layout row justify-space-between>
         <v-flex xs12 md6>
-          <v-card class="pa-2 mr-2" raised min-height="350px">
+          <v-card class="pa-2 mr-2" raised min-height="100%">
             <div class="blue--text px-2 py-1 text-capitalize font-weight-medium"
                  style="margin-bottom: -15px"
             >Add New Expense</div>
@@ -20,7 +20,7 @@
           <v-card
             :class="{'pa-2 mr-2 mt-2': $vuetify.breakpoint.smAndDown, 'pa-2 mr-2': $vuetify.breakpoint.mdAndUp}"
             tile
-            min-height="350px"
+            min-height="100%"
             height="100%"
           >
             <div
@@ -34,16 +34,16 @@
               :showLabel="true"
               :showLabelLines="true"
               :seriesData="monthlyBudget.data"
-              :centerY="50"
+              :centerY="52"
               :pieRadiusOuter="75"
             />
             <div class="d-flex justify-space-around text-subtitle-2 px-12 mx-12">
               <div>
-                <div>Limit</div>
+                <div>Total Budget</div>
                 <div>{{`BGN ${monthlyBudget.totalBudget}`}}</div>
               </div>
               <div>
-                <div>Spent</div>
+                <div>Total Spent</div>
                 <div>{{`BGN ${monthlyBudget.totalSpent}`}}</div>
               </div>
             </div>
@@ -88,6 +88,9 @@ import { mapGetters } from 'vuex'
 
 export default {
   components: { ExpenseForm, DoughnutChart },
+  mounted () {
+    this.$store.dispatch('statistics/loadCurrentBudget')
+  },
   computed: {
     ...mapGetters('statistics', ['monthlyBudget', 'yearlyExpenses', 'monthlyBudgetsByCategory'])
   },

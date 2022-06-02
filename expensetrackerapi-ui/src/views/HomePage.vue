@@ -66,11 +66,6 @@ export default {
   font-size: 10pt;
 }
 
-.tableHeader {
-  height: 20px;
-  font-size: 16px !important;
-}
-
 .singleAppbar {
   margin-top: 48px;
 }
@@ -79,11 +74,4 @@ export default {
   margin-top: 92px;
 }
 
-.v-select__slot {
-  font-size: smaller;
-}
-
-.v-text-field__slot {
-  font-size: smaller;
-}
 </style>

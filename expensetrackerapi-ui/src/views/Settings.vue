@@ -2,7 +2,7 @@
   <div>
     <v-container>
       <v-layout row justify-space-between>
-        <v-flex xs12 md6>
+        <v-flex xs10 md2>
           <v-card
             :class="{'pa-2 mr-2 mt-2': $vuetify.breakpoint.smAndDown,
              'pa-2 mr-2': $vuetify.breakpoint.mdAndUp}">
@@ -20,6 +20,7 @@
                   class="ma-0 pa-0 form-label"
                   v-model="settings.systemName"
                   dense
+                  readonly
                 ></v-text-field>
                 <v-text-field
                   label="Currency"
@@ -27,20 +28,18 @@
                   class="ma-0 pa-0 form-label"
                   v-model="settings.currency"
                   dense
+                  readonly
                 ></v-text-field>
               </v-container>
             </v-form>
           </v-card>
         </v-flex>
-        <v-flex xs12>
-          <v-flex xs12>
-            <v-card
-              :class="{'pa-2 mr-2 mt-2': $vuetify.breakpoint.smAndDown, 'pa-2 mr-2': $vuetify.breakpoint.mdAndUp}">
-              <ExpenseCategories/>
-            </v-card>
-          </v-flex>
-        </v-flex>
-        <v-flex xs12>
+        <v-flex xs10>
+          <v-card
+            :class="{'pa-2 mr-2 mt-2': $vuetify.breakpoint.smAndDown, 'pa-2 mr-2': $vuetify.breakpoint.mdAndUp}">
+            <ExpenseCategories/>
+          </v-card>
+          <v-divider></v-divider>
           <v-card
             :class="{'pa-2 mr-2 mt-2': $vuetify.breakpoint.smAndDown, 'pa-2 mr-2': $vuetify.breakpoint.mdAndUp}">
             <IncomeCategories/>

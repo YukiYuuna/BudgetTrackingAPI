@@ -48,6 +48,8 @@ public interface TransactionService {
 //    done
     void addCategory(String categoryName, String type);
 
+    void addCategoryWithColor(String categoryName, String type, String color);
+
 //    done
     void addTransaction(String categoryType,String date, Double TransactionAmount, String categoryName, String description);
 

@@ -56,7 +56,6 @@ const actions = {
     UserService.getUserInfo().then(
       user => {
         commit('modificationFinished', user)
-        dispatch(`alert/${ADD_ALERT}`, { message: 'Profile extracted successfully', color: 'success' }, { root: true })
       },
       error => {
         commit('modificationFinished')

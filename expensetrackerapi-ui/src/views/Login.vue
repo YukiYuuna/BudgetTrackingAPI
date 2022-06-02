@@ -79,6 +79,10 @@ export default {
     this.$vuetify.theme.dark = false
     // reset login status
     this.$store.dispatch('account/logout')
+    this.$store.dispatch('expenseCategories/logout')
+    this.$store.dispatch('incomeCategories/logout')
+    this.$store.dispatch('expenseTransactions/logout')
+    this.$store.dispatch('incomeTransactions/logout')
   },
   methods: {
     handleLoginSubmit () {
@@ -87,7 +91,7 @@ export default {
       if (this.loginForm.username && this.loginForm.password) {
         this.$store.dispatch('account/login', this.loginForm)
           .then(() => {
-            this.$router.push('/dashboard')
+            this.$router.push('/')
           })
           .finally(() => {
             window.location.reload()

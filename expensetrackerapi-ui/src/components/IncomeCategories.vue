@@ -32,8 +32,8 @@
                 <v-text-field
                   class="ma-0 pa-0 form-label"
                   dense
-                  v-model="editedCategory.colourHex"
-                  label="Colour"
+                  v-model="editedCategory.color"
+                  label="Color"
                 >
                   <template v-slot:append>
                     <v-menu
@@ -51,7 +51,7 @@
                           <v-color-picker
                             mode="hexa"
                             hide-mode-switch
-                            v-model="editedCategory.colourHex"
+                            v-model="editedCategory.color"
                             flat
                           />
                         </v-card-text>
@@ -86,9 +86,9 @@
         </v-dialog>
       </div>
     </template>
-    <template v-slot:item.colourHex="{ item }">
+    <template v-slot:item.color="{ item }">
       <v-chip
-        :color="item.colourHex"
+        :color="item.color"
         style="padding: 0px; height: 20px; width: 20px"
         flat
         small
@@ -116,18 +116,18 @@ export default {
     headers: [
       { text: 'Id', value: 'incomeCategoryId', align: ' d-none' },
       { text: 'Name', value: 'categoryName' },
-      { text: 'Colour', value: 'colourHex', width: 100 },
+      { text: 'Color', value: 'color', width: 100 },
       { text: 'Actions', value: 'action', sortable: false, width: 50 }
     ],
     editedCategory: {
       incomeCategoryId: 0,
       categoryName: '',
-      colourHex: '#1976D2FF'
+      color: '#1976D2FF'
     },
     defaultCategory: {
       incomeCategoryId: 0,
       categoryName: '',
-      colourHex: '#1976D2FF'
+      color: '#1976D2FF'
     }
   }),
 
@@ -148,9 +148,9 @@ export default {
   },
   methods: {
     swatchStyle (item) {
-      const { colourHex } = item
+      const { color } = item
       return {
-        backgroundColor: colourHex,
+        backgroundColor: color,
         cursor: 'pointer',
         height: '20px',
         width: '20px',
@@ -160,7 +160,8 @@ export default {
 
     deleteIncomeCategory (incomeCategory) {
       confirm('Are you sure you want to delete this item?') &&
-      this.$store.dispatch('incomeCategories/deleteIncomeCategory', { categoryName: incomeCategory.categoryName })
+      this.$store.dispatch('incomeCategories/deleteIncomeCategory', { incomeCategoryId: incomeCategory.incomeCategoryId })
+      window.location.reload()
     },
 
     editIncomeCategory (item) {
@@ -195,8 +196,8 @@ export default {
             this.close()
           })
           .finally(() => {
-            window.location.reload()
             this.loading = false
+            window.location.reload()
           })
       }
     }

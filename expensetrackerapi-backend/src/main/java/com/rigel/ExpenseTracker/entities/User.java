@@ -122,12 +122,4 @@ public class User {
 
         setIncomeCategories(newCategories);
     }
-
-    public void addExpenseAmountToUser(Double expenseAmount){
-        this.currentBudget -= expenseAmount;
-    }
-
-    public void addIncomeAmountToUser(Double incomeAmount){
-        this.currentBudget += incomeAmount;
-    }
 }

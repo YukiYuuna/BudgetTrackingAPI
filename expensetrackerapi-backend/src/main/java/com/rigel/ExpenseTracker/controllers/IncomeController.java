@@ -73,7 +73,11 @@ public class IncomeController extends ControlHelper {
 
     @PostMapping("/add/income/category")
     public ResponseEntity<String> addIncomeCategory(@RequestBody IncomeCategory category) {
-        service.addCategory(category.getCategoryName(), "income");
+        if(category.getColor() != null){
+            service.addCategoryWithColor(category.getCategoryName(), "income", category.getColor());
+        } else {
+            service.addCategory(category.getCategoryName(), "income");
+        }
         return ResponseEntity.ok("Income category has been saved successfully!");
     }
 
@@ -83,8 +87,8 @@ public class IncomeController extends ControlHelper {
         return ResponseEntity.ok().body("Transaction added successfully!");
     }
 
-    @PutMapping("/modify/income/category")
-    public ResponseEntity<?> modifyIncomeCategory(Long categoryId, @RequestBody IncomeCategory modifiedCategory) {
+    @PutMapping("/modify/income/category/{categoryId}")
+    public ResponseEntity<?> modifyIncomeCategory(@PathVariable Long categoryId, @RequestBody IncomeCategory modifiedCategory) {
         if(!service.categoryExists("income", categoryId)) {
             throw new ResponseStatusException(NOT_FOUND, "Income category with this name doesn't exist in the DB.");
         }
@@ -104,6 +108,7 @@ public class IncomeController extends ControlHelper {
         return category.map(c -> {
             modifiedCategory.setCategoryName(modifiedCategory.getCategoryName() == null ? c.getCategoryName() : modifiedCategory.getCategoryName().toLowerCase());
             modifiedCategory.setUser(c.getUser());
+            modifiedCategory.setColor(c.getColor() == null ? c.getColor() : modifiedCategory.getColor());
 
             service.deleteCategory(categoryId, "income");
             service.saveCategoryToDB(Optional.of(modifiedCategory), "income");
@@ -152,8 +157,8 @@ public class IncomeController extends ControlHelper {
     /* Ask the user if he wants to delete the category for sure, before calling this method,
      * because if he deletes the category all transactions, made with this category will be deleted too.
      */
-    @DeleteMapping("/delete/income/category")
-    public ResponseEntity<String> deleteIncomeCategory(Long categoryId) {
+    @DeleteMapping("/delete/income/category/{categoryId}")
+    public ResponseEntity<String> deleteIncomeCategory(@PathVariable Long categoryId) {
         service.deleteCategory(categoryId, "income");
         return ResponseEntity.ok().body("Income category has been deleted successfully!");
     }
@@ -161,8 +166,8 @@ public class IncomeController extends ControlHelper {
     /* The difference between this method and the deleteIncomeCategory method is that by calling this one, you will delete all correlated transactions to this category, but
      * you will not delete the category!
      */
-    @DeleteMapping("/delete/income/transactions/category")
-    public ResponseEntity<String> deleteAllUserIncomeTransactionsByCategory(String categoryName) {
+    @DeleteMapping("/delete/income/transactions/category/{categoryName}")
+    public ResponseEntity<String> deleteAllUserIncomeTransactionsByCategory(@PathVariable String categoryName) {
         service.deleteTransactionsByCategory("income", categoryName);
         return ResponseEntity.ok().body("All transactions in category - " + categoryName + " have been deleted successfully!");
     }

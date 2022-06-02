@@ -8,7 +8,7 @@
   >
     <template v-slot:top>
       <div class="d-flex align-center pa-1 pb-2">
-        <span class="blue--text font-weight-medium">Categories</span>
+        <span class="blue--text font-weight-medium">Expense Categories</span>
         <v-divider class="mx-2 my-1" inset vertical style="height: 20px"></v-divider>
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="500px">
@@ -32,8 +32,8 @@
                 <v-text-field
                   class="ma-0 pa-0 form-label"
                   dense
-                  v-model="editedCategory.colourHex"
-                  label="Colour"
+                  v-model="editedCategory.color"
+                  label="Color"
                 >
                   <template v-slot:append>
                     <v-menu
@@ -51,7 +51,7 @@
                           <v-color-picker
                             mode="hexa"
                             hide-mode-switch
-                            v-model="editedCategory.colourHex"
+                            v-model="editedCategory.color"
                             flat
                           />
                         </v-card-text>
@@ -86,9 +86,9 @@
         </v-dialog>
       </div>
     </template>
-    <template v-slot:item.colourHex="{ item }">
+    <template v-slot:item.color="{ item }">
       <v-chip
-        :color="item.colourHex"
+        :color="item.color"
         style="padding: 0px; height: 20px; width: 20px"
         flat
         small
@@ -116,18 +116,18 @@ export default {
     headers: [
       { text: 'Id', value: 'expenseCategoryId', align: ' d-none' },
       { text: 'Name', value: 'categoryName' },
-      { text: 'Colour', value: 'colourHex', width: 100 },
+      { text: 'Color', value: 'color', width: 100 },
       { text: 'Actions', value: 'action', sortable: false, width: 50 }
     ],
     editedCategory: {
       expenseCategoryId: 0,
       categoryName: '',
-      colourHex: '#1976D2FF'
+      color: '#1976D2FF'
     },
     defaultCategory: {
       expenseCategoryId: 0,
       categoryName: '',
-      colourHex: '#1976D2FF'
+      color: '#1976D2FF'
     }
   }),
 
@@ -148,9 +148,9 @@ export default {
   },
   methods: {
     swatchStyle (item) {
-      const { colourHex } = item
+      const { color } = item
       return {
-        backgroundColor: colourHex,
+        backgroundColor: color,
         cursor: 'pointer',
         height: '20px',
         width: '20px',
@@ -160,7 +160,7 @@ export default {
 
     deleteExpenseCategory (expenseCategory) {
       confirm('Are you sure you want to delete this item?') &&
-      this.$store.dispatch('expenseCategories/deleteExpenseCategory', { categoryName: expenseCategory.categoryName })
+      this.$store.dispatch('expenseCategories/deleteExpenseCategory', { expenseCategoryId: expenseCategory.expenseCategoryId })
     },
 
     editExpenseCategory (item) {
@@ -176,13 +176,11 @@ export default {
     saveExpenseCategory () {
       this.loading = true
       const editedExpenseCategory = this.editedCategory
-      console.log(this.editedCategory)
       if (editedExpenseCategory.expenseCategoryId === 0) {
         this.$store.dispatch('expenseCategories/createExpenseCategory', {
           expenseCategory: editedExpenseCategory
         })
           .then(() => {
-            console.log('done')
             this.close()
           })
           .finally(() => {
@@ -197,8 +195,8 @@ export default {
             this.close()
           })
           .finally(() => {
-            window.location.reload()
             this.loading = false
+            window.location.reload()
           })
       }
     }

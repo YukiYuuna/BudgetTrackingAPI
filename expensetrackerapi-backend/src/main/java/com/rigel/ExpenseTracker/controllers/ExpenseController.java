@@ -79,7 +79,11 @@ public class ExpenseController extends ControlHelper {
 
     @PostMapping(value = "/add/expense/category", consumes = "application/json")
     public ResponseEntity<String> addExpenseCategory(@RequestBody ExpenseCategory category) {
-        service.addCategory(category.getCategoryName(), "expense");
+        if(category.getColor() != null){
+            service.addCategoryWithColor(category.getCategoryName(), "expense", category.getColor());
+        } else {
+            service.addCategory(category.getCategoryName(), "expense");
+        }
         return ResponseEntity.ok("Expense category has been saved successfully!");
     }
 
@@ -110,6 +114,7 @@ public class ExpenseController extends ControlHelper {
         return category.map(c -> {
                     modifiedCategory.setCategoryName(modifiedCategory.getCategoryName() == null ? c.getCategoryName() : modifiedCategory.getCategoryName().toLowerCase());
                     modifiedCategory.setUser(c.getUser());
+                    modifiedCategory.setColor(c.getColor() == null ? c.getColor() : modifiedCategory.getColor());
 
                     service.deleteCategory(categoryId, "expense");
                     service.saveCategoryToDB(Optional.of(modifiedCategory), "expense");
@@ -159,8 +164,8 @@ public class ExpenseController extends ControlHelper {
     /* Ask the user if he wants to delete the category for sure, before calling this method,
     * because if he deletes the category, all transactions made with this category will be deleted too.
     */
-    @DeleteMapping("/delete/expense/category")
-    public ResponseEntity<String> deleteExpenseCategory(Long categoryId) {
+    @DeleteMapping("/delete/expense/category/{categoryId}")
+    public ResponseEntity<String> deleteExpenseCategory(@PathVariable Long categoryId) {
         service.deleteCategory(categoryId, "expense");
         return ResponseEntity.ok().body("Expense category has been deleted successfully!");
     }

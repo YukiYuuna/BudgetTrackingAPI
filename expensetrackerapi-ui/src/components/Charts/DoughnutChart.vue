@@ -15,7 +15,7 @@ export default {
     },
     titleFontSize: {
       type: Number,
-      default: 18
+      default: 15
     },
     showLabel: {
       type: Boolean,

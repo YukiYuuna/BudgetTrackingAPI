@@ -21,7 +21,8 @@ class ExpenseCategoriesService {
 
   createExpenseCategory (expenseCategory) {
     const requestCategory = {
-      categoryName: expenseCategory.expenseCategory.categoryName
+      categoryName: expenseCategory.expenseCategory.categoryName,
+      color: expenseCategory.expenseCategory.color
     }
 
     return axios.post(API_URL + 'api/add/expense/category', requestCategory, headers
@@ -32,7 +33,8 @@ class ExpenseCategoriesService {
 
   modifyExpenseCategory (modifiedCategory) {
     const requestCategory = {
-      categoryName: modifiedCategory.expenseCategory.categoryName
+      categoryName: modifiedCategory.expenseCategory.categoryName,
+      color: modifiedCategory.expenseCategory.color
     }
     const expenseCategoryId = modifiedCategory.expenseCategory.expenseCategoryId
 
@@ -42,8 +44,13 @@ class ExpenseCategoriesService {
     })
   }
 
-  deleteExpenseCategory (categoryName) {
-    return axios.delete(API_URL + 'api/delete/expense/category' + categoryName, headers)
+  deleteExpenseCategory (expenseCategoryId) {
+    const id = expenseCategoryId.expenseCategoryId
+
+    return axios.delete(API_URL + 'api/delete/expense/category/' + id, headers
+    ).then(response => {
+      return response.data
+    })
   }
 }
 

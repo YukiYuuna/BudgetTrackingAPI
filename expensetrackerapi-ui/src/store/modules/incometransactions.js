@@ -6,6 +6,9 @@ const state = {
 }
 
 const actions = {
+  logout ({ commit }) {
+    commit('logout')
+  },
   loadIncomeTransactions ({ commit }) {
     IncomeTransactionsService.getAllIncomeTransactions().then(incomeTransactions => {
       commit('getAllIncomeTransactions', incomeTransactions)
@@ -64,6 +67,9 @@ const mutations = {
   },
   deleteAllIncomeTransactionByCategory (state, categoryName) {
     state.incomeTransactions = state.incomeTransactions.filter(it => it.categoryName !== categoryName)
+  },
+  logout (state) {
+    state.incomeTransactions = []
   }
 }
 
