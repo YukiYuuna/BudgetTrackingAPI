@@ -32,6 +32,13 @@ public interface IncomeTransactionRepository extends JpaRepository<IncomeTransac
             + "FROM IncomeTransaction i "
             + "WHERE "
             + "lower(i.user.username) "
+            + "LIKE :#{#username == null || #username.isEmpty()? '%' : #username + '%'} ")
+    List<IncomeTransaction> getAllTransactionsByUsername( String username);
+
+    @Query("SELECT i "
+            + "FROM IncomeTransaction i "
+            + "WHERE "
+            + "lower(i.user.username) "
             + "LIKE :#{#username == null || #username.isEmpty()? '%' : #username + '%'} "
             + "AND "
             + "lower(i.categoryName) "
@@ -43,6 +50,22 @@ public interface IncomeTransactionRepository extends JpaRepository<IncomeTransac
             + "WHERE i.user.username = ?1 "
             + "AND i.date = ?2")
     Page<IncomeTransaction> filteredTransactionsByDate(Pageable pageable, String username, LocalDate date);
+
+    @Query(value = "SELECT i FROM IncomeTransaction i WHERE  EXTRACT(YEAR FROM i.date) = ?2 AND i.user.username = ?1")
+    List<IncomeTransaction> filterTransactionsByYear(String username, Integer year);
+
+    @Query(value = "SELECT i FROM IncomeTransaction i " +
+            "WHERE  EXTRACT(YEAR FROM i.date) = ?2 " +
+            "AND  EXTRACT(MONTH FROM i.date) = ?3 " +
+            "AND i.user.username = ?1")
+    List<IncomeTransaction> filterTransactionsForCurrentMonth(String username, Integer year, Integer month);
+
+    @Query(value = "SELECT i FROM IncomeTransaction i " +
+            "WHERE  EXTRACT(YEAR FROM i.date) = ?2 " +
+            "AND  EXTRACT(MONTH FROM i.date) = ?3 " +
+            "AND i.user.username = ?1 " +
+            "AND i.categoryName = ?4")
+    List<IncomeTransaction> filterTransactionsByCategoryYearAndMonth(String username, Integer year, Integer month, String categoryName);
 
     List<IncomeTransaction> findIncomeTransactionsByCategoryName(String categoryName);
 

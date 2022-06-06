@@ -1,0 +1,5 @@
+// ALERT
+export const CREATE_ALERT = 'CREATE_ALERT'
+
+// LOADING
+export const UPDATE_LOADING = 'UPDATE_LOADING'

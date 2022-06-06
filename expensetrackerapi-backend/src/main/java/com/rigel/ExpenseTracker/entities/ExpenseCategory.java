@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.util.List;
@@ -20,11 +21,14 @@ public class ExpenseCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "expense_category_id")
-    @JsonIgnore
     private Long expenseCategoryId;
 
     @Column(name = "category_name")
     private String categoryName;
+
+    @Column(name = "color")
+    @Nullable
+    private String color;
 
     @JsonIgnore
     @OneToMany(mappedBy = "expenseCategory")
@@ -47,6 +51,12 @@ public class ExpenseCategory {
     public ExpenseCategory(String categoryName, User user) {
         this.categoryName = categoryName;
         this.user = user;
+    }
+
+    public ExpenseCategory(String categoryName, @Nullable String color, User user) {
+        this.categoryName = categoryName;
+        this.user = user;
+        this.color = color;
     }
 
     public ExpenseCategory(String categoryName) {

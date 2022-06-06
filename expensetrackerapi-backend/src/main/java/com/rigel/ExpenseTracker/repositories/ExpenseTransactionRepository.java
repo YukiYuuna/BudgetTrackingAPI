@@ -29,6 +29,13 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
             + "FROM ExpenseTransaction e "
             + "WHERE "
             + "lower(e.user.username) "
+            + "LIKE :#{#username == null || #username.isEmpty()? '%' : #username + '%'} ")
+    List<ExpenseTransaction> getAllTransactionsByUsername(String username);
+
+    @Query("SELECT e "
+            + "FROM ExpenseTransaction e "
+            + "WHERE "
+            + "lower(e.user.username) "
             + "LIKE :#{#username == null || #username.isEmpty()? '%' : #username + '%'} "
             + "AND "
             + "lower(e.categoryName) "
@@ -40,6 +47,29 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
             + "WHERE e.date = ?2 "
             + "AND e.user.username = ?1")
     Page<ExpenseTransaction> filterTransactionsByDate(Pageable pageable, String username, LocalDate date);
+
+    @Query(value = "SELECT e FROM ExpenseTransaction e WHERE  EXTRACT(YEAR FROM e.date) = ?2 AND e.user.username = ?1")
+    List<ExpenseTransaction> filterTransactionsByYear(String username, Integer year);
+
+    @Query(value = "SELECT e FROM ExpenseTransaction e " +
+            "WHERE  EXTRACT(YEAR FROM e.date) = ?2 " +
+            "AND  EXTRACT(MONTH FROM e.date) = ?3 " +
+            "AND e.user.username = ?1")
+    List<ExpenseTransaction> filterTransactionsForCurrentMonth(String username, Integer year, Integer month);
+
+    @Query(value = "SELECT e FROM ExpenseTransaction e " +
+            "WHERE  EXTRACT(YEAR FROM e.date) = ?2 " +
+            "AND  EXTRACT(MONTH FROM e.date) = ?3 " +
+            "AND e.user.username = ?1 " +
+            "AND e.categoryName = ?4")
+    List<ExpenseTransaction> filterTransactionsByCategoryYearAndMonth(String username, Integer year, Integer month, String categoryName);
+//
+//    @Query(value = "SELECT SUM(e.expenseAmount) AS MonthlyCategorySpent, e.categoryName FROM ExpenseTransaction e " +
+//            "WHERE  EXTRACT(YEAR FROM e.date) = ?2 " +
+//            "AND e.user.username = ?1 " +
+//            "AND e.categoryName = ?4 " +
+//            "GROUP BY EXTRACT(MONTH FROM e.date)")
+//    List<ExpenseTransaction> groupTransactionsByCategoryYearAndMonth(String username, Integer year, String categoryName);
 
     List<ExpenseTransaction> findExpenseTransactionsByCategoryName(String categoryName);
 

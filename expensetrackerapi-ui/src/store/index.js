@@ -1,21 +1,39 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { auth } from './auth.module'
-import { categories } from './category.module'
-import { allTransactions } from './transaction.module'
-import { userModule } from './user.module'
+import { alert } from '@/store/modules/alert'
+import { loader } from '@/store/modules/loader'
+import { account } from '@/store/modules/account'
+import { expenseCategories } from '@/store/modules/expensecategories'
+import { expenseTransactions } from '@/store/modules/expensetransactions'
+import { incomeCategories } from '@/store/modules/incomecategories'
+import { incomeTransactions } from '@/store/modules/incometransactions'
+import { statistics } from '@/store/modules/statistics'
+import createPersistedState from 'vuex-persistedstate'
+import SecureLS from 'secure-ls'
+const ls = new SecureLS({ isCompression: false })
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
-  state: {},
-  getters: {},
-  mutations: {},
-  actions: {},
+const store = new Vuex.Store({
   modules: {
-    auth,
-    userModule,
-    allTransactions,
-    categories
-  }
+    alert,
+    loader,
+    account,
+    expenseCategories,
+    expenseTransactions,
+    incomeCategories,
+    incomeTransactions,
+    statistics
+  },
+  plugins: [
+    createPersistedState({
+      storage: {
+        getItem: key => ls.get(key),
+        setItem: (key, value) => ls.set(key, value),
+        removeItem: key => ls.remove(key)
+      }
+    })
+  ]
 })
+
+export default store

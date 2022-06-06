@@ -1,180 +1,132 @@
 <template>
-  <div class="col-md-12">
-    <div class="card card-container">
-      <img
-        id="profile-img"
-        src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-        class="profile-img-card"
-        alt="Image couldn't load"/>
-      <form name="form" @submit.prevent="handleRegister">
-        <div v-if="!successful">
-          <div class="form-group">
-            <label for="username">Username</label>
-            <input
-              v-model="user.username"
-              v-validate="'required|min:3|max:20'"
-              type="text"
-              class="form-control"
-              name="username"
-            />
-            <div
-              v-if="submitted && errors.has('username')"
-              class="alert-danger"
-            >{{ errors.first('username') }}
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input
-              v-model="user.password"
-              v-validate="'required'"
-              type="password"
-              class="form-control"
-              name="password"
-            />
-            <div
-              v-if="errors.has('password')"
-              class="alert alert-danger"
-              role="alert"
-            >Password is required!</div>
-          </div>
-          <div class="form-group">
-            <label for="firstName">First Name</label>
-            <input
-              v-model="user.firstName"
-              type="text"
-              class="form-control"
-              name="firstName"
-            />
-          </div>
-          <div class="form-group">
-            <label for="lastName">Last Name</label>
-            <input
-              v-model="user.lastName"
-              type="text"
-              class="form-control"
-              name="lastName"
-            />
-          </div>
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input
-              v-model="user.email"
-              v-validate="'required|email|max:50'"
-              type="email"
-              class="form-control"
-              name="email"
-            />
-            <div
-              v-if="submitted && errors.has('email')"
-              class="alert-danger"
-            >{{ errors.first('email') }}
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="currentBudget">Current Budget</label>
-            <input
-              v-model="user.currentBudget"
-              type="text"
-              class="form-control"
-              name="currentBudget"
-            />
-            <div class="form-group">
-              <button class="btn btn-primary btn-block" style="margin-top:30px">Sign Up</button>
-            </div>
-          </div>
-          </div>
-      </form>
-      <div
-        v-if="message.message"
-        class="alert"
-        :class="successful ? 'alert-success' : 'alert-danger'"
-      >{{ message.message }}
-      </div>
-    </div>
-  </div>
+  <v-app>
+    <v-main>
+      <v-container fill-height>
+        <v-layout align-center justify-center>
+          <v-flex xs12 sm8 md4>
+            <v-card tile>
+              <v-toolbar flat color="primary" dark>
+                <v-toolbar-title>Register</v-toolbar-title>
+              </v-toolbar>
+              <v-card-text>
+                <v-form ref="registerForm">
+                  <v-text-field
+                    v-model="registerForm.username"
+                    placeholder="Username"
+                    :rules="[required('Username')]"
+                    dense
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="registerForm.password"
+                    placeholder="Password"
+                    :type="showRegisterPassword ? 'text' : 'password'"
+                    :append-icon="showRegisterPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                    :rules="[required('Password')]"
+                    dense
+                  >
+                    <v-icon
+                      slot="append"
+                      small
+                      v-if="showRegisterPassword"
+                      @click="showRegisterPassword = !showRegisterPassword"
+                    >mdi-eye</v-icon>
+                    <v-icon
+                      slot="append"
+                      small
+                      v-else
+                      @click="showRegisterPassword = !showRegisterPassword"
+                    >mdi-eye-off</v-icon>
+                  </v-text-field>
+                  <v-text-field
+                    v-model="registerForm.email"
+                    placeholder="E-mail"
+                    :rules="[required('Email'), email('Email')]"
+                    dense
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="registerForm.firstName"
+                    placeholder="First Name"
+                    :rules="[required('FirstName')]"
+                    dense
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="registerForm.lastName"
+                    placeholder="Last Name"
+                    dense
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="registerForm.currentBudget"
+                    placeholder="Current Budget"
+                    type="number"
+                    dense
+                  ></v-text-field>
+                </v-form>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn
+                  small
+                  outlined
+                  class="primary--text"
+                  @click.native="handleLoginClick"
+                >SignIn</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn
+                  small
+                  outlined
+                  class="primary--text"
+                  @click="handleRegisterSubmit"
+                  :loading="loading"
+                >Register</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-
-import User from '../models/user'
+import { mapState } from 'vuex'
+import validations from '@/helpers/validations'
+import router from '@/router/index'
 
 export default {
-  name: 'Register',
   data () {
     return {
-      user: new User('', '', '', '', '', ''),
-      submitted: false,
-      successful: false,
-      message: ''
+      loginForm: {
+        email: '',
+        password: ''
+      },
+      registerForm: {
+        username: '',
+        password: '',
+        email: '',
+        firstName: '',
+        lastName: '',
+        currentBudget: 0
+      },
+      showRegisterPassword: false,
+      showPassword: false,
+      ...validations
     }
   },
   computed: {
-    loggedIn () {
-      return this.$store.state.auth.status.loggedIn
-    }
-  },
-  mounted () {
-    if (this.loggedIn) {
-      this.$router.push('/profile')
-    }
+    ...mapState({ loading: state => state.loader.loading })
   },
   methods: {
-    handleRegister () {
-      this.message = ''
-      this.submitted = true
-      this.$validator.validate().then(isValid => {
-        if (isValid) {
-          this.$store.dispatch('auth/register', this.user).then(
-            data => {
-              this.message = data.message
-              this.successful = true
-            },
-            error => {
-              this.message =
-                (error.response && error.response.data) ||
-                error.message ||
-                error.toString()
-              this.successful = false
-            }
-          )
-        }
-      })
+    handleRegisterSubmit () {
+      if (!this.$refs.registerForm.validate()) return
+
+      const user = this.registerForm
+      this.$store.dispatch('account/register', user)
+    },
+    handleLoginClick () {
+      router.push('/login')
     }
   }
 }
 </script>
 
-<style scoped>
-label {
-  display: block;
-  margin-top: 10px;
-}
-
-.card-container.card {
-  max-width: 350px !important;
-  padding: 40px 40px;
-}
-
-.card {
-  background-color: #f7f7f7;
-  padding: 20px 25px 30px;
-  margin: 50px auto 25px;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
-  -moz-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
-  -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
-}
-
-.profile-img-card {
-  width: 96px;
-  height: 96px;
-  margin: 0 auto 10px;
-  display: block;
-  -moz-border-radius: 50%;
-  -webkit-border-radius: 50%;
-  border-radius: 50%;
-}
+<style>
 </style>

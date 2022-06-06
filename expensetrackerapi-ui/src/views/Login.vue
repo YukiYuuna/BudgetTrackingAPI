@@ -1,134 +1,110 @@
 <template>
-  <div class="col-md-12">
-    <div class="card card-container">
-      <img
-        id="profile-img"
-        src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-        class="profile-img-card"
-      />
-      <form name="form" @submit.prevent="handleLogin">
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input
-            v-model="user.username"
-            v-validate="'required'"
-            type="text"
-            class="form-control"
-            name="username"
-          />
-          <div
-            v-if="errors.has('username')"
-            class="alert alert-danger"
-            role="alert"
-          >Username is required!</div>
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            v-model="user.password"
-            v-validate="'required'"
-            type="password"
-            class="form-control"
-            name="password"
-          />
-          <div
-            v-if="errors.has('password')"
-            class="alert alert-danger"
-            role="alert"
-          >Password is required!</div>
-        </div>
-        <div class="form-group">
-          <button class="btn btn-primary btn-block" :disabled="loading" style="margin-top: 38px">
-            <span v-show="loading" class="spinner-border spinner-border-sm"></span>
-            <span>Login</span>
-          </button>
-        </div>
-        <div class="form-group">
-          <div v-if="message.message" class="alert alert-danger" role="alert">{{message.message}}</div>
-        </div>
-      </form>
-    </div>
-  </div>
+  <v-app>
+    <v-main>
+      <v-container fill-height>
+        <v-layout align-center justify-center>
+          <v-flex xs12 sm8 md4>
+            <v-card tile>
+              <v-toolbar flat color="primary" dark>
+                <v-toolbar-title>Login</v-toolbar-title>
+              </v-toolbar>
+              <v-card-text>
+                <v-form ref="loginForm">
+                  <v-text-field
+                    v-model="loginForm.username"
+                    prepend-icon="mdi-account"
+                    placeholder="Username"
+                    :rules="[required('Username')]"
+                    dense
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="loginForm.password"
+                    placeholder="Password"
+                    prepend-icon="lock"
+                    :type="showPassword ? 'text' : 'password'"
+                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                    @click:append="showPassword = !showPassword"
+                    :rules="[required('Password')]"
+                    dense
+                  ></v-text-field>
+                </v-form>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn
+                  small
+                  outlined
+                  class="primary--text"
+                  @click.native="handleRegisterClick"
+                >Register</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn
+                  small
+                  outlined
+                  class="primary--text"
+                  @click="handleLoginSubmit"
+                  :loading="loading"
+                >Login</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-
-import User from '../models/user'
+import { mapState } from 'vuex'
+import validations from '@/helpers/validations'
+import router from '@/router/index'
 
 export default {
-  name: 'Login',
   data () {
     return {
-      user: new User('', ''),
-      loading: false,
-      message: ''
+      loginForm: {
+        username: '',
+        password: ''
+      },
+      showPassword: false,
+      ...validations
     }
   },
   computed: {
-    loggedIn () {
-      return this.$store.state.auth.status.loggedIn
-    }
+    ...mapState({
+      loading: state => state.loader.loading
+    })
   },
   created () {
-    if (this.loggedIn) {
-      this.$router.push('/profile')
-    }
+    // reset theme
+    this.$vuetify.theme.dark = false
+    // reset login status
+    this.$store.dispatch('account/logout')
+    this.$store.dispatch('expenseCategories/logout')
+    this.$store.dispatch('incomeCategories/logout')
+    this.$store.dispatch('expenseTransactions/logout')
+    this.$store.dispatch('incomeTransactions/logout')
   },
   methods: {
-    handleLogin () {
-      this.loading = true
-      this.$validator.validateAll().then(isValid => {
-        if (!isValid) {
-          this.loading = false
-          return
-        }
-        if (this.user.username && this.user.password) {
-          this.$store.dispatch('auth/login', this.user).then(
-            () => {
-              this.$router.push('/profile')
-            },
-            error => {
-              this.loading = false
-              this.message =
-                (error.response && error.response.data) ||
-                error.message ||
-                error.toString()
-            }
-          )
-        }
-      })
+    handleLoginSubmit () {
+      if (!this.$refs.loginForm.validate()) return
+
+      if (this.loginForm.username && this.loginForm.password) {
+        this.$store.dispatch('account/login', this.loginForm)
+          .then(() => {
+            this.$router.push('/')
+          })
+          .finally(() => {
+            window.location.reload()
+            this.loading = false
+          })
+      }
+    },
+    handleRegisterClick () {
+      router.push('/register')
     }
   }
 }
 </script>
 
-<style scoped>
-label {
-  display: block;
-  margin-top: 10px;
-}
-.card-container.card {
-  max-width: 350px !important;
-  padding: 40px 40px;
-}
-.card {
-  background-color: #f7f7f7;
-  padding: 20px 25px 30px;
-  margin: 50px auto 25px;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
-  -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-}
-.profile-img-card {
-  width: 96px;
-  height: 96px;
-  margin: 0 auto 10px;
-  display: block;
-  -moz-border-radius: 50%;
-  -webkit-border-radius: 50%;
-  border-radius: 50%;
-}
+<style>
 </style>

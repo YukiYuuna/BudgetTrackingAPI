@@ -2,12 +2,12 @@ package com.rigel.ExpenseTracker.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Objects;
 
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.CascadeType.DETACH;
@@ -41,7 +41,7 @@ public class IncomeTransaction {
     @JsonIgnore
     private IncomeCategory incomeCategory;
 
-    @ManyToOne(cascade=ALL)
+    @ManyToOne(cascade= {PERSIST, MERGE, REFRESH, DETACH})
     @JoinColumn(name = "user_income_transaction_id", referencedColumnName = "user_id")
     @JsonIgnore
     private User user;
@@ -55,5 +55,18 @@ public class IncomeTransaction {
         this.categoryName = categoryName;
         this.description = description;
         this.user = user;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IncomeTransaction that = (IncomeTransaction) o;
+        return Objects.equals(incomeTransactionId, that.incomeTransactionId) && Objects.equals(date, that.date) && Objects.equals(incomeAmount, that.incomeAmount) && Objects.equals(categoryName, that.categoryName) && Objects.equals(description, that.description) && Objects.equals(incomeCategory, that.incomeCategory) && Objects.equals(user, that.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(incomeTransactionId, date, incomeAmount, categoryName, description, incomeCategory, user);
     }
 }

@@ -13,65 +13,89 @@ var headers = {
 
 class ExpenseTransactionsService {
   getAllExpenseTransactions (currentPage, perPage) {
-    return axios.get(API_URL + 'api/expense/transactions',
-      {
-        params:
-          {
-            currentPage: currentPage,
-            perPage: perPage
-          },
-        headers: {
-          Authorization: authHeader()
-        }
-      }).then(response => {
-      return response
-    }, (error) => {
-      console.log(error)
+    return axios.get(API_URL + 'api/expense/transactions', headers
+    ).then(response => {
+      return response.data.transactions
     })
   }
 
   getTransactionById (id) {
-    return axios.get(API_URL + 'api/expense/transaction/' + id, { headers: authHeader() })
+    return axios.get(API_URL + 'api/expense/transaction/' + id, headers
+    ).then(response => {
+      return response.data
+    })
   }
 
-  getTransactionsByDate (date, currentPage, perPage) {
-    return axios.get(API_URL + 'api/expense/transactions/date', { params: { date: date, currentPage: currentPage, perPage: perPage }, headers: authHeader() })
+  getTransactionsByDate (date) {
+    return axios.get(API_URL + 'api/expense/transactions/date?date=' + date, headers
+    ).then(response => {
+      return response.data
+    })
   }
 
-  getTransactionByCategory (category, currentPage, perPage) {
-    return axios.get(API_URL + 'api/expense/transactions/category', { params: { category: category, currentPage: currentPage, perPage: perPage }, headers: authHeader() })
+  getTransactionsForCurrentMonth (year, month) {
+    return axios.get(API_URL + 'api/expense/transactions/current/' + year + '/' + month, headers
+    ).then(response => {
+      return response.data
+    })
+  }
+
+  getTransactionsForCurrentMonthByCategory (year, month) {
+    return axios.get(API_URL + 'api/expense/transactions/year/' + year + '/' + month, headers
+    ).then(response => {
+      return response.data
+    })
+  }
+
+  getTransactionByCategory (category) {
+    return axios.get(API_URL + 'api/expense/transactions/category?category' + category, headers
+    ).then(response => {
+      return response.data
+    })
   }
 
   createExpenseTransaction (transaction) {
     const requestTransaction = {
-      date: transaction.date,
-      expenseAmount: Number(transaction.expenseAmount),
-      categoryName: transaction.categoryName,
-      description: transaction.description
+      date: transaction.expenseTransaction.date,
+      expenseAmount: Number(transaction.expenseTransaction.expenseAmount),
+      categoryName: transaction.expenseTransaction.categoryName,
+      description: transaction.expenseTransaction.description
     }
 
-    axios.post(API_URL + 'api/add/expense/transaction', requestTransaction, headers
-    ).then(function (response) {
-      console.log(response)
-    }).catch(function (error) {
-      console.log(error)
-    })
+    return axios.post(API_URL + 'api/add/expense/transaction', requestTransaction, headers)
+      .then(response => {
+        return response.data
+      })
   }
 
-  modifyExpenseTransaction (transactionId, modifiedTransaction) {
-    return axios.put(API_URL + 'api/modify/expense/transaction/{transactionId}', { params: { transactionId: transactionId, modifiedTransaction: modifiedTransaction }, headers: authHeader() })
+  modifyExpenseTransaction (transaction) {
+    const requestTransaction = {
+      date: transaction.expenseTransaction.date,
+      expenseAmount: Number(transaction.expenseTransaction.expenseAmount),
+      categoryName: transaction.expenseTransaction.categoryName,
+      description: transaction.expenseTransaction.description
+    }
+
+    const expenseTransactionId = transaction.expenseTransaction.expenseTransactionId
+
+    return axios.put(API_URL + 'api/modify/expense/transaction/' + expenseTransactionId, requestTransaction, headers)
+      .then(response => {
+        return response.data
+      })
   }
 
   deleteExpenseTransactionByCategory (categoryName) {
-    return axios.delete(API_URL + 'api/delete/expense/transactions/category', { params: { categoryName: categoryName }, headers: authHeader() })
-  }
+    const expenseCategoryName = categoryName.categoryName
 
-  deleteExpenseTransactions () {
-    return axios.delete(API_URL + 'api/delete/expense/transactions', { headers: authHeader() })
+    return axios.delete(API_URL + 'api/delete/expense/transactions/category?categoryName=' + expenseCategoryName, headers)
   }
 
   deleteExpenseTransactionById (id) {
-    return axios.delete(API_URL + 'api/delete/expense/transaction/' + id, { headers: authHeader() })
+    const expenseTransactionId = id.expenseTransactionId
+
+    return axios.delete(API_URL + 'api/delete/expense/transaction/' + expenseTransactionId, headers).then(response => {
+      return response.data
+    })
   }
 }
 

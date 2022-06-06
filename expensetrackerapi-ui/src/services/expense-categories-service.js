@@ -2,7 +2,7 @@ import axios from 'axios'
 import authHeader from '@/services/auth-header'
 
 const API_URL = 'http://localhost:8080/'
-var headers = {
+const headers = {
   withCredentials: false,
   headers: {
     Authorization: authHeader(),
@@ -13,32 +13,44 @@ var headers = {
 
 class ExpenseCategoriesService {
   getAllExpenseCategories () {
-    return axios.get(API_URL + 'api/expense/categories', {
-      headers: {
-        Authorization: authHeader()
-      }
+    return axios.get(API_URL + 'api/expense/categories', headers
+    ).then(response => {
+      return response.data
     })
   }
 
   createExpenseCategory (expenseCategory) {
     const requestCategory = {
-      categoryName: expenseCategory.categoryName
+      categoryName: expenseCategory.expenseCategory.categoryName,
+      color: expenseCategory.expenseCategory.color
     }
 
-    axios.post(API_URL + 'api/add/expense/category', requestCategory, headers
-    ).then(function (response) {
-      console.log(response)
-    }).catch(function (error) {
-      console.log(error)
+    return axios.post(API_URL + 'api/add/expense/category', requestCategory, headers
+    ).then(response => {
+      return response.data
     })
   }
 
-  modifyExpenseCategory (categoryName, modifiedCategory) {
-    return axios.put(API_URL + 'api/modify/expense/category', { params: { categoryName: categoryName, modifiedCategory: modifiedCategory }, headers: authHeader() })
+  modifyExpenseCategory (modifiedCategory) {
+    const requestCategory = {
+      categoryName: modifiedCategory.expenseCategory.categoryName,
+      color: modifiedCategory.expenseCategory.color
+    }
+    const expenseCategoryId = modifiedCategory.expenseCategory.expenseCategoryId
+
+    return axios.put(API_URL + 'api/modify/expense/category/' + expenseCategoryId, requestCategory, headers
+    ).then(response => {
+      return response.data
+    })
   }
 
-  deleteExpenseCategory (categoryName) {
-    return axios.delete(API_URL + 'api/delete/expense/category', { params: { categoryName: categoryName }, headers: authHeader() })
+  deleteExpenseCategory (expenseCategoryId) {
+    const id = expenseCategoryId.expenseCategoryId
+
+    return axios.delete(API_URL + 'api/delete/expense/category/' + id, headers
+    ).then(response => {
+      return response.data
+    })
   }
 }
 

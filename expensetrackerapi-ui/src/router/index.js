@@ -1,10 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '../views/Home.vue'
-import Login from '../views/Login.vue'
-import Register from '../views/Register.vue'
-import Categories from '@/views/Categories.vue'
-import Transactions from '@/views/Transactions.vue'
+import Login from '@/views/Login.vue'
+import Register from '@/views/Register.vue'
+import HomePage from '@/views/HomePage.vue'
+import Expenses from '@/views/Expenses.vue'
+import Income from '@/views/Income.vue'
+import Dashboard from '@/views/Dashboard.vue'
+import Settings from '@/views/Settings.vue'
+import Profile from '@/views/Profile.vue'
+import store from '@/store/index.js'
 
 Vue.use(Router)
 
@@ -13,65 +17,38 @@ export const router = new Router({
   routes: [
     {
       path: '/',
-      name: 'Home',
-      component: Home
+      component: HomePage,
+      children: [
+        { path: '/dashboard', component: Dashboard },
+        { path: '/expenses', component: Expenses },
+        { path: '/income', component: Income },
+        { path: '/settings', component: Settings },
+        { path: '/profile', component: Profile }
+      ]
     },
-    {
-      path: '/login',
-      name: 'Login',
-      component: Login
-    },
-    {
-      path: '/register',
-      name: 'Register',
-      component: Register
-    },
-    {
-      path: '/profile',
-      name: 'Profile',
-      // lazy-loaded
-      component: () => import('../views/Profile.vue')
-    },
-    {
-      path: '/categories',
-      name: 'Categories',
-      component: Categories
-    },
-    {
-      path: '/transactions',
-      name: 'Transactions',
-      component: Transactions
-    },
-    {
-      path: '/addExpenseTransaction',
-      name: 'AddExpenseTransaction',
-      component: () => import('@/views/AddExpenseTransaction.vue')
-    },
-    {
-      path: '/addIncomeTransaction',
-      name: 'AddIncomeTransaction',
-      component: () => import('@/views/AddIncomeTransaction.vue')
-    },
-    {
-      path: '/addExpenseCategory',
-      name: 'AddExpenseCategory',
-      component: () => import('@/views/AddExpenseCategory.vue')
-    },
-    {
-      path: '/addIncomeCategory',
-      name: 'AddIncomeCategory',
-      component: () => import('@/views/AddIncomeCategory.vue')
-    },
-    {
-      path: '/modifyUser',
-      name: 'ModifyUser',
-      component: () => import('@/views/ModifyUser.vue')
-    },
-    {
-      path: '/admin',
-      name: 'Admin',
-      // lazy-loaded
-      component: () => import('../views/Admin.vue')
+    { path: '/login', component: Login },
+    { path: '/register', component: Register },
+    { path: '*', redirect: '/' }
+  ],
+  scrollBehavior (to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { x: 0, y: 0 }
     }
-  ]
+  }
 })
+
+router.beforeEach((to, from, next) => {
+  const publicPages = ['/login', '/register']
+  const authRequired = !publicPages.includes(to.path)
+  const loggedIn = store.state.account.user !== undefined && true
+
+  if (authRequired && !loggedIn) {
+    return next('/login')
+  }
+
+  next()
+})
+
+export default router

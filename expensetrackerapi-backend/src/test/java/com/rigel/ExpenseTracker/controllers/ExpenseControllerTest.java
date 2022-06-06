@@ -10,7 +10,6 @@ import com.rigel.ExpenseTracker.service.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,12 +26,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -62,7 +59,7 @@ class ExpenseControllerTest extends AbstractTest {
     final List<ExpenseTransaction> transactions = listOfTransactions(firstUser, secondUser);
     final String categoryType = "expense";
     final String date = "2021-10-10";
-    final String categoryName = "food";
+    final Long categoryId = 1L;
 
     @BeforeEach
     void setUp() {
@@ -187,13 +184,13 @@ class ExpenseControllerTest extends AbstractTest {
                 .andExpect(status().isOk());
 
 //        then
-        then(transactionService).should(atMost(1)).getTransactionsByCategoryAndUsername(pageable, categoryType, categoryName);
+        then(transactionService).should(atMost(1)).getTransactionsByCategoryAndUsername(pageable, categoryType, "food");
     }
 
     @Test
     void addingExpenseCategory() throws Exception{
 //        given
-        ExpenseCategory expenseCategory = new ExpenseCategory(categoryName, firstUser);
+        ExpenseCategory expenseCategory = new ExpenseCategory("food", firstUser);
         expenseCategory.setExpenseCategoryId(1L);
 
 //        when
@@ -204,7 +201,7 @@ class ExpenseControllerTest extends AbstractTest {
                 .andExpect(status().isOk())
                 .andReturn();
 //        then
-        then(transactionService).should(atMost(1)).addCategory(categoryName, categoryType);
+        then(transactionService).should(atMost(1)).addCategory("food", categoryType);
         assertThat(result).isNotNull();
         assertThat(result.getResponse().getContentAsString()).isEqualTo("Expense category has been saved successfully!");
     }
@@ -217,14 +214,14 @@ class ExpenseControllerTest extends AbstractTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("date", date)
                         .param("expenseAmount", "90.2")
-                        .param("categoryName", categoryName)
+                        .param("categoryName", "food")
                         .param("description", "Grocery bill")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 //        then
         then(transactionService).should(atMost(1))
-                .addTransaction(categoryType, date, 90.2, categoryName, "Grocery bill");
+                .addTransaction(categoryType, date, 90.2, "food", "Grocery bill");
         assertThat(result).isNotNull();
         assertThat(result.getResponse().getContentAsString()).isEqualTo("Transaction added successfully!");
     }
@@ -232,22 +229,22 @@ class ExpenseControllerTest extends AbstractTest {
     @Test
     void modifyingCategorySuccessfully() throws Exception {
 //        given
-        ExpenseCategory category = new ExpenseCategory(1L, categoryName, firstUser);
+        ExpenseCategory category = new ExpenseCategory(1L, "food", firstUser);
         ExpenseCategory providedCategoryByUser = new ExpenseCategory("travel");
 
-        given(transactionService.categoryExists(categoryType, categoryName)).willReturn(true);
-        when((Optional<ExpenseCategory>)transactionService.getCategory(categoryType, categoryName)).thenReturn(Optional.of(category));
+        given(transactionService.categoryExists(categoryType, categoryId)).willReturn(true);
+        when((Optional<ExpenseCategory>)transactionService.getCategory(categoryType, categoryId)).thenReturn(Optional.of(category));
 
 //        when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/api/modify/expense/category")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("categoryName", categoryName)
+                        .param("categoryName", "food")
                         .content(mapToJson(providedCategoryByUser))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 //        then
-        then(transactionService).should(atMost(1)).deleteCategory(any(String.class), any(String.class));
+        then(transactionService).should(atMost(1)).deleteCategory(any(Long.class), any(String.class));
         then(transactionService).should(atMost(1)).saveCategoryToDB(any(Optional.class), any(String.class));
         ExpenseCategory resultedCategory = mapFromJson(result.getResponse().getContentAsString(), ExpenseCategory.class);
         assertThat(resultedCategory).isNotNull();
@@ -257,16 +254,16 @@ class ExpenseControllerTest extends AbstractTest {
     @Test
     void notAbleToModifyCategory_BecauseCategory_HasTransactions() throws Exception {
 //        given
-        ExpenseCategory category = new ExpenseCategory(1L, categoryName, firstUser);
+        ExpenseCategory category = new ExpenseCategory(1L, "food", firstUser);
         category.setExpenseTransactions(transactions);
-        given(transactionService.categoryExists(categoryType, categoryName)).willReturn(true);
-        when((Optional<ExpenseCategory>)transactionService.getCategory(categoryType, categoryName)).thenReturn(Optional.of(category));
+        given(transactionService.categoryExists(categoryType, categoryId)).willReturn(true);
+        when((Optional<ExpenseCategory>)transactionService.getCategory(categoryType, categoryId)).thenReturn(Optional.of(category));
 
 
 //        when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/api/modify/expense/category")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("categoryName", categoryName)
+                        .param("categoryName", "food")
                         .content(mapToJson(category)) // it doesn't matter what you pass because this test won't run through any modifications
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotAcceptable())
@@ -274,19 +271,19 @@ class ExpenseControllerTest extends AbstractTest {
 //        then
         then(transactionService).should(never()).saveCategoryToDB(any(),any());
         String providedException = mapFromJson(result.getResponse().getContentAsString(), LinkedHashMap.class).get("message").toString();
-        assertThat(providedException).isEqualTo("There are attached transactions to category - " + categoryName
+        assertThat(providedException).isEqualTo("There are attached transactions to category: " + categoryId
                 + ", please either delete those transactions or ADD the category as a new one!");
     }
 
     @Test
     void notAbleToModifyCategory_BecauseItDoesNotExists() throws Exception {
 //        given
-        given(transactionService.categoryExists(categoryType, categoryName)).willReturn(false);
+        given(transactionService.categoryExists(categoryType, categoryId)).willReturn(false);
 
 //        when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/api/modify/expense/category")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("categoryName", categoryName)
+                        .param("categoryName", "food")
                         .content(mapToJson(new ExpenseCategory(1L, "travel", firstUser)))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -300,14 +297,14 @@ class ExpenseControllerTest extends AbstractTest {
     @Test
     void modifyingTransactionSuccessfully_With_ExistingCategory() throws Exception{
 //        given
-        ExpenseCategory category = new ExpenseCategory(1L, categoryName, firstUser);
-        ExpenseTransaction transactionInDB = new ExpenseTransaction( 300.0, categoryName, "Grocery bill", firstUser);
+        ExpenseCategory category = new ExpenseCategory(1L, "food", firstUser);
+        ExpenseTransaction transactionInDB = new ExpenseTransaction( 300.0, "food", "Grocery bill", firstUser);
         transactionInDB.setExpenseTransactionId(1L);
-        ExpenseTransaction providedTransactionByUser = new ExpenseTransaction( 600.2, categoryName, "Big bill", firstUser);
+        ExpenseTransaction providedTransactionByUser = new ExpenseTransaction( 600.2, "food", "Big bill", firstUser);
 
         when((Optional<ExpenseTransaction>)transactionService.getTransactionById(any(),any())).thenReturn(Optional.of(transactionInDB));
-        given(transactionService.categoryExists(categoryType, categoryName)).willReturn(true);
-        when((Optional<ExpenseCategory>)transactionService.getCategory(categoryType, categoryName)).thenReturn(Optional.of(category));
+        given(transactionService.categoryExists(categoryType, categoryId)).willReturn(true);
+        when((Optional<ExpenseCategory>)transactionService.getCategory(categoryType, categoryId)).thenReturn(Optional.of(category));
 
 //        when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/api/modify/expense/transaction/{transactionId}", 1L)
@@ -330,12 +327,12 @@ class ExpenseControllerTest extends AbstractTest {
     @Test
     void modifyingTransactionSuccessfully_Without_ExistingCategory() throws Exception{
 //        given
-        ExpenseTransaction transactionInDB = new ExpenseTransaction( 300.0, categoryName, "Grocery bill", firstUser);
+        ExpenseTransaction transactionInDB = new ExpenseTransaction( 300.0, "food", "Grocery bill", firstUser);
         transactionInDB.setExpenseTransactionId(1L);
-        ExpenseTransaction providedTransactionByUser = new ExpenseTransaction( 600.2, categoryName, "Big bill", firstUser);
+        ExpenseTransaction providedTransactionByUser = new ExpenseTransaction( 600.2, "food", "Big bill", firstUser);
 
         when((Optional<ExpenseTransaction>)transactionService.getTransactionById(any(),any())).thenReturn(Optional.of(transactionInDB));
-        given(transactionService.categoryExists(categoryType, categoryName)).willReturn(false);
+        given(transactionService.categoryExists(categoryType, categoryId)).willReturn(false);
         given(userService.getUser()).willReturn(firstUser);
 
 //        when
@@ -379,7 +376,7 @@ class ExpenseControllerTest extends AbstractTest {
     @Test
     void notAbleToModifyTransaction_BecauseId_IsInvalid() throws Exception {
 //        given
-        ExpenseTransaction providedTransactionByUser = new ExpenseTransaction( 600.2, categoryName, "Big bill", firstUser);
+        ExpenseTransaction providedTransactionByUser = new ExpenseTransaction( 600.2, "food", "Big bill", firstUser);
         providedTransactionByUser.setExpenseTransactionId(4L);
         when((Optional<ExpenseTransaction>)transactionService.getTransactionById(any(),any())).thenReturn(Optional.of(providedTransactionByUser));
 
@@ -404,11 +401,11 @@ class ExpenseControllerTest extends AbstractTest {
 //        when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/delete/expense/category")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("categoryName", categoryName))
+                        .param("categoryName", "food"))
                 .andExpect(status().isOk())
                 .andReturn();
 //        then
-        verify(transactionService, atLeast(1)).deleteCategory(categoryName, categoryType);
+        verify(transactionService, atLeast(1)).deleteCategory(categoryId, categoryType);
         assertThat(result).isNotNull();
         assertThat(result.getResponse().getContentAsString()).isEqualTo("Expense category has been deleted successfully!");
     }
@@ -419,14 +416,14 @@ class ExpenseControllerTest extends AbstractTest {
 //        when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/delete/expense/transactions/category")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("categoryName", categoryName))
+                        .param("categoryName", "food"))
                 .andExpect(status().isOk())
                 .andReturn();
 //        then
-        verify(transactionService, atLeast(1)).deleteTransactionsByCategory(categoryType, categoryName);
+        verify(transactionService, atLeast(1)).deleteTransactionsByCategory(categoryType, "food");
         assertThat(result).isNotNull();
         assertThat(result.getResponse().getContentAsString())
-                .isEqualTo("All transactions in category - " + categoryName + " have been deleted successfully!");
+                .isEqualTo("All transactions in category - " + categoryId + " have been deleted successfully!");
     }
 
     @Test

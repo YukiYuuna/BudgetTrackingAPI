@@ -51,14 +51,39 @@ public class ExpenseController extends ControlHelper {
         return service.getTransactionByDate(createPagination(currentPage, perPage, userService.numberOfUsers()), date, "expense");
     }
 
+    @GetMapping("/expense/transactions/year/{year}")
+    public HashMap<String, Object> fetchTransactionsByYear(@PathVariable Integer year) {
+        return service.getTransactionByYear(year, "expense");
+    }
+
+    @GetMapping("/expense/transactions/current/{year}/{month}")
+    public HashMap<String, Object> fetchTransactionsByYear(@PathVariable Integer year, @PathVariable Integer month) {
+        return service.getTransactionForCurrentMonth(year, month, "expense");
+    }
+
+    @GetMapping("/expense/transactions/current/year")
+    public HashMap<String, Object> fetchTransactionsByCurrentYear() {
+        return service.getTransactionByCurrentYear("expense");
+    }
+
+    @GetMapping("/expense/transactions/year/{year}/{month}")
+    public HashMap<String, Object> fetchTransactionsByYearMonthAndCategory(@PathVariable Integer year,
+                                                           @PathVariable Integer month) {
+        return service.getTransactionByYearMonthAndCategory(year, month, "expense");
+    }
+
     @GetMapping("/expense/transactions/category")
-    public HashMap<String, Object> fetchTransactionsByCategory(String categoryName, @Nullable Integer currentPage, @Nullable Integer perPage) {
+    public HashMap<String, Object> fetchTransactionsByCategory(@RequestParam String categoryName, @Nullable Integer currentPage, @Nullable Integer perPage) {
         return service.getTransactionsByCategoryAndUsername(createPagination(currentPage, perPage, userService.numberOfUsers()),"expense", categoryName);
     }
 
-    @PostMapping("/add/expense/category")
+    @PostMapping(value = "/add/expense/category", consumes = "application/json")
     public ResponseEntity<String> addExpenseCategory(@RequestBody ExpenseCategory category) {
-        service.addCategory(category.getCategoryName(), "expense");
+        if(category.getColor() != null){
+            service.addCategoryWithColor(category.getCategoryName(), "expense", category.getColor());
+        } else {
+            service.addCategory(category.getCategoryName(), "expense");
+        }
         return ResponseEntity.ok("Expense category has been saved successfully!");
     }
 
@@ -68,9 +93,9 @@ public class ExpenseController extends ControlHelper {
         return ResponseEntity.ok().body("Transaction added successfully!");
     }
 
-    @PutMapping("/modify/expense/category")
-    public ResponseEntity<?> modifyExpenseCategory(String categoryName, @RequestBody ExpenseCategory modifiedCategory) {
-        if(!service.categoryExists("expense", categoryName)) {
+    @PutMapping("/modify/expense/category/{categoryId}")
+    public ResponseEntity<?> modifyExpenseCategory(@PathVariable Long categoryId, @RequestBody ExpenseCategory modifiedCategory) {
+        if(!service.categoryExists("expense", categoryId)) {
             throw new ResponseStatusException(NOT_FOUND, "Expense category with this name doesn't exist in the DB.");
         }
 
@@ -78,19 +103,20 @@ public class ExpenseController extends ControlHelper {
             throw new ResponseStatusException(NOT_ACCEPTABLE, "Don't provide an id for the new category, because you cannot modify it.");
         }
 
-        Optional<ExpenseCategory> category = ((Optional<ExpenseCategory>)service.getCategory("expense",categoryName));
+        Optional<ExpenseCategory> category = ((Optional<ExpenseCategory>)service.getCategory("expense", categoryId));
 
 //        Provide the user with button which, he/she can use to delete all transaction correlated with this category!
         if(category.get().getExpenseTransactions() != null && category.get().getExpenseTransactions().size() > 0){
-            throw new ResponseStatusException(NOT_ACCEPTABLE, "There are attached transactions to category - " + categoryName
+            throw new ResponseStatusException(NOT_ACCEPTABLE, "There are attached transactions to category: " + categoryId
                     + ", please either delete those transactions or ADD the category as a new one!");
         }
 
         return category.map(c -> {
                     modifiedCategory.setCategoryName(modifiedCategory.getCategoryName() == null ? c.getCategoryName() : modifiedCategory.getCategoryName().toLowerCase());
                     modifiedCategory.setUser(c.getUser());
+                    modifiedCategory.setColor(c.getColor() == null ? c.getColor() : modifiedCategory.getColor());
 
-                    service.deleteCategory(categoryName, "expense");
+                    service.deleteCategory(categoryId, "expense");
                     service.saveCategoryToDB(Optional.of(modifiedCategory), "expense");
 
 //                    new category changes its ID automatically. Old ID frees up.
@@ -110,9 +136,9 @@ public class ExpenseController extends ControlHelper {
             throw new ResponseStatusException(NOT_ACCEPTABLE, "Don't provide an id for the new transaction, because you cannot modify it.");
 
         if (modifiedTransaction.getCategoryName() != null) {
-            if (service.categoryExists("expense", modifiedTransaction.getCategoryName())) {
+            if (service.categoryExistsByName("expense", modifiedTransaction.getCategoryName())) {
                 modifiedTransaction.setExpenseCategory((ExpenseCategory) service
-                        .getCategory("expense", modifiedTransaction.getCategoryName()).get());
+                        .getCategoryByName("expense", modifiedTransaction.getCategoryName()).get());
             } else {
                 Optional<ExpenseCategory> newCategory = Optional.of(
                         new ExpenseCategory(modifiedTransaction.getCategoryName(), userService.getUser()));
@@ -138,9 +164,9 @@ public class ExpenseController extends ControlHelper {
     /* Ask the user if he wants to delete the category for sure, before calling this method,
     * because if he deletes the category, all transactions made with this category will be deleted too.
     */
-    @DeleteMapping("/delete/expense/category")
-    public ResponseEntity<String> deleteExpenseCategory(String categoryName) {
-        service.deleteCategory(categoryName, "expense");
+    @DeleteMapping("/delete/expense/category/{categoryId}")
+    public ResponseEntity<String> deleteExpenseCategory(@PathVariable Long categoryId) {
+        service.deleteCategory(categoryId, "expense");
         return ResponseEntity.ok().body("Expense category has been deleted successfully!");
     }
 
@@ -161,7 +187,7 @@ public class ExpenseController extends ControlHelper {
 
     @DeleteMapping("/delete/expense/transaction/{id}")
     ResponseEntity<String> deleteExpenseTransactionById(@PathVariable Long id) {
-        service.deleteTransactionById("expense",id);
+        service.deleteTransactionById("expense", id);
         return ResponseEntity.ok().body("The transaction has been deleted successfully!");
     }
 

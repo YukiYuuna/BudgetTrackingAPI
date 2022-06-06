@@ -2,9 +2,9 @@ package com.rigel.ExpenseTracker.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,7 +14,6 @@ import static javax.persistence.CascadeType.*;
 
 @Entity
 @Table(name = "income_category")
-@Data
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,17 +21,20 @@ public class IncomeCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "income_category_id")
-    @JsonIgnore
     private Long incomeCategoryId;
 
     @Column(name = "category_name")
     private String categoryName;
 
+    @Column(name = "color")
+    @Nullable
+    private String color;
+
     @JsonIgnore
     @OneToMany(mappedBy = "incomeCategory")
     private List<IncomeTransaction> incomeTransactions;
 
-    @ManyToOne(cascade = ALL)
+    @ManyToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH})
     @JoinColumn(name = "user_income_category_id", referencedColumnName = "user_id")
     @JsonIgnore
     private User user;
@@ -47,6 +49,12 @@ public class IncomeCategory {
     public IncomeCategory(String categoryName, User user) {
         this.categoryName = categoryName;
         this.user = user;
+    }
+
+    public IncomeCategory(String categoryName, @Nullable String color, User user) {
+        this.categoryName = categoryName;
+        this.user = user;
+        this.color = color;
     }
 
     @Override
