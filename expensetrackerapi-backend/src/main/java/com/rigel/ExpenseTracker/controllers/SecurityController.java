@@ -1,9 +1,11 @@
 package com.rigel.ExpenseTracker.controllers;
 
+import com.rigel.ExpenseTracker.event.UserPayload;
 import com.rigel.ExpenseTracker.service.UserService;
 import com.rigel.ExpenseTracker.entities.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +20,12 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class SecurityController {
 
     private final UserService userService;
+    private final StreamBridge streamBridge;
 
     @Autowired
-    public SecurityController(@Lazy UserService userService) {
+    public SecurityController(@Lazy UserService userService, StreamBridge streamBridge) {
         this.userService = userService;
+        this.streamBridge = streamBridge;
     }
 
     @PostMapping("/register")
@@ -36,7 +40,18 @@ public class SecurityController {
             boolean invalidUsername = userService.getAllDBUsers().stream().anyMatch(u -> u.getUsername().equals(username));
             boolean invalidEmail = userService.getAllDBUsers().stream().anyMatch(u -> u.getEmail().equals(email));
             if (!invalidUsername && !invalidEmail) {
+
                 userService.saveUser(new User(username, password, firstName, lastName, email, currentBudget));
+
+                // Sending user information to TrackYourPortfolio service
+                streamBridge.send("userInfoEventSupplier-out-0", UserPayload.builder()
+                                                                    .username(username)
+                                                                    .firstName(firstName)
+                                                                    .lastName(lastName)
+                                                                    .email(email)
+                                                                    .currentBudget(currentBudget)
+                                                                    .build());
+                log.info("Just published a new 'userInfoEvent'!");
                 return ResponseEntity.ok().body(firstName + " " + lastName + " has been added successfully!");
             } else {
                 if (invalidUsername) {
