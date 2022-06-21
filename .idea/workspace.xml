@@ -90,6 +90,29 @@
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/expensetrackerapi-ui.iml" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/expensetrackerapi-ui.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+=======
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_github_stephenc_jcip_jcip_annotations_1_0_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_nimbusds_nimbus_jose_jwt_9_22.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_security_spring_security_oauth2_core_5_6_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_security_spring_security_oauth2_jose_5_7_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_security_spring_security_oauth2_resource_server_5_7_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/expensetrackerapi_backend_war_exploded.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/expensetrackerapi_backend_war_exploded.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/expensetrackerapi_ui_war_exploded.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/expensetrackerapi_ui_war_exploded.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__javax_servlet_javax_servlet_api_4_0_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_restdocs_spring_restdocs_core_2_0_5_RELEASE.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_restdocs_spring_restdocs_mockmvc_2_0_5_RELEASE.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker.iml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/security/CustomAuthenticationFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/security/CustomAuthorizationFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/expensetrackerapi-ui.iml" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/expensetrackerapi-ui.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+>>>>>>> Stashed changes
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -188,7 +211,7 @@
     <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="project.structure.last.edited" value="Modules" />
-    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.javacompiler" />
     <property name="show.run.dashboard.notification" value="false" />
@@ -409,11 +432,17 @@
       <workItem from="1654145859738" duration="4486000" />
       <workItem from="1654159888510" duration="4086000" />
       <workItem from="1655041385799" duration="509000" />
+
       <workItem from="1655465555456" duration="860000" />
       <workItem from="1655468675895" duration="4481000" />
       <workItem from="1655532310787" duration="20884000" />
       <workItem from="1655619071325" duration="2992000" />
-    </task>
+      <workItem from="1655659691173" duration="923000" />
+      <workItem from="1655660650895" duration="4454000" />
+      <workItem from="1655700389070" duration="2578000" />
+      <workItem from="1655703643017" duration="762000" />
+      <workItem from="1655741912720" duration="1216000" />
+      <workItem from="1655784073221" duration="4254000" />    </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
