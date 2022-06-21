@@ -76,9 +76,7 @@
           <element id="library" level="project" name="Maven: org.apache.httpcomponents:httpcore:4.4.14" />
           <element id="library" level="project" name="Maven: commons-codec:commons-codec:1.15" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.13.0" />
-          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.13.0" />
-        </element>
-      </element>
+          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.13.0" />      </element>
       <element id="directory" name="META-INF">
         <element id="file-copy" path="$PROJECT_DIR$/expensetrackerapi-ui/target/expensetrackerapi-ui-0.0.1-SNAPSHOT/META-INF/MANIFEST.MF" />
       </element>
