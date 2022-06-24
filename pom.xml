@@ -49,4 +49,5 @@
 			<version>5.7.1</version>
 			<scope>compile</scope>
 		</dependency>
-	</dependencies></project>
+	</dependencies>
+</project>

@@ -79,5 +79,6 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-jcl:5.3.13" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-oauth2-jose:5.7.1" level="project" />
     <orderEntry type="library" name="Maven: com.nimbusds:nimbus-jose-jwt:9.22" level="project" />
-    <orderEntry type="library" name="Maven: com.github.stephenc.jcip:jcip-annotations:1.0-1" level="project" />  </component>
+    <orderEntry type="library" name="Maven: com.github.stephenc.jcip:jcip-annotations:1.0-1" level="project" />
+  </component>
 </module>
