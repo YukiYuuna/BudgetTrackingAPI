@@ -9,9 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -26,7 +23,7 @@ import static org.springframework.http.HttpStatus.*;
 @Transactional
 @Slf4j
 @Component
-public class UserServiceImpl  implements UserService, UserDetailsService {
+public class UserServiceImpl  implements UserService {
 
     private final UserRepository userRepo;
     private final RoleRepo roleRepo;
@@ -37,17 +34,6 @@ public class UserServiceImpl  implements UserService, UserDetailsService {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
         this.passwordEncoder = passwordEncoder;
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepo.findUserByUsername(username);
-        if(user.isEmpty() && !username.equals("NONE_PROVIDED")) {
-            throw new ResponseStatusException(NOT_FOUND, "User with this username not found in the database!");
-        }
-
-        return new org.springframework.security.core.userdetails.User(user.get().getUsername(), user.get().getPassword(),
-                buildSimpleGrantedAuthorities(user.get().getRoles()));
     }
 
     @Override

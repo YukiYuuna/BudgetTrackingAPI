@@ -16,10 +16,6 @@
 	<properties>
 		<frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
 	</properties>
-<<<<<<< Updated upstream
-	
-	<build>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.cloud</groupId>

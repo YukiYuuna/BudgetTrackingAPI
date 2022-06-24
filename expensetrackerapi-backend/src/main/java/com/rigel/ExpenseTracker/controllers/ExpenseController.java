@@ -32,7 +32,7 @@ public class ExpenseController extends ControlHelper {
     }
 
     @GetMapping("/expense/transactions")
-    public HashMap<String, Object>  fetchAllExpenseTransactions(@Nullable Integer currentPage, @Nullable Integer perPage) {
+    public HashMap<String, Object>  fetchAllExpenseTransactions(@RequestHeader String Authorization, @Nullable Integer currentPage, @Nullable Integer perPage) {
         return service.getAllUserTransactions(createPagination(currentPage, perPage, userService.numberOfUsers()),"expense");
     }
 
@@ -47,7 +47,7 @@ public class ExpenseController extends ControlHelper {
     }
 
     @GetMapping("/expense/transactions/date")
-    public HashMap<String, Object> fetchTransactionsByDate(String date, @Nullable Integer currentPage, @Nullable Integer perPage) {
+    public HashMap<String, Object> fetchTransactionsByDate(@RequestHeader String Authorization, String date, @Nullable Integer currentPage, @Nullable Integer perPage) {
         return service.getTransactionByDate(createPagination(currentPage, perPage, userService.numberOfUsers()), date, "expense");
     }
 
