@@ -90,7 +90,6 @@
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/expensetrackerapi-ui.iml" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/expensetrackerapi-ui.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-=======
       <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_github_stephenc_jcip_jcip_annotations_1_0_1.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_nimbusds_nimbus_jose_jwt_9_22.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_security_spring_security_oauth2_core_5_6_0.xml" afterDir="false" />
@@ -112,7 +111,6 @@
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/expensetrackerapi-ui.iml" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/expensetrackerapi-ui.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
->>>>>>> Stashed changes
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
