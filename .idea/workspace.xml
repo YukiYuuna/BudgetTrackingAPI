@@ -10,13 +10,14 @@
       <change afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/keycloak/LoginResponse.java" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/keycloak/LoginService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker.iml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/ExpenseTrackerApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/ExpenseTrackerApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/ExpenseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/ExpenseController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/service/TransactionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/service/TransactionServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/service/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/service/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/SecurityController.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/SecurityController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/expensetrackerapi-ui.iml" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/expensetrackerapi-ui.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +116,7 @@
     <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="project.structure.last.edited" value="Modules" />
-    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.javacompiler" />
     <property name="show.run.dashboard.notification" value="false" />
@@ -336,6 +337,7 @@
       <workItem from="1654145859738" duration="4486000" />
       <workItem from="1654159888510" duration="4086000" />
       <workItem from="1655041385799" duration="509000" />
+
       <workItem from="1655465555456" duration="860000" />
       <workItem from="1655468675895" duration="4481000" />
       <workItem from="1655532310787" duration="20884000" />
