@@ -3,12 +3,10 @@ package com.rigel.ExpenseTracker.service;
 import com.rigel.ExpenseTracker.entities.*;
 import com.rigel.ExpenseTracker.repositories.*;
 import lombok.extern.slf4j.Slf4j;
-import org.keycloak.KeycloakPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -544,16 +542,7 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
     private String getUsernameByAuthentication(){
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-
-        return Optional.ofNullable(securityContext.getAuthentication())
-                .map(authentication -> {
-
-                    if (authentication.getPrincipal() instanceof KeycloakPrincipal) {
-                        return ((KeycloakPrincipal)securityContext.getAuthentication().getPrincipal()).getKeycloakSecurityContext().getToken().getPreferredUsername();
-                    }
-                    return null;
-                }).get();
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
     private Optional<User> getOptionalUser() {
