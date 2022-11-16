@@ -1,3 +1,12 @@
+Running the program locally:
+1. git clone <gitUrl>
+2. Create a DB via Pgadmin or DBeaver, naming the DB: expense_tracker
+3. Start the application by running the ExpenseTrackerApplication.main
+4. Go to the expensetrackerapi-ui (go to InteliJ's Terminal and type: cd .\expensetrackerapi-ui\)
+5. Run the command: npm run serve
+6. Wait and click on the localhost:8081 link :)
+
+
 ## 📚 What I've learned and improved:
 * I have considerably improved my skills in working with an array 😉 of Data Structures.
 * Object-Relational Mapping and general workflow with databases (mainly PostgreSQL🐘)
