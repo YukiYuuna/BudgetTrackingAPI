@@ -4,20 +4,54 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-<<<<<<< HEAD
-    <list default="true" id="5cbfaace-34ca-43af-875a-4f098e35433d" name="Changes" comment="">
+    <list default="true" id="95028216-68b3-4970-b872-65160f817d59" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/artifacts/expensetrackerapi_backend_war_exploded.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/expensetrackerapi_backend_war_exploded.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/artifacts/expensetrackerapi_ui_war_exploded.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/expensetrackerapi_ui_war_exploded.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_woodstox_woodstox_core_6_2_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_github_andrewoma_dexx_dexx_collections_0_2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_github_vlsi_compactmap_compactmap_2_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_code_findbugs_jsr305_3_0_2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_code_gson_gson_2_8_9.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_inject_guice_4_1_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_archaius_archaius_core_0_7_6.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_eureka_eureka_client_1_10_17.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_eureka_eureka_core_1_10_17.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_netflix_commons_netflix_eventbus_0_3_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_netflix_commons_netflix_infix_0_3_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_servo_servo_core_0_12_21.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_stoyanr_evictor_1_0_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_thoughtworks_xstream_xstream_1_4_18.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__commons_configuration_commons_configuration_1_10.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__commons_jxpath_commons_jxpath_1_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__commons_lang_commons_lang_2_6.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__commons_logging_commons_logging_1_1_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__io_github_x_stream_mxparser_1_2_2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__io_projectreactor_addons_reactor_extra_3_4_5.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__javax_inject_javax_inject_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__javax_servlet_servlet_api_2_5.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__javax_ws_rs_jsr311_api_1_1_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__joda_time_joda_time_2_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_antlr_antlr_runtime_3_4.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_antlr_stringtemplate_3_2_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_math_2_2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_codehaus_jettison_jettison_1_4_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_codehaus_woodstox_stax2_api_4_2_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_cache_2_6_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_loadbalancer_3_1_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_netflix_eureka_client_3_1_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_starter_bootstrap_3_1_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_starter_loadbalancer_3_1_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_starter_netflix_eureka_client_3_1_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_context_support_5_3_13.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__xmlpull_xmlpull_1_1_3_1.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker.iml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/service/TransactionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/service/TransactionServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/service/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/service/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/ExpenseTrackerApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/ExpenseTrackerApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/ServletInitializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/SecurityController.java" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/controllers/SecurityController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/event/UserPayload.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-backend/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expensetrackerapi-ui/expensetrackerapi-ui.iml" beforeDir="false" afterPath="$PROJECT_DIR$/expensetrackerapi-ui/expensetrackerapi-ui.iml" afterDir="false" />
-=======
-    <list default="true" id="95028216-68b3-4970-b872-65160f817d59" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
->>>>>>> 3061f2f (Reverting old implementation.)
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,18 +83,11 @@
     </file-type-list>
   </component>
   <component name="HighlightingSettingsPerFile">
-<<<<<<< HEAD
-    <setting file="file://$PROJECT_DIR$/expensetrackerapi-ui/src/App.vue" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/expensetrackerapi-backend/src/main/resources/application.properties" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-transactions-service.js" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/expensetransactions.js" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/expensetrackerapi-ui/src/services/budget-service.js" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/expensetrackerapi-ui/src/services/income-categories-service.js" root0="FORCE_HIGHLIGHTING" />
-=======
     <setting file="file://$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/service/UserService.java" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/expensetrackerapi-ui/src/App.vue" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/expensetrackerapi-ui/src/views/Expenses.vue" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/security/CustomAuthenticationFilter.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/expensetrackerapi-ui/src/services/budget-service.js" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/repositories/ExpenseTransactionRepository.java" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/expensetrackerapi-backend/src/main/resources/application.properties" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/entities/ExpenseTransaction.java" root0="FORCE_HIGHLIGHTING" />
@@ -81,14 +108,7 @@
     <setting file="file://$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/security/SecurityConfig.java" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/expensetrackerapi-backend/pom.xml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/expensetrackerapi-ui/pom.xml" root0="FORCE_HIGHLIGHTING" />
->>>>>>> 3061f2f (Reverting old implementation.)
     <setting file="file://$PROJECT_DIR$/expensetrackerapi-backend/src/main/java/com/rigel/ExpenseTracker/entities/ExpenseCategory.java" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/account.js" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/expensetrackerapi-ui/src/views/Expenses.vue" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/expensecategories.js" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/expensetrackerapi-ui/src/services/expense-categories-service.js" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/expensetrackerapi-ui/src/services/user-service.js" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/expensetrackerapi-ui/src/store/modules/incometransactions.js" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="JpbToolWindowState">
     <option name="myId2FirstActivated">

@@ -3,9 +3,7 @@
   <component name="FacetManager">
     <facet type="web" name="Web">
       <configuration>
-        <webroots>
-          <root url="file://$MODULE_DIR$/src/main/webapp" relative="/" />
-        </webroots>
+        <webroots />
       </configuration>
     </facet>
     <facet type="Spring" name="Spring">
